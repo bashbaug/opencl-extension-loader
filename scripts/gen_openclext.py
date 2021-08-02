@@ -62,11 +62,20 @@ if __name__ == "__main__":
         gen = open(args.directory + '/openclext.cpp', 'wb')
         gen.write(
           mako_template.render_unicode(
-              genExtensions={
-                  'cl_khr_create_command_queue',
-                  'cl_khr_spir',
-                  'cl_intel_unified_shared_memory'
-              },
+              genExtensions={},
+              includes='#include <CL/cl_ext.h>',
+              spec=spec,
+              apisigs=apisigs,
+              extapis=extapis).
+          encode('utf-8', 'replace'))
+
+        test_template = Template(filename='call_all.c.mako')
+
+        print('Generating call_all.c test function...')
+        gen = open(args.directory + '/call_all.c', 'wb')
+        gen.write(
+          test_template.render_unicode(
+              genExtensions={},
               includes='#include <CL/cl_ext.h>',
               spec=spec,
               apisigs=apisigs,

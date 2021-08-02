@@ -8,7 +8,8 @@ build32/
 build64/
 install/
 scripts/cl.xml
-scripts/loader.cpp
+scripts/*.c
+scripts/*.cpp
 scripts/gen/__pycache__/*
 *~
 log.txt

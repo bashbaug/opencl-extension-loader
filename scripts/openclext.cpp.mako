@@ -10,9 +10,16 @@ skipExtensions = {
     'cl_khr_gl_event',
     'cl_khr_gl_msaa_sharing',
     'cl_khr_gl_sharing',
+    'cl_khr_icd',
     'cl_loader_layers',
+    'cl_APPLE_ContextLoggingFunctions',
     'cl_intel_dx9_media_sharing',
     'cl_intel_va_api_media_sharing',
+    'cl_intel_sharing_format_query_d3d10',
+    'cl_intel_sharing_format_query_d3d11',
+    'cl_intel_sharing_format_query_dx9',
+    'cl_intel_sharing_format_query_gl',
+    'cl_intel_sharing_format_query_va_api',
     }
 
 # Extensions to include in this file:
@@ -170,6 +177,24 @@ static inline cl_platform_id _get_platform(cl_mem memobj)
     return _get_platform(context);
 }
 
+#if defined(cl_intel_accelerator)
+
+static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
+{
+    if (accelerator == NULL) return NULL;
+
+    cl_context context = NULL;
+    clGetAcceleratorInfoINTEL(
+        accelerator,
+        CL_ACCELERATOR_CONTEXT_INTEL,
+        sizeof(context),
+        &context,
+        NULL);
+    return _get_platform(context);
+}
+
+#endif // defined(cl_intel_accelerator)
+
 /***************************************************************
 * Function Pointer Typedefs
 ***************************************************************/
@@ -182,6 +207,7 @@ static inline cl_platform_id _get_platform(cl_mem memobj)
 %for block in extension.findall('require'):
 %  if shouldEmit(block):
 %    if block.get('condition'):
+
 #if ${block.get('condition')}
 %    endif
 %    for func in block.findall('command'):
@@ -198,6 +224,7 @@ typedef ${api.RetType} (CL_API_CALL* ${api.Name}_clextfn)(
 %      endfor
 %    endfor
 %    if block.get('condition'):
+
 #endif
 %    endif
 %  endif
@@ -304,6 +331,7 @@ extern "C" {
 %for block in extension.findall('require'):
 %  if shouldEmit(block):
 %    if block.get('condition'):
+
 #if ${block.get('condition')}
 %    endif
 %    for func in block.findall('command'):
@@ -326,6 +354,10 @@ ${api.RetType} ${api.Name}(
 %      elif api.Params[len(api.Params)-1].Name == "errcode_ret":
         if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
         return NULL;
+%      elif api.RetType == "void*":
+        return NULL;
+%      elif api.RetType == "void":
+        return;
 %      else:
         // not sure how to return an error in this case!
 %      endif
@@ -345,6 +377,7 @@ ${api.RetType} ${api.Name}(
 }
 %    endfor
 %    if block.get('condition'):
+
 #endif
 %    endif
 %  endif
