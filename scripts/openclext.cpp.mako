@@ -30,7 +30,7 @@ def shouldGenerate(extension):
         return True
     return False
 
-# XML blocks with funcitons to include:
+# XML blocks with functions to include:
 def shouldEmit(block):
     for func in block.findall('command'):
         return True

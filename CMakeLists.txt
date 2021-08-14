@@ -26,10 +26,32 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(OpenCLExtensionLoader LANGUAGES C CXX)
 
-option(BUILD_SHARED_LIBS "Set to ON to build a shared library." OFF)
+option (BUILD_SHARED_LIBS "Build shared libs" ON)
+option (OPENCL_EXTENSION_LOADER_FORCE_STATIC_LIB "Unconditionally build a static library for the OpenCL Extension Loader" ON)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
+    find_package(Python3 COMPONENTS Interpreter)
+    set(OPENCL_EXTENSION_LOADER_XML_PATH CACHE FILEPATH "Path to cl.xml for OpenCL Extension Loader genereration")
+    set(OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/generated)
+    add_custom_target(extension_loader_generate
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/scripts
+            ${Python3_EXECUTABLE} gen_openclext.py
+            -registry ${OPENCL_EXTENSION_LOADER_XML_PATH}
+            -o ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}
+    )
+    add_custom_target(extension_loader_copy
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}/openclext.cpp
+            ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}/openclext.def
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}/call_all.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests
+    )
+    set_target_properties(extension_loader_generate PROPERTIES FOLDER "OpenCLExtensionLoader/Generation")
+    set_target_properties(extension_loader_copy PROPERTIES FOLDER "OpenCLExtensionLoader/Generation")
 endif()
 
 if(NOT DEFINED OpenCL_INCLUDE_DIRS)
@@ -38,26 +60,32 @@ endif()
 
 set( OpenCLExtensionLoader_SOURCE_FILES
     src/openclext.cpp
+    src/openclext.def
 )
 
 source_group(Source FILES ${OpenCLExtensionLoader_SOURCE_FILES})
 
-add_library(OpenCLExt ${OpenCLExtensionLoader_SOURCE_FILES})
+if (OPENCL_EXTENSION_LOADER_FORCE_STATIC_LIB)
+    add_library(OpenCLExt STATIC ${OpenCLExtensionLoader_SOURCE_FILES})
+else()
+    add_library(OpenCLExt ${OpenCLExtensionLoader_SOURCE_FILES})
+endif()
 set_target_properties(OpenCLExt PROPERTIES FOLDER "OpenCLExtensionLoader")
-target_include_directories(OpenCLExt PUBLIC ${OpenCL_INCLUDE_DIRS})
+set_target_properties(OpenCLExt PROPERTIES VERSION "0.9" SOVERSION "0")
+target_include_directories(OpenCLExt SYSTEM PUBLIC ${OpenCL_INCLUDE_DIRS})
 target_compile_definitions(OpenCLExt PRIVATE CL_TARGET_OPENCL_VERSION=300)
-target_link_libraries(OpenCLExt PRIVATE ${CMAKE_DL_LIBS})
+target_link_libraries(OpenCLExt PRIVATE ${OpenCL_LIBRARIES})
 
 if(MSVC)
-    target_compile_options(OpenCLExt PRIVATE /EHs-c-)
+    #/EHs enable C++ EH (no SEH exceptions)
+    #/EHc extern "C" defaults to nothrow
+    target_compile_options(OpenCLExt PRIVATE /EHs- /EHc-)
 else()
     target_compile_options(OpenCLExt PRIVATE -Wall -fno-exceptions)
 endif()
 
 include(GNUInstallDirs)
 install(TARGETS OpenCLExt
-    EXPORT OpenCLExt
-    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -66,3 +94,8 @@ install(TARGETS OpenCLExt
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_subdirectory(tests)
 endif()
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "Install Path" FORCE)
+endif()
+

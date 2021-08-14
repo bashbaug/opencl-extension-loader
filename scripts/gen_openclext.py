@@ -56,14 +56,26 @@ if __name__ == "__main__":
     extapis = gen.get_extapis(spec, apisigs)
 
     try:
-        mako_template = Template(filename='openclext.cpp.mako')
+        loader_template = Template(filename='openclext.cpp.mako')
 
         print('Generating openclext.cpp...')
         gen = open(args.directory + '/openclext.cpp', 'wb')
         gen.write(
-          mako_template.render_unicode(
+          loader_template.render_unicode(
               genExtensions={},
               includes='#include <CL/cl_ext.h>',
+              spec=spec,
+              apisigs=apisigs,
+              extapis=extapis).
+          encode('utf-8', 'replace'))
+
+        def_template = Template(filename='openclext.def.mako')
+
+        print('Generating openclext.def...')
+        gen = open(args.directory + '/openclext.def', 'wb')
+        gen.write(
+          def_template.render_unicode(
+              genExtensions={},
               spec=spec,
               apisigs=apisigs,
               extapis=extapis).
