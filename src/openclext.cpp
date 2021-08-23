@@ -34,6 +34,14 @@
     #endif
 #endif
 
+#define CL_USE_DEPRECATED_OPENCL_1_0_APIS
+#define CL_USE_DEPRECATED_OPENCL_1_1_APIS
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
+#define CL_USE_DEPRECATED_OPENCL_2_0_APIS
+#define CL_USE_DEPRECATED_OPENCL_2_1_APIS
+#define CL_USE_DEPRECATED_OPENCL_2_2_APIS
+#define CL_USE_DEPRECATED_OPENCL_3_0_APIS
+
 #include <CL/cl.h>
 #include <CL/cl_ext.h>
 #if defined(CLEXT_INCLUDE_GL)
@@ -1250,7 +1258,7 @@ static openclext_dispatch_table _dispatch = {0};
 static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_ptr)
 {
 #define GET_EXTENSION(_funcname)                                               \
-    dispatch_ptr->##_funcname =                                                \
+    dispatch_ptr -> _funcname =                                                \
         (_funcname##_fn)clGetExtensionFunctionAddressForPlatform(platform,     \
                                                                  #_funcname);
 
