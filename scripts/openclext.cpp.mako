@@ -373,9 +373,9 @@ static openclext_dispatch_table _dispatch = {0};
 static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_ptr)
 {
 #define GET_EXTENSION(_funcname)                                               ${"\\"}
-    dispatch_ptr -> _funcname =                                                ${"\\"}
-        (_funcname##_fn)clGetExtensionFunctionAddressForPlatform(platform,     ${"\\"}
-                                                                 #_funcname);
+    dispatch_ptr->_funcname =                                                  ${"\\"}
+        (_funcname##_clextfn)clGetExtensionFunctionAddressForPlatform(         ${"\\"}
+            platform, #_funcname);
 
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
 %  if shouldGenerate(extension.get('name')):
