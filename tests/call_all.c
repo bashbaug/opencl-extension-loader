@@ -7,12 +7,71 @@
 #define CL_USE_DEPRECATED_OPENCL_3_0_APIS
 #include "CL/cl.h"
 #include <CL/cl_ext.h>
+#if defined(CLEXT_INCLUDE_GL)
+#include <CL/cl_gl.h>
+#endif
+#if defined(CLEXT_INCLUDE_EGL)
+#include <CL/cl_egl.h>
+#endif
+#if defined(CLEXT_INCLUDE_DX9)
+#include <CL/cl_dx9_media_sharing.h>
+#endif
+// Note: If both D3D10 and D3D11 are supported, the D3D11 header must be
+// included first.
+#if defined(CLEXT_INCLUDE_D3D11)
+#include <CL/cl_d3d11.h>
+#endif
+#if defined(CLEXT_INCLUDE_D3D10)
+#include <CL/cl_d3d10.h>
+#endif
+#if defined(CLEXT_INCLUDE_VA_API)
+#include <CL/cl_va_api_media_sharing_intel.h>
+#endif
 
 void call_all(void)
 {
 #ifdef cl_khr_create_command_queue
     clCreateCommandQueueWithPropertiesKHR(NULL, NULL, NULL, NULL);
 #endif // cl_khr_create_command_queue
+
+#ifdef cl_khr_d3d10_sharing
+    clGetDeviceIDsFromD3D10KHR(NULL, CL_D3D10_DEVICE_KHR, NULL, CL_ALL_DEVICES_FOR_D3D10_KHR, 0, NULL, NULL);
+    clCreateFromD3D10BufferKHR(NULL, CL_MEM_READ_WRITE, NULL, NULL);
+    clCreateFromD3D10Texture2DKHR(NULL, CL_MEM_READ_WRITE, NULL, 0, NULL);
+    clCreateFromD3D10Texture3DKHR(NULL, CL_MEM_READ_WRITE, NULL, 0, NULL);
+    clEnqueueAcquireD3D10ObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
+    clEnqueueReleaseD3D10ObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
+#endif // cl_khr_d3d10_sharing
+
+#ifdef cl_khr_d3d11_sharing
+    clGetDeviceIDsFromD3D11KHR(NULL, CL_D3D11_DEVICE_KHR, NULL, CL_ALL_DEVICES_FOR_D3D11_KHR, 0, NULL, NULL);
+    clCreateFromD3D11BufferKHR(NULL, CL_MEM_READ_WRITE, NULL, NULL);
+    clCreateFromD3D11Texture2DKHR(NULL, CL_MEM_READ_WRITE, NULL, 0, NULL);
+    clCreateFromD3D11Texture3DKHR(NULL, CL_MEM_READ_WRITE, NULL, 0, NULL);
+    clEnqueueAcquireD3D11ObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
+    clEnqueueReleaseD3D11ObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
+#endif // cl_khr_d3d11_sharing
+
+#ifdef cl_khr_dx9_media_sharing
+    clGetDeviceIDsFromDX9MediaAdapterKHR(NULL, 0, NULL, NULL, CL_ALL_DEVICES_FOR_DX9_MEDIA_ADAPTER_KHR, 0, NULL, NULL);
+    clCreateFromDX9MediaSurfaceKHR(NULL, CL_MEM_READ_WRITE, CL_ADAPTER_D3D9_KHR, NULL, 0, NULL);
+    clEnqueueAcquireDX9MediaSurfacesKHR(NULL, 0, NULL, 0, NULL, NULL);
+    clEnqueueReleaseDX9MediaSurfacesKHR(NULL, 0, NULL, 0, NULL, NULL);
+#endif // cl_khr_dx9_media_sharing
+
+#ifdef cl_khr_egl_event
+    clCreateEventFromEGLSyncKHR(NULL, NULL, NULL, NULL);
+#endif // cl_khr_egl_event
+
+#ifdef cl_khr_egl_image
+    clCreateFromEGLImageKHR(NULL, NULL, NULL, CL_MEM_READ_WRITE, NULL, NULL);
+    clEnqueueAcquireEGLObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
+    clEnqueueReleaseEGLObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
+#endif // cl_khr_egl_image
+
+#ifdef cl_khr_gl_event
+    clCreateEventFromGLsyncKHR(NULL, NULL, NULL);
+#endif // cl_khr_gl_event
 
 #ifdef cl_khr_il_program
     clCreateProgramWithILKHR(NULL, NULL, 0, NULL);
@@ -80,6 +139,33 @@ void call_all(void)
     clCreateBufferWithPropertiesINTEL(NULL, NULL, CL_MEM_READ_WRITE, 0, NULL, NULL);
 #endif // cl_intel_create_buffer_with_properties
 
+#ifdef cl_intel_dx9_media_sharing
+    clGetDeviceIDsFromDX9INTEL(NULL, CL_D3D9_DEVICE_INTEL, NULL, CL_ALL_DEVICES_FOR_DX9_INTEL, 0, NULL, NULL);
+    clCreateFromDX9MediaSurfaceINTEL(NULL, CL_MEM_READ_WRITE, NULL, NULL, 0, NULL);
+    clEnqueueAcquireDX9ObjectsINTEL(NULL, 0, NULL, 0, NULL, NULL);
+    clEnqueueReleaseDX9ObjectsINTEL(NULL, 0, NULL, 0, NULL, NULL);
+#endif // cl_intel_dx9_media_sharing
+
+#ifdef cl_intel_sharing_format_query_d3d10
+    clGetSupportedD3D10TextureFormatsINTEL(NULL, CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE2D, 0, NULL, NULL);
+#endif // cl_intel_sharing_format_query_d3d10
+
+#ifdef cl_intel_sharing_format_query_d3d11
+    clGetSupportedD3D11TextureFormatsINTEL(NULL, CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE2D, 0, 0, NULL, NULL);
+#endif // cl_intel_sharing_format_query_d3d11
+
+#ifdef cl_intel_sharing_format_query_dx9
+    clGetSupportedDX9MediaSurfaceFormatsINTEL(NULL, CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE2D, 0, 0, NULL, NULL);
+#endif // cl_intel_sharing_format_query_dx9
+
+#ifdef cl_intel_sharing_format_query_gl
+    clGetSupportedGLTextureFormatsINTEL(NULL, CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE2D, 0, NULL, NULL);
+#endif // cl_intel_sharing_format_query_gl
+
+#ifdef cl_intel_sharing_format_query_va_api
+    clGetSupportedVA_APIMediaSurfaceFormatsINTEL(NULL, CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE2D, 0, 0, NULL, NULL);
+#endif // cl_intel_sharing_format_query_va_api
+
 #ifdef cl_intel_unified_shared_memory
     clHostMemAllocINTEL(NULL, NULL, 0, 0, NULL);
     clDeviceMemAllocINTEL(NULL, NULL, NULL, 0, 0, NULL);
@@ -99,6 +185,13 @@ void call_all(void)
     clEnqueueMigrateMemINTEL(NULL, NULL, 0, CL_MIGRATE_MEM_OBJECT_HOST, 0, NULL, NULL);
 #endif // defined(CL_VERSION_1_2)
 #endif // cl_intel_unified_shared_memory
+
+#ifdef cl_intel_va_api_media_sharing
+    clGetDeviceIDsFromVA_APIMediaAdapterINTEL(NULL, CL_VA_API_DISPLAY_INTEL, NULL, CL_ALL_DEVICES_FOR_VA_API_INTEL, 0, NULL, NULL);
+    clCreateFromVA_APIMediaSurfaceINTEL(NULL, CL_MEM_READ_WRITE, NULL, 0, NULL);
+    clEnqueueAcquireVA_APIMediaSurfacesINTEL(NULL, 0, NULL, 0, NULL, NULL);
+    clEnqueueReleaseVA_APIMediaSurfacesINTEL(NULL, 0, NULL, 0, NULL, NULL);
+#endif // cl_intel_va_api_media_sharing
 
 #ifdef cl_qcom_ext_host_ptr
     clGetDeviceImageInfoQCOM(NULL, 0, 0, NULL, CL_IMAGE_ROW_ALIGNMENT_QCOM, 0, NULL, NULL);

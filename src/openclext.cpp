@@ -20,10 +20,49 @@
 // SOFTWARE.
 */
 
+#if defined _WIN32 || defined __CYGWIN__
+    #ifdef __GNUC__
+        #define CL_API_ENTRY __attribute__((dllexport))
+    #else
+        #define CL_API_ENTRY __declspec(dllexport)
+    #endif
+#else
+    #if __GNUC__ >= 4
+        #define CL_API_ENTRY __attribute__((visibility("default")))
+    #else
+        #define CL_API_ENTRY
+    #endif
+#endif
+
 #include <CL/cl.h>
 #include <CL/cl_ext.h>
+#if defined(CLEXT_INCLUDE_GL)
+#include <CL/cl_gl.h>
+#endif
+#if defined(CLEXT_INCLUDE_EGL)
+#include <CL/cl_egl.h>
+#endif
+#if defined(CLEXT_INCLUDE_DX9)
+#include <CL/cl_dx9_media_sharing.h>
+#endif
+// Note: If both D3D10 and D3D11 are supported, the D3D11 header must be
+// included first.
+#if defined(CLEXT_INCLUDE_D3D11)
+#include <CL/cl_d3d11.h>
+#endif
+#if defined(CLEXT_INCLUDE_D3D10)
+#include <CL/cl_d3d10.h>
+#endif
+#if defined(CLEXT_INCLUDE_VA_API)
+#include <CL/cl_va_api_media_sharing_intel.h>
+#endif
 
 #include <vector>
+
+static inline cl_platform_id _get_platform(cl_platform_id platform)
+{
+    return platform;
+}
 
 static inline cl_platform_id _get_platform(cl_device_id device)
 {
@@ -146,15 +185,222 @@ typedef cl_command_queue (CL_API_CALL* clCreateCommandQueueWithPropertiesKHR_cle
     const cl_queue_properties_khr* properties,
     cl_int* errcode_ret);
 
+#if defined(CLEXT_INCLUDE_D3D10)
+
+/* cl_khr_d3d10_sharing */
+
+typedef cl_int (CL_API_CALL* clGetDeviceIDsFromD3D10KHR_clextfn)(
+    cl_platform_id platform,
+    cl_d3d10_device_source_khr d3d_device_source,
+    void* d3d_object,
+    cl_d3d10_device_set_khr d3d_device_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices);
+
+typedef cl_mem (CL_API_CALL* clCreateFromD3D10BufferKHR_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D10Buffer* resource,
+    cl_int* errcode_ret);
+
+typedef cl_mem (CL_API_CALL* clCreateFromD3D10Texture2DKHR_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D10Texture2D* resource,
+    UINT subresource,
+    cl_int* errcode_ret);
+
+typedef cl_mem (CL_API_CALL* clCreateFromD3D10Texture3DKHR_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D10Texture3D* resource,
+    UINT subresource,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clEnqueueAcquireD3D10ObjectsKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueReleaseD3D10ObjectsKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+#endif // defined(CLEXT_INCLUDE_D3D10)
+
+#if defined(CLEXT_INCLUDE_D3D11)
+
+/* cl_khr_d3d11_sharing */
+
+typedef cl_int (CL_API_CALL* clGetDeviceIDsFromD3D11KHR_clextfn)(
+    cl_platform_id platform,
+    cl_d3d11_device_source_khr d3d_device_source,
+    void* d3d_object,
+    cl_d3d11_device_set_khr d3d_device_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices);
+
+typedef cl_mem (CL_API_CALL* clCreateFromD3D11BufferKHR_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D11Buffer* resource,
+    cl_int* errcode_ret);
+
+typedef cl_mem (CL_API_CALL* clCreateFromD3D11Texture2DKHR_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D11Texture2D* resource,
+    UINT subresource,
+    cl_int* errcode_ret);
+
+typedef cl_mem (CL_API_CALL* clCreateFromD3D11Texture3DKHR_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D11Texture3D* resource,
+    UINT subresource,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clEnqueueAcquireD3D11ObjectsKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueReleaseD3D11ObjectsKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+#endif // defined(CLEXT_INCLUDE_D3D11)
+
 /* cl_khr_depth_images */
 
 /* cl_khr_device_uuid */
+
+#if defined(CLEXT_INCLUDE_DX9)
+
+/* cl_khr_dx9_media_sharing */
+
+typedef cl_int (CL_API_CALL* clGetDeviceIDsFromDX9MediaAdapterKHR_clextfn)(
+    cl_platform_id platform,
+    cl_uint num_media_adapters,
+    cl_dx9_media_adapter_type_khr* media_adapter_type,
+    void* media_adapters,
+    cl_dx9_media_adapter_set_khr media_adapter_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices);
+
+typedef cl_mem (CL_API_CALL* clCreateFromDX9MediaSurfaceKHR_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_dx9_media_adapter_type_khr adapter_type,
+    void* surface_info,
+    cl_uint plane,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clEnqueueAcquireDX9MediaSurfacesKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueReleaseDX9MediaSurfacesKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
+#if defined(CLEXT_INCLUDE_EGL)
+
+/* cl_khr_egl_event */
+
+typedef cl_event (CL_API_CALL* clCreateEventFromEGLSyncKHR_clextfn)(
+    cl_context context,
+    CLeglSyncKHR sync,
+    CLeglDisplayKHR display,
+    cl_int* errcode_ret);
+
+#endif // defined(CLEXT_INCLUDE_EGL)
+
+#if defined(CLEXT_INCLUDE_EGL)
+
+/* cl_khr_egl_image */
+
+typedef cl_mem (CL_API_CALL* clCreateFromEGLImageKHR_clextfn)(
+    cl_context context,
+    CLeglDisplayKHR egldisplay,
+    CLeglImageKHR eglimage,
+    cl_mem_flags flags,
+    const cl_egl_image_properties_khr* properties,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clEnqueueAcquireEGLObjectsKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueReleaseEGLObjectsKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+#endif // defined(CLEXT_INCLUDE_EGL)
 
 /* cl_khr_extended_versioning */
 
 /* cl_khr_fp16 */
 
 /* cl_khr_fp64 */
+
+#if defined(CLEXT_INCLUDE_GL)
+
+/* cl_khr_gl_depth_images */
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+/* cl_khr_gl_event */
+
+typedef cl_event (CL_API_CALL* clCreateEventFromGLsyncKHR_clextfn)(
+    cl_context context,
+    cl_GLsync sync,
+    cl_int* errcode_ret);
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+/* cl_khr_gl_msaa_sharing */
+
+#endif // defined(CLEXT_INCLUDE_GL)
 
 /* cl_khr_il_program */
 
@@ -225,6 +471,8 @@ typedef cl_int (CL_API_CALL* clCreateSubDevicesEXT_clextfn)(
     cl_uint num_entries,
     cl_device_id* out_devices,
     cl_uint* num_devices);
+
+/* cl_ext_float_atomics */
 
 /* cl_ext_migrate_memobject */
 
@@ -413,6 +661,45 @@ typedef cl_mem (CL_API_CALL* clCreateBufferWithPropertiesINTEL_clextfn)(
 
 /* cl_intel_driver_diagnostics */
 
+#if defined(CLEXT_INCLUDE_DX9)
+
+/* cl_intel_dx9_media_sharing */
+
+typedef cl_int (CL_API_CALL* clGetDeviceIDsFromDX9INTEL_clextfn)(
+    cl_platform_id platform,
+    cl_dx9_device_source_intel dx9_device_source,
+    void* dx9_object,
+    cl_dx9_device_set_intel dx9_device_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices);
+
+typedef cl_mem (CL_API_CALL* clCreateFromDX9MediaSurfaceINTEL_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    IDirect3DSurface9* resource,
+    HANDLE sharedHandle,
+    UINT plane,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clEnqueueAcquireDX9ObjectsINTEL_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueReleaseDX9ObjectsINTEL_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
 /* cl_intel_egl_image_yuv */
 
 /* cl_intel_mem_channel_property */
@@ -428,6 +715,79 @@ typedef cl_mem (CL_API_CALL* clCreateBufferWithPropertiesINTEL_clextfn)(
 /* cl_intel_required_subgroup_size */
 
 /* cl_intel_sharing_format_query */
+
+#if defined(CLEXT_INCLUDE_D3D10)
+
+/* cl_intel_sharing_format_query_d3d10 */
+
+typedef cl_int (CL_API_CALL* clGetSupportedD3D10TextureFormatsINTEL_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint num_entries,
+    DXGI_FORMAT* d3d10_formats,
+    cl_uint* num_texture_formats);
+
+#endif // defined(CLEXT_INCLUDE_D3D10)
+
+#if defined(CLEXT_INCLUDE_D3D11)
+
+/* cl_intel_sharing_format_query_d3d11 */
+
+typedef cl_int (CL_API_CALL* clGetSupportedD3D11TextureFormatsINTEL_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint plane,
+    cl_uint num_entries,
+    DXGI_FORMAT* d3d11_formats,
+    cl_uint* num_texture_formats);
+
+#endif // defined(CLEXT_INCLUDE_D3D11)
+
+#if defined(CLEXT_INCLUDE_DX9)
+
+/* cl_intel_sharing_format_query_dx9 */
+
+typedef cl_int (CL_API_CALL* clGetSupportedDX9MediaSurfaceFormatsINTEL_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint plane,
+    cl_uint num_entries,
+    D3DFORMAT* dx9_formats,
+    cl_uint* num_surface_formats);
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+/* cl_intel_sharing_format_query_gl */
+
+typedef cl_int (CL_API_CALL* clGetSupportedGLTextureFormatsINTEL_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint num_entries,
+    cl_GLenum* gl_formats,
+    cl_uint* num_texture_formats);
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_VA_API)
+
+/* cl_intel_sharing_format_query_va_api */
+
+typedef cl_int (CL_API_CALL* clGetSupportedVA_APIMediaSurfaceFormatsINTEL_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint plane,
+    cl_uint num_entries,
+    VAImageFormat* va_api_formats,
+    cl_uint* num_surface_formats);
+
+#endif // defined(CLEXT_INCLUDE_VA_API)
 
 /* cl_intel_simultaneous_sharing */
 
@@ -528,7 +888,45 @@ typedef cl_int (CL_API_CALL* clEnqueueMigrateMemINTEL_clextfn)(
     const cl_event* event_wait_list,
     cl_event* event);
 
-#endif
+#endif // defined(CL_VERSION_1_2)
+
+#if defined(CLEXT_INCLUDE_VA_API)
+
+/* cl_intel_va_api_media_sharing */
+
+typedef cl_int (CL_API_CALL* clGetDeviceIDsFromVA_APIMediaAdapterINTEL_clextfn)(
+    cl_platform_id platform,
+    cl_va_api_device_source_intel media_adapter_type,
+    void* media_adapter,
+    cl_va_api_device_set_intel media_adapter_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices);
+
+typedef cl_mem (CL_API_CALL* clCreateFromVA_APIMediaSurfaceINTEL_clextfn)(
+    cl_context context,
+    cl_mem_flags flags,
+    VASurfaceID* surface,
+    cl_uint plane,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clEnqueueAcquireVA_APIMediaSurfacesINTEL_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueReleaseVA_APIMediaSurfacesINTEL_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+#endif // defined(CLEXT_INCLUDE_VA_API)
 
 /* cl_nv_device_attribute_query */
 
@@ -559,15 +957,84 @@ struct openclext_dispatch_table {
     /* cl_khr_create_command_queue */
     clCreateCommandQueueWithPropertiesKHR_clextfn clCreateCommandQueueWithPropertiesKHR;
 
+#if defined(CLEXT_INCLUDE_D3D10)
+
+    /* cl_khr_d3d10_sharing */
+    clGetDeviceIDsFromD3D10KHR_clextfn clGetDeviceIDsFromD3D10KHR;
+    clCreateFromD3D10BufferKHR_clextfn clCreateFromD3D10BufferKHR;
+    clCreateFromD3D10Texture2DKHR_clextfn clCreateFromD3D10Texture2DKHR;
+    clCreateFromD3D10Texture3DKHR_clextfn clCreateFromD3D10Texture3DKHR;
+    clEnqueueAcquireD3D10ObjectsKHR_clextfn clEnqueueAcquireD3D10ObjectsKHR;
+    clEnqueueReleaseD3D10ObjectsKHR_clextfn clEnqueueReleaseD3D10ObjectsKHR;
+
+#endif // defined(CLEXT_INCLUDE_D3D10)
+
+#if defined(CLEXT_INCLUDE_D3D11)
+
+    /* cl_khr_d3d11_sharing */
+    clGetDeviceIDsFromD3D11KHR_clextfn clGetDeviceIDsFromD3D11KHR;
+    clCreateFromD3D11BufferKHR_clextfn clCreateFromD3D11BufferKHR;
+    clCreateFromD3D11Texture2DKHR_clextfn clCreateFromD3D11Texture2DKHR;
+    clCreateFromD3D11Texture3DKHR_clextfn clCreateFromD3D11Texture3DKHR;
+    clEnqueueAcquireD3D11ObjectsKHR_clextfn clEnqueueAcquireD3D11ObjectsKHR;
+    clEnqueueReleaseD3D11ObjectsKHR_clextfn clEnqueueReleaseD3D11ObjectsKHR;
+
+#endif // defined(CLEXT_INCLUDE_D3D11)
+
     /* cl_khr_depth_images */
 
     /* cl_khr_device_uuid */
+
+#if defined(CLEXT_INCLUDE_DX9)
+
+    /* cl_khr_dx9_media_sharing */
+    clGetDeviceIDsFromDX9MediaAdapterKHR_clextfn clGetDeviceIDsFromDX9MediaAdapterKHR;
+    clCreateFromDX9MediaSurfaceKHR_clextfn clCreateFromDX9MediaSurfaceKHR;
+    clEnqueueAcquireDX9MediaSurfacesKHR_clextfn clEnqueueAcquireDX9MediaSurfacesKHR;
+    clEnqueueReleaseDX9MediaSurfacesKHR_clextfn clEnqueueReleaseDX9MediaSurfacesKHR;
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
+#if defined(CLEXT_INCLUDE_EGL)
+
+    /* cl_khr_egl_event */
+    clCreateEventFromEGLSyncKHR_clextfn clCreateEventFromEGLSyncKHR;
+
+#endif // defined(CLEXT_INCLUDE_EGL)
+
+#if defined(CLEXT_INCLUDE_EGL)
+
+    /* cl_khr_egl_image */
+    clCreateFromEGLImageKHR_clextfn clCreateFromEGLImageKHR;
+    clEnqueueAcquireEGLObjectsKHR_clextfn clEnqueueAcquireEGLObjectsKHR;
+    clEnqueueReleaseEGLObjectsKHR_clextfn clEnqueueReleaseEGLObjectsKHR;
+
+#endif // defined(CLEXT_INCLUDE_EGL)
 
     /* cl_khr_extended_versioning */
 
     /* cl_khr_fp16 */
 
     /* cl_khr_fp64 */
+
+#if defined(CLEXT_INCLUDE_GL)
+
+    /* cl_khr_gl_depth_images */
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+    /* cl_khr_gl_event */
+    clCreateEventFromGLsyncKHR_clextfn clCreateEventFromGLsyncKHR;
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+    /* cl_khr_gl_msaa_sharing */
+
+#endif // defined(CLEXT_INCLUDE_GL)
 
     /* cl_khr_il_program */
     clCreateProgramWithILKHR_clextfn clCreateProgramWithILKHR;
@@ -605,6 +1072,8 @@ struct openclext_dispatch_table {
     clReleaseDeviceEXT_clextfn clReleaseDeviceEXT;
     clRetainDeviceEXT_clextfn clRetainDeviceEXT;
     clCreateSubDevicesEXT_clextfn clCreateSubDevicesEXT;
+
+    /* cl_ext_float_atomics */
 
     /* cl_ext_migrate_memobject */
     clEnqueueMigrateMemObjectEXT_clextfn clEnqueueMigrateMemObjectEXT;
@@ -668,6 +1137,16 @@ struct openclext_dispatch_table {
 
     /* cl_intel_driver_diagnostics */
 
+#if defined(CLEXT_INCLUDE_DX9)
+
+    /* cl_intel_dx9_media_sharing */
+    clGetDeviceIDsFromDX9INTEL_clextfn clGetDeviceIDsFromDX9INTEL;
+    clCreateFromDX9MediaSurfaceINTEL_clextfn clCreateFromDX9MediaSurfaceINTEL;
+    clEnqueueAcquireDX9ObjectsINTEL_clextfn clEnqueueAcquireDX9ObjectsINTEL;
+    clEnqueueReleaseDX9ObjectsINTEL_clextfn clEnqueueReleaseDX9ObjectsINTEL;
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
     /* cl_intel_egl_image_yuv */
 
     /* cl_intel_mem_channel_property */
@@ -683,6 +1162,41 @@ struct openclext_dispatch_table {
     /* cl_intel_required_subgroup_size */
 
     /* cl_intel_sharing_format_query */
+
+#if defined(CLEXT_INCLUDE_D3D10)
+
+    /* cl_intel_sharing_format_query_d3d10 */
+    clGetSupportedD3D10TextureFormatsINTEL_clextfn clGetSupportedD3D10TextureFormatsINTEL;
+
+#endif // defined(CLEXT_INCLUDE_D3D10)
+
+#if defined(CLEXT_INCLUDE_D3D11)
+
+    /* cl_intel_sharing_format_query_d3d11 */
+    clGetSupportedD3D11TextureFormatsINTEL_clextfn clGetSupportedD3D11TextureFormatsINTEL;
+
+#endif // defined(CLEXT_INCLUDE_D3D11)
+
+#if defined(CLEXT_INCLUDE_DX9)
+
+    /* cl_intel_sharing_format_query_dx9 */
+    clGetSupportedDX9MediaSurfaceFormatsINTEL_clextfn clGetSupportedDX9MediaSurfaceFormatsINTEL;
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+    /* cl_intel_sharing_format_query_gl */
+    clGetSupportedGLTextureFormatsINTEL_clextfn clGetSupportedGLTextureFormatsINTEL;
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_VA_API)
+
+    /* cl_intel_sharing_format_query_va_api */
+    clGetSupportedVA_APIMediaSurfaceFormatsINTEL_clextfn clGetSupportedVA_APIMediaSurfaceFormatsINTEL;
+
+#endif // defined(CLEXT_INCLUDE_VA_API)
 
     /* cl_intel_simultaneous_sharing */
 
@@ -702,7 +1216,17 @@ struct openclext_dispatch_table {
     clEnqueueMemAdviseINTEL_clextfn clEnqueueMemAdviseINTEL;
 #if defined(CL_VERSION_1_2)
     clEnqueueMigrateMemINTEL_clextfn clEnqueueMigrateMemINTEL;
-#endif
+#endif // defined(CL_VERSION_1_2)
+
+#if defined(CLEXT_INCLUDE_VA_API)
+
+    /* cl_intel_va_api_media_sharing */
+    clGetDeviceIDsFromVA_APIMediaAdapterINTEL_clextfn clGetDeviceIDsFromVA_APIMediaAdapterINTEL;
+    clCreateFromVA_APIMediaSurfaceINTEL_clextfn clCreateFromVA_APIMediaSurfaceINTEL;
+    clEnqueueAcquireVA_APIMediaSurfacesINTEL_clextfn clEnqueueAcquireVA_APIMediaSurfacesINTEL;
+    clEnqueueReleaseVA_APIMediaSurfacesINTEL_clextfn clEnqueueReleaseVA_APIMediaSurfacesINTEL;
+
+#endif // defined(CLEXT_INCLUDE_VA_API)
 
     /* cl_nv_device_attribute_query */
 
@@ -733,15 +1257,84 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     /* cl_khr_create_command_queue */
     GET_EXTENSION(clCreateCommandQueueWithPropertiesKHR);
 
+#if defined(CLEXT_INCLUDE_D3D10)
+
+    /* cl_khr_d3d10_sharing */
+    GET_EXTENSION(clGetDeviceIDsFromD3D10KHR);
+    GET_EXTENSION(clCreateFromD3D10BufferKHR);
+    GET_EXTENSION(clCreateFromD3D10Texture2DKHR);
+    GET_EXTENSION(clCreateFromD3D10Texture3DKHR);
+    GET_EXTENSION(clEnqueueAcquireD3D10ObjectsKHR);
+    GET_EXTENSION(clEnqueueReleaseD3D10ObjectsKHR);
+
+#endif // defined(CLEXT_INCLUDE_D3D10)
+
+#if defined(CLEXT_INCLUDE_D3D11)
+
+    /* cl_khr_d3d11_sharing */
+    GET_EXTENSION(clGetDeviceIDsFromD3D11KHR);
+    GET_EXTENSION(clCreateFromD3D11BufferKHR);
+    GET_EXTENSION(clCreateFromD3D11Texture2DKHR);
+    GET_EXTENSION(clCreateFromD3D11Texture3DKHR);
+    GET_EXTENSION(clEnqueueAcquireD3D11ObjectsKHR);
+    GET_EXTENSION(clEnqueueReleaseD3D11ObjectsKHR);
+
+#endif // defined(CLEXT_INCLUDE_D3D11)
+
     /* cl_khr_depth_images */
 
     /* cl_khr_device_uuid */
+
+#if defined(CLEXT_INCLUDE_DX9)
+
+    /* cl_khr_dx9_media_sharing */
+    GET_EXTENSION(clGetDeviceIDsFromDX9MediaAdapterKHR);
+    GET_EXTENSION(clCreateFromDX9MediaSurfaceKHR);
+    GET_EXTENSION(clEnqueueAcquireDX9MediaSurfacesKHR);
+    GET_EXTENSION(clEnqueueReleaseDX9MediaSurfacesKHR);
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
+#if defined(CLEXT_INCLUDE_EGL)
+
+    /* cl_khr_egl_event */
+    GET_EXTENSION(clCreateEventFromEGLSyncKHR);
+
+#endif // defined(CLEXT_INCLUDE_EGL)
+
+#if defined(CLEXT_INCLUDE_EGL)
+
+    /* cl_khr_egl_image */
+    GET_EXTENSION(clCreateFromEGLImageKHR);
+    GET_EXTENSION(clEnqueueAcquireEGLObjectsKHR);
+    GET_EXTENSION(clEnqueueReleaseEGLObjectsKHR);
+
+#endif // defined(CLEXT_INCLUDE_EGL)
 
     /* cl_khr_extended_versioning */
 
     /* cl_khr_fp16 */
 
     /* cl_khr_fp64 */
+
+#if defined(CLEXT_INCLUDE_GL)
+
+    /* cl_khr_gl_depth_images */
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+    /* cl_khr_gl_event */
+    GET_EXTENSION(clCreateEventFromGLsyncKHR);
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+    /* cl_khr_gl_msaa_sharing */
+
+#endif // defined(CLEXT_INCLUDE_GL)
 
     /* cl_khr_il_program */
     GET_EXTENSION(clCreateProgramWithILKHR);
@@ -779,6 +1372,8 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     GET_EXTENSION(clReleaseDeviceEXT);
     GET_EXTENSION(clRetainDeviceEXT);
     GET_EXTENSION(clCreateSubDevicesEXT);
+
+    /* cl_ext_float_atomics */
 
     /* cl_ext_migrate_memobject */
     GET_EXTENSION(clEnqueueMigrateMemObjectEXT);
@@ -842,6 +1437,16 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 
     /* cl_intel_driver_diagnostics */
 
+#if defined(CLEXT_INCLUDE_DX9)
+
+    /* cl_intel_dx9_media_sharing */
+    GET_EXTENSION(clGetDeviceIDsFromDX9INTEL);
+    GET_EXTENSION(clCreateFromDX9MediaSurfaceINTEL);
+    GET_EXTENSION(clEnqueueAcquireDX9ObjectsINTEL);
+    GET_EXTENSION(clEnqueueReleaseDX9ObjectsINTEL);
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
     /* cl_intel_egl_image_yuv */
 
     /* cl_intel_mem_channel_property */
@@ -857,6 +1462,41 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     /* cl_intel_required_subgroup_size */
 
     /* cl_intel_sharing_format_query */
+
+#if defined(CLEXT_INCLUDE_D3D10)
+
+    /* cl_intel_sharing_format_query_d3d10 */
+    GET_EXTENSION(clGetSupportedD3D10TextureFormatsINTEL);
+
+#endif // defined(CLEXT_INCLUDE_D3D10)
+
+#if defined(CLEXT_INCLUDE_D3D11)
+
+    /* cl_intel_sharing_format_query_d3d11 */
+    GET_EXTENSION(clGetSupportedD3D11TextureFormatsINTEL);
+
+#endif // defined(CLEXT_INCLUDE_D3D11)
+
+#if defined(CLEXT_INCLUDE_DX9)
+
+    /* cl_intel_sharing_format_query_dx9 */
+    GET_EXTENSION(clGetSupportedDX9MediaSurfaceFormatsINTEL);
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+    /* cl_intel_sharing_format_query_gl */
+    GET_EXTENSION(clGetSupportedGLTextureFormatsINTEL);
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_VA_API)
+
+    /* cl_intel_sharing_format_query_va_api */
+    GET_EXTENSION(clGetSupportedVA_APIMediaSurfaceFormatsINTEL);
+
+#endif // defined(CLEXT_INCLUDE_VA_API)
 
     /* cl_intel_simultaneous_sharing */
 
@@ -876,7 +1516,17 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     GET_EXTENSION(clEnqueueMemAdviseINTEL);
 #if defined(CL_VERSION_1_2)
     GET_EXTENSION(clEnqueueMigrateMemINTEL);
-#endif
+#endif // defined(CL_VERSION_1_2)
+
+#if defined(CLEXT_INCLUDE_VA_API)
+
+    /* cl_intel_va_api_media_sharing */
+    GET_EXTENSION(clGetDeviceIDsFromVA_APIMediaAdapterINTEL);
+    GET_EXTENSION(clCreateFromVA_APIMediaSurfaceINTEL);
+    GET_EXTENSION(clEnqueueAcquireVA_APIMediaSurfacesINTEL);
+    GET_EXTENSION(clEnqueueReleaseVA_APIMediaSurfacesINTEL);
+
+#endif // defined(CLEXT_INCLUDE_VA_API)
 
     /* cl_nv_device_attribute_query */
 
@@ -933,15 +1583,496 @@ cl_command_queue clCreateCommandQueueWithPropertiesKHR(
         errcode_ret);
 }
 
+#if defined(CLEXT_INCLUDE_D3D10)
+
+/* cl_khr_d3d10_sharing */
+
+cl_int clGetDeviceIDsFromD3D10KHR(
+    cl_platform_id platform,
+    cl_d3d10_device_source_khr d3d_device_source,
+    void* d3d_object,
+    cl_d3d10_device_set_khr d3d_device_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(platform);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetDeviceIDsFromD3D10KHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetDeviceIDsFromD3D10KHR(
+        platform,
+        d3d_device_source,
+        d3d_object,
+        d3d_device_set,
+        num_entries,
+        devices,
+        num_devices);
+}
+
+cl_mem clCreateFromD3D10BufferKHR(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D10Buffer* resource,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromD3D10BufferKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromD3D10BufferKHR(
+        context,
+        flags,
+        resource,
+        errcode_ret);
+}
+
+cl_mem clCreateFromD3D10Texture2DKHR(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D10Texture2D* resource,
+    UINT subresource,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromD3D10Texture2DKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromD3D10Texture2DKHR(
+        context,
+        flags,
+        resource,
+        subresource,
+        errcode_ret);
+}
+
+cl_mem clCreateFromD3D10Texture3DKHR(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D10Texture3D* resource,
+    UINT subresource,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromD3D10Texture3DKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromD3D10Texture3DKHR(
+        context,
+        flags,
+        resource,
+        subresource,
+        errcode_ret);
+}
+
+cl_int clEnqueueAcquireD3D10ObjectsKHR(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueAcquireD3D10ObjectsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueAcquireD3D10ObjectsKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int clEnqueueReleaseD3D10ObjectsKHR(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueReleaseD3D10ObjectsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueReleaseD3D10ObjectsKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+#endif // defined(CLEXT_INCLUDE_D3D10)
+
+#if defined(CLEXT_INCLUDE_D3D11)
+
+/* cl_khr_d3d11_sharing */
+
+cl_int clGetDeviceIDsFromD3D11KHR(
+    cl_platform_id platform,
+    cl_d3d11_device_source_khr d3d_device_source,
+    void* d3d_object,
+    cl_d3d11_device_set_khr d3d_device_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(platform);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetDeviceIDsFromD3D11KHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetDeviceIDsFromD3D11KHR(
+        platform,
+        d3d_device_source,
+        d3d_object,
+        d3d_device_set,
+        num_entries,
+        devices,
+        num_devices);
+}
+
+cl_mem clCreateFromD3D11BufferKHR(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D11Buffer* resource,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromD3D11BufferKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromD3D11BufferKHR(
+        context,
+        flags,
+        resource,
+        errcode_ret);
+}
+
+cl_mem clCreateFromD3D11Texture2DKHR(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D11Texture2D* resource,
+    UINT subresource,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromD3D11Texture2DKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromD3D11Texture2DKHR(
+        context,
+        flags,
+        resource,
+        subresource,
+        errcode_ret);
+}
+
+cl_mem clCreateFromD3D11Texture3DKHR(
+    cl_context context,
+    cl_mem_flags flags,
+    ID3D11Texture3D* resource,
+    UINT subresource,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromD3D11Texture3DKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromD3D11Texture3DKHR(
+        context,
+        flags,
+        resource,
+        subresource,
+        errcode_ret);
+}
+
+cl_int clEnqueueAcquireD3D11ObjectsKHR(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueAcquireD3D11ObjectsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueAcquireD3D11ObjectsKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int clEnqueueReleaseD3D11ObjectsKHR(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueReleaseD3D11ObjectsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueReleaseD3D11ObjectsKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+#endif // defined(CLEXT_INCLUDE_D3D11)
+
 /* cl_khr_depth_images */
 
 /* cl_khr_device_uuid */
+
+#if defined(CLEXT_INCLUDE_DX9)
+
+/* cl_khr_dx9_media_sharing */
+
+cl_int clGetDeviceIDsFromDX9MediaAdapterKHR(
+    cl_platform_id platform,
+    cl_uint num_media_adapters,
+    cl_dx9_media_adapter_type_khr* media_adapter_type,
+    void* media_adapters,
+    cl_dx9_media_adapter_set_khr media_adapter_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(platform);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetDeviceIDsFromDX9MediaAdapterKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetDeviceIDsFromDX9MediaAdapterKHR(
+        platform,
+        num_media_adapters,
+        media_adapter_type,
+        media_adapters,
+        media_adapter_set,
+        num_entries,
+        devices,
+        num_devices);
+}
+
+cl_mem clCreateFromDX9MediaSurfaceKHR(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_dx9_media_adapter_type_khr adapter_type,
+    void* surface_info,
+    cl_uint plane,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromDX9MediaSurfaceKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromDX9MediaSurfaceKHR(
+        context,
+        flags,
+        adapter_type,
+        surface_info,
+        plane,
+        errcode_ret);
+}
+
+cl_int clEnqueueAcquireDX9MediaSurfacesKHR(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueAcquireDX9MediaSurfacesKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueAcquireDX9MediaSurfacesKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int clEnqueueReleaseDX9MediaSurfacesKHR(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueReleaseDX9MediaSurfacesKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueReleaseDX9MediaSurfacesKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
+#if defined(CLEXT_INCLUDE_EGL)
+
+/* cl_khr_egl_event */
+
+cl_event clCreateEventFromEGLSyncKHR(
+    cl_context context,
+    CLeglSyncKHR sync,
+    CLeglDisplayKHR display,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateEventFromEGLSyncKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateEventFromEGLSyncKHR(
+        context,
+        sync,
+        display,
+        errcode_ret);
+}
+
+#endif // defined(CLEXT_INCLUDE_EGL)
+
+#if defined(CLEXT_INCLUDE_EGL)
+
+/* cl_khr_egl_image */
+
+cl_mem clCreateFromEGLImageKHR(
+    cl_context context,
+    CLeglDisplayKHR egldisplay,
+    CLeglImageKHR eglimage,
+    cl_mem_flags flags,
+    const cl_egl_image_properties_khr* properties,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromEGLImageKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromEGLImageKHR(
+        context,
+        egldisplay,
+        eglimage,
+        flags,
+        properties,
+        errcode_ret);
+}
+
+cl_int clEnqueueAcquireEGLObjectsKHR(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueAcquireEGLObjectsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueAcquireEGLObjectsKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int clEnqueueReleaseEGLObjectsKHR(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueReleaseEGLObjectsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueReleaseEGLObjectsKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+#endif // defined(CLEXT_INCLUDE_EGL)
 
 /* cl_khr_extended_versioning */
 
 /* cl_khr_fp16 */
 
 /* cl_khr_fp64 */
+
+#if defined(CLEXT_INCLUDE_GL)
+
+/* cl_khr_gl_depth_images */
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+/* cl_khr_gl_event */
+
+cl_event clCreateEventFromGLsyncKHR(
+    cl_context context,
+    cl_GLsync sync,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateEventFromGLsyncKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateEventFromGLsyncKHR(
+        context,
+        sync,
+        errcode_ret);
+}
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+/* cl_khr_gl_msaa_sharing */
+
+#endif // defined(CLEXT_INCLUDE_GL)
 
 /* cl_khr_il_program */
 
@@ -1088,6 +2219,8 @@ cl_int clCreateSubDevicesEXT(
         out_devices,
         num_devices);
 }
+
+/* cl_ext_float_atomics */
 
 /* cl_ext_migrate_memobject */
 
@@ -1524,6 +2657,99 @@ cl_mem clCreateBufferWithPropertiesINTEL(
 
 /* cl_intel_driver_diagnostics */
 
+#if defined(CLEXT_INCLUDE_DX9)
+
+/* cl_intel_dx9_media_sharing */
+
+cl_int clGetDeviceIDsFromDX9INTEL(
+    cl_platform_id platform,
+    cl_dx9_device_source_intel dx9_device_source,
+    void* dx9_object,
+    cl_dx9_device_set_intel dx9_device_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(platform);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetDeviceIDsFromDX9INTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetDeviceIDsFromDX9INTEL(
+        platform,
+        dx9_device_source,
+        dx9_object,
+        dx9_device_set,
+        num_entries,
+        devices,
+        num_devices);
+}
+
+cl_mem clCreateFromDX9MediaSurfaceINTEL(
+    cl_context context,
+    cl_mem_flags flags,
+    IDirect3DSurface9* resource,
+    HANDLE sharedHandle,
+    UINT plane,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromDX9MediaSurfaceINTEL == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromDX9MediaSurfaceINTEL(
+        context,
+        flags,
+        resource,
+        sharedHandle,
+        plane,
+        errcode_ret);
+}
+
+cl_int clEnqueueAcquireDX9ObjectsINTEL(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueAcquireDX9ObjectsINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueAcquireDX9ObjectsINTEL(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int clEnqueueReleaseDX9ObjectsINTEL(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueReleaseDX9ObjectsINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueReleaseDX9ObjectsINTEL(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
 /* cl_intel_egl_image_yuv */
 
 /* cl_intel_mem_channel_property */
@@ -1539,6 +2765,147 @@ cl_mem clCreateBufferWithPropertiesINTEL(
 /* cl_intel_required_subgroup_size */
 
 /* cl_intel_sharing_format_query */
+
+#if defined(CLEXT_INCLUDE_D3D10)
+
+/* cl_intel_sharing_format_query_d3d10 */
+
+cl_int clGetSupportedD3D10TextureFormatsINTEL(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint num_entries,
+    DXGI_FORMAT* d3d10_formats,
+    cl_uint* num_texture_formats)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetSupportedD3D10TextureFormatsINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSupportedD3D10TextureFormatsINTEL(
+        context,
+        flags,
+        image_type,
+        num_entries,
+        d3d10_formats,
+        num_texture_formats);
+}
+
+#endif // defined(CLEXT_INCLUDE_D3D10)
+
+#if defined(CLEXT_INCLUDE_D3D11)
+
+/* cl_intel_sharing_format_query_d3d11 */
+
+cl_int clGetSupportedD3D11TextureFormatsINTEL(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint plane,
+    cl_uint num_entries,
+    DXGI_FORMAT* d3d11_formats,
+    cl_uint* num_texture_formats)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetSupportedD3D11TextureFormatsINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSupportedD3D11TextureFormatsINTEL(
+        context,
+        flags,
+        image_type,
+        plane,
+        num_entries,
+        d3d11_formats,
+        num_texture_formats);
+}
+
+#endif // defined(CLEXT_INCLUDE_D3D11)
+
+#if defined(CLEXT_INCLUDE_DX9)
+
+/* cl_intel_sharing_format_query_dx9 */
+
+cl_int clGetSupportedDX9MediaSurfaceFormatsINTEL(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint plane,
+    cl_uint num_entries,
+    D3DFORMAT* dx9_formats,
+    cl_uint* num_surface_formats)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetSupportedDX9MediaSurfaceFormatsINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSupportedDX9MediaSurfaceFormatsINTEL(
+        context,
+        flags,
+        image_type,
+        plane,
+        num_entries,
+        dx9_formats,
+        num_surface_formats);
+}
+
+#endif // defined(CLEXT_INCLUDE_DX9)
+
+#if defined(CLEXT_INCLUDE_GL)
+
+/* cl_intel_sharing_format_query_gl */
+
+cl_int clGetSupportedGLTextureFormatsINTEL(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint num_entries,
+    cl_GLenum* gl_formats,
+    cl_uint* num_texture_formats)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetSupportedGLTextureFormatsINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSupportedGLTextureFormatsINTEL(
+        context,
+        flags,
+        image_type,
+        num_entries,
+        gl_formats,
+        num_texture_formats);
+}
+
+#endif // defined(CLEXT_INCLUDE_GL)
+
+#if defined(CLEXT_INCLUDE_VA_API)
+
+/* cl_intel_sharing_format_query_va_api */
+
+cl_int clGetSupportedVA_APIMediaSurfaceFormatsINTEL(
+    cl_context context,
+    cl_mem_flags flags,
+    cl_mem_object_type image_type,
+    cl_uint plane,
+    cl_uint num_entries,
+    VAImageFormat* va_api_formats,
+    cl_uint* num_surface_formats)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetSupportedVA_APIMediaSurfaceFormatsINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSupportedVA_APIMediaSurfaceFormatsINTEL(
+        context,
+        flags,
+        image_type,
+        plane,
+        num_entries,
+        va_api_formats,
+        num_surface_formats);
+}
+
+#endif // defined(CLEXT_INCLUDE_VA_API)
 
 /* cl_intel_simultaneous_sharing */
 
@@ -1793,7 +3160,98 @@ cl_int clEnqueueMigrateMemINTEL(
         event);
 }
 
-#endif
+#endif // defined(CL_VERSION_1_2)
+
+#if defined(CLEXT_INCLUDE_VA_API)
+
+/* cl_intel_va_api_media_sharing */
+
+cl_int clGetDeviceIDsFromVA_APIMediaAdapterINTEL(
+    cl_platform_id platform,
+    cl_va_api_device_source_intel media_adapter_type,
+    void* media_adapter,
+    cl_va_api_device_set_intel media_adapter_set,
+    cl_uint num_entries,
+    cl_device_id* devices,
+    cl_uint* num_devices)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(platform);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetDeviceIDsFromVA_APIMediaAdapterINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetDeviceIDsFromVA_APIMediaAdapterINTEL(
+        platform,
+        media_adapter_type,
+        media_adapter,
+        media_adapter_set,
+        num_entries,
+        devices,
+        num_devices);
+}
+
+cl_mem clCreateFromVA_APIMediaSurfaceINTEL(
+    cl_context context,
+    cl_mem_flags flags,
+    VASurfaceID* surface,
+    cl_uint plane,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateFromVA_APIMediaSurfaceINTEL == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateFromVA_APIMediaSurfaceINTEL(
+        context,
+        flags,
+        surface,
+        plane,
+        errcode_ret);
+}
+
+cl_int clEnqueueAcquireVA_APIMediaSurfacesINTEL(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueAcquireVA_APIMediaSurfacesINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueAcquireVA_APIMediaSurfacesINTEL(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int clEnqueueReleaseVA_APIMediaSurfacesINTEL(
+    cl_command_queue command_queue,
+    cl_uint num_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueReleaseVA_APIMediaSurfacesINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueReleaseVA_APIMediaSurfacesINTEL(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+#endif // defined(CLEXT_INCLUDE_VA_API)
 
 /* cl_nv_device_attribute_query */
 

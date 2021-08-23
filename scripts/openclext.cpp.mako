@@ -1,24 +1,48 @@
 <%
-# Extensions to skip - they are in dedicated files.
 skipExtensions = {
-    'cl_khr_d3d10_sharing',
-    'cl_khr_d3d11_sharing',
-    'cl_khr_dx9_media_sharing',
-    'cl_khr_egl_event',
-    'cl_khr_egl_image',
+    # cl_khr_gl_sharing is a special case because it is implemented in the ICD
+    # loader and is called into via the ICD dispatch table.
+    'cl_khr_gl_sharing',
+    # cl_khr_icd is used by the ICD loader only.
+    'cl_khr_icd',
+    # cl_loader_layers is used by the ICD loader only.
+    'cl_loader_layers',
+    # cl_APPLE_ContextLoggingFunctions is not passed a dispatchable object so
+    # we cannot generate functions for it.
+    'cl_APPLE_ContextLoggingFunctions',
+    }
+
+GL_Extensions = {
     'cl_khr_gl_depth_images',
     'cl_khr_gl_event',
     'cl_khr_gl_msaa_sharing',
     'cl_khr_gl_sharing',
-    'cl_khr_icd',
-    'cl_loader_layers',
-    'cl_APPLE_ContextLoggingFunctions',
-    'cl_intel_dx9_media_sharing',
-    'cl_intel_va_api_media_sharing',
-    'cl_intel_sharing_format_query_d3d10',
-    'cl_intel_sharing_format_query_d3d11',
-    'cl_intel_sharing_format_query_dx9',
     'cl_intel_sharing_format_query_gl',
+    }
+
+EGL_Extensions = {
+    'cl_khr_egl_event',
+    'cl_khr_egl_image',
+    }
+
+DX9_Extensions = {
+    'cl_khr_dx9_media_sharing',
+    'cl_intel_dx9_media_sharing',
+    'cl_intel_sharing_format_query_dx9',
+    }
+
+D3D10_Extensions = {
+    'cl_khr_d3d10_sharing',
+    'cl_intel_sharing_format_query_d3d10',
+    }
+
+D3D11_Extensions = {
+    'cl_khr_d3d11_sharing',
+    'cl_intel_sharing_format_query_d3d11',
+    }
+
+VA_API_Extensions = {
+    'cl_intel_va_api_media_sharing',
     'cl_intel_sharing_format_query_va_api',
     }
 
@@ -29,6 +53,22 @@ def shouldGenerate(extension):
     elif not genExtensions and not extension in skipExtensions:
         return True
     return False
+
+# ifdef condition for an extension:
+def getIfdefCondition(extension):
+    if extension in GL_Extensions:
+        return 'CLEXT_INCLUDE_GL'
+    elif extension in EGL_Extensions:
+        return 'CLEXT_INCLUDE_EGL'
+    elif extension in DX9_Extensions:
+        return 'CLEXT_INCLUDE_DX9'
+    elif extension in D3D10_Extensions:
+        return 'CLEXT_INCLUDE_D3D10'
+    elif extension in D3D11_Extensions:
+        return 'CLEXT_INCLUDE_D3D11'
+    elif extension in VA_API_Extensions:
+        return 'CLEXT_INCLUDE_VA_API'
+    return None
 
 # XML blocks with functions to include:
 def shouldEmit(block):
@@ -79,12 +119,49 @@ def getCParameterStrings(params):
 // SOFTWARE.
 */
 
+#if defined _WIN32 || defined __CYGWIN__
+    #ifdef __GNUC__
+        #define CL_API_ENTRY __attribute__((dllexport))
+    #else
+        #define CL_API_ENTRY __declspec(dllexport)
+    #endif
+#else
+    #if __GNUC__ >= 4
+        #define CL_API_ENTRY __attribute__((visibility("default")))
+    #else
+        #define CL_API_ENTRY
+    #endif
+#endif
+
 #include <CL/cl.h>
-%if includes:
-${includes}
-%endif
+#include <CL/cl_ext.h>
+#if defined(CLEXT_INCLUDE_GL)
+#include <CL/cl_gl.h>
+#endif
+#if defined(CLEXT_INCLUDE_EGL)
+#include <CL/cl_egl.h>
+#endif
+#if defined(CLEXT_INCLUDE_DX9)
+#include <CL/cl_dx9_media_sharing.h>
+#endif
+// Note: If both D3D10 and D3D11 are supported, the D3D11 header must be
+// included first.
+#if defined(CLEXT_INCLUDE_D3D11)
+#include <CL/cl_d3d11.h>
+#endif
+#if defined(CLEXT_INCLUDE_D3D10)
+#include <CL/cl_d3d10.h>
+#endif
+#if defined(CLEXT_INCLUDE_VA_API)
+#include <CL/cl_va_api_media_sharing_intel.h>
+#endif
 
 #include <vector>
+
+static inline cl_platform_id _get_platform(cl_platform_id platform)
+{
+    return platform;
+}
 
 static inline cl_platform_id _get_platform(cl_device_id device)
 {
@@ -201,6 +278,10 @@ static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
 
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
 %  if shouldGenerate(extension.get('name')):
+%    if getIfdefCondition(extension.get('name')):
+#if defined(${getIfdefCondition(extension.get('name'))})
+
+%    endif
 <%
     name = extension.get('name')
 %>/* ${name} */
@@ -225,11 +306,15 @@ typedef ${api.RetType} (CL_API_CALL* ${api.Name}_clextfn)(
 %    endfor
 %    if block.get('condition'):
 
-#endif
+#endif // ${block.get('condition')}
 %    endif
 %  endif
 %endfor
 
+%    if getIfdefCondition(extension.get('name')):
+#endif // defined(${getIfdefCondition(extension.get('name'))})
+
+%    endif
 %  endif
 %endfor
 
@@ -240,6 +325,10 @@ typedef ${api.RetType} (CL_API_CALL* ${api.Name}_clextfn)(
 struct openclext_dispatch_table {
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
 %  if shouldGenerate(extension.get('name')):
+%    if getIfdefCondition(extension.get('name')):
+#if defined(${getIfdefCondition(extension.get('name'))})
+
+%    endif
 <%
     name = extension.get('name')
 %>    /* ${name} */
@@ -254,11 +343,15 @@ struct openclext_dispatch_table {
 %>    ${api.Name}_clextfn ${api.Name};
 %    endfor
 %    if block.get('condition'):
-#endif
+#endif // ${block.get('condition')}
 %    endif
 %  endif
 %endfor
 
+%    if getIfdefCondition(extension.get('name')):
+#endif // defined(${getIfdefCondition(extension.get('name'))})
+
+%    endif
 %  endif
 %endfor
 };
@@ -278,6 +371,10 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
 %  if shouldGenerate(extension.get('name')):
+%    if getIfdefCondition(extension.get('name')):
+#if defined(${getIfdefCondition(extension.get('name'))})
+
+%    endif
 <%
     name = extension.get('name')
 %>    /* ${name} */
@@ -292,11 +389,15 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 %>    GET_EXTENSION(${api.Name});
 %    endfor
 %    if block.get('condition'):
-#endif
+#endif // ${block.get('condition')}
 %    endif
 %  endif
 %endfor
 
+%    if getIfdefCondition(extension.get('name')):
+#endif // defined(${getIfdefCondition(extension.get('name'))})
+
+%    endif
 %  endif
 %endfor
 #undef GET_EXTENSION
@@ -325,6 +426,10 @@ extern "C" {
 
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
 %  if shouldGenerate(extension.get('name')):
+%    if getIfdefCondition(extension.get('name')):
+#if defined(${getIfdefCondition(extension.get('name'))})
+
+%    endif
 <%
     name = extension.get('name')
 %>/* ${name} */
@@ -378,11 +483,15 @@ ${api.RetType} ${api.Name}(
 %    endfor
 %    if block.get('condition'):
 
-#endif
+#endif // ${block.get('condition')}
 %    endif
 %  endif
 %endfor
 
+%    if getIfdefCondition(extension.get('name')):
+#endif // defined(${getIfdefCondition(extension.get('name'))})
+
+%    endif
 %  endif
 %endfor
 #ifdef __cplusplus

@@ -63,19 +63,6 @@ if __name__ == "__main__":
         gen.write(
           loader_template.render_unicode(
               genExtensions={},
-              includes='#include <CL/cl_ext.h>',
-              spec=spec,
-              apisigs=apisigs,
-              extapis=extapis).
-          encode('utf-8', 'replace'))
-
-        def_template = Template(filename='openclext.def.mako')
-
-        print('Generating openclext.def...')
-        gen = open(args.directory + '/openclext.def', 'wb')
-        gen.write(
-          def_template.render_unicode(
-              genExtensions={},
               spec=spec,
               apisigs=apisigs,
               extapis=extapis).
@@ -88,7 +75,6 @@ if __name__ == "__main__":
         gen.write(
           test_template.render_unicode(
               genExtensions={},
-              includes='#include <CL/cl_ext.h>',
               spec=spec,
               apisigs=apisigs,
               extapis=extapis).

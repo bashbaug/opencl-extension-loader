@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.4 FATAL_ERROR)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
@@ -28,12 +28,18 @@ project(OpenCLExtensionLoader LANGUAGES C CXX)
 
 option (BUILD_SHARED_LIBS "Build shared libs" ON)
 option (OPENCL_EXTENSION_LOADER_FORCE_STATIC_LIB "Unconditionally build a static library for the OpenCL Extension Loader" ON)
+option (OPENCL_EXTENSION_LOADER_INCLUDE_GL      "Include OpenGL Extension APIs" ON)
+option (OPENCL_EXTENSION_LOADER_INCLUDE_EGL     "Include EGL Extension APIs" ON)
+option (OPENCL_EXTENSION_LOADER_INCLUDE_DX9     "Include DirectX 9 Extension APIs" OFF)
+option (OPENCL_EXTENSION_LOADER_INCLUDE_D3D10   "Include Direct3D 10 Extension APIs" OFF)
+option (OPENCL_EXTENSION_LOADER_INCLUDE_D3D11   "Include Direct3D 11 Extension APIs" OFF)
+option (OPENCL_EXTENSION_LOADER_INCLUDE_VA_API  "Include OpenGL Extension APIs" OFF)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
     find_package(Python3 COMPONENTS Interpreter)
     set(OPENCL_EXTENSION_LOADER_XML_PATH CACHE FILEPATH "Path to cl.xml for OpenCL Extension Loader genereration")
-    set(OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/generated)
+    set(OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
     add_custom_target(extension_loader_generate
         COMMAND ${CMAKE_COMMAND} -E make_directory ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}
         COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}/scripts
@@ -44,7 +50,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_custom_target(extension_loader_copy
         COMMAND ${CMAKE_COMMAND} -E copy
             ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}/openclext.cpp
-            ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}/openclext.def
             ${CMAKE_CURRENT_SOURCE_DIR}/src
         COMMAND ${CMAKE_COMMAND} -E copy
             ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}/call_all.c
@@ -60,7 +65,6 @@ endif()
 
 set( OpenCLExtensionLoader_SOURCE_FILES
     src/openclext.cpp
-    src/openclext.def
 )
 
 source_group(Source FILES ${OpenCLExtensionLoader_SOURCE_FILES})
@@ -74,6 +78,24 @@ set_target_properties(OpenCLExt PROPERTIES FOLDER "OpenCLExtensionLoader")
 set_target_properties(OpenCLExt PROPERTIES VERSION "0.9" SOVERSION "0")
 target_include_directories(OpenCLExt SYSTEM PUBLIC ${OpenCL_INCLUDE_DIRS})
 target_compile_definitions(OpenCLExt PRIVATE CL_TARGET_OPENCL_VERSION=300)
+if (OPENCL_EXTENSION_LOADER_INCLUDE_GL)
+    target_compile_definitions(OpenCLExt PRIVATE CLEXT_INCLUDE_GL)
+endif()
+if (OPENCL_EXTENSION_LOADER_INCLUDE_EGL)
+    target_compile_definitions(OpenCLExt PRIVATE CLEXT_INCLUDE_EGL)
+endif()
+if (OPENCL_EXTENSION_LOADER_INCLUDE_DX9)
+    target_compile_definitions(OpenCLExt PRIVATE CLEXT_INCLUDE_DX9)
+endif()
+if (OPENCL_EXTENSION_LOADER_INCLUDE_D3D10)
+    target_compile_definitions(OpenCLExt PRIVATE CLEXT_INCLUDE_D3D10)
+endif()
+if (OPENCL_EXTENSION_LOADER_INCLUDE_D3D11)
+    target_compile_definitions(OpenCLExt PRIVATE CLEXT_INCLUDE_D3D11)
+endif()
+if (OPENCL_EXTENSION_LOADER_INCLUDE_VA_API)
+    target_compile_definitions(OpenCLExt PRIVATE CLEXT_INCLUDE_VA_API)
+endif()
 target_link_libraries(OpenCLExt PRIVATE ${OpenCL_LIBRARIES})
 
 if(MSVC)

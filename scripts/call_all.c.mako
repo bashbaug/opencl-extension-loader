@@ -1,25 +1,15 @@
 <%
-# Extensions to skip - they are in dedicated files.
 skipExtensions = {
-    'cl_khr_d3d10_sharing',
-    'cl_khr_d3d11_sharing',
-    'cl_khr_dx9_media_sharing',
-    'cl_khr_egl_event',
-    'cl_khr_egl_image',
-    'cl_khr_gl_depth_images',
-    'cl_khr_gl_event',
-    'cl_khr_gl_msaa_sharing',
+    # cl_khr_gl_sharing is a special case because it is implemented in the ICD
+    # loader and is called into via the ICD dispatch table.
     'cl_khr_gl_sharing',
+    # cl_khr_icd is used by the ICD loader only.
     'cl_khr_icd',
+    # cl_loader_layers is used by the ICD loader only.
     'cl_loader_layers',
+    # cl_APPLE_ContextLoggingFunctions is not passed a dispatchable object so
+    # we cannot generate functions for it.
     'cl_APPLE_ContextLoggingFunctions',
-    'cl_intel_dx9_media_sharing',
-    'cl_intel_va_api_media_sharing',
-    'cl_intel_sharing_format_query_d3d10',
-    'cl_intel_sharing_format_query_d3d11',
-    'cl_intel_sharing_format_query_dx9',
-    'cl_intel_sharing_format_query_gl',
-    'cl_intel_sharing_format_query_va_api',
     }
 
 defaultValueForType = {
@@ -29,14 +19,32 @@ defaultValueForType = {
     'cl_context'                        : 'NULL',
     'cl_device_id'                      : 'NULL',
     'cl_event'                          : 'NULL',
+    'cl_GLsync'                         : 'NULL',
     'cl_kernel'                         : 'NULL',
     'cl_mem'                            : 'NULL',
+    'cl_platform_id'                    : 'NULL',
     'cl_program'                        : 'NULL',
     'cl_sampler'                        : 'NULL',
+    'CLeglDisplayKHR'                   : 'NULL',
+    'CLeglImageKHR'                     : 'NULL',
+    'CLeglSyncKHR'                      : 'NULL',
+    'ID3D10Texture2D'                   : 'NULL',
+    'ID3D10Texture3D'                   : 'NULL',
+    'ID3D11Texture2D'                   : 'NULL',
+    'ID3D11Texture3D'                   : 'NULL',
+    'HANDLE'                            : 'NULL',
     # Enum Types
     'cl_accelerator_info_intel'         : 'CL_ACCELERATOR_DESCRIPTOR_INTEL',
     'cl_accelerator_type_intel'         : '0',
     'cl_bool'                           : 'CL_FALSE',
+    'cl_d3d10_device_source_khr'        : 'CL_D3D10_DEVICE_KHR',
+    'cl_d3d10_device_set_khr'           : 'CL_ALL_DEVICES_FOR_D3D10_KHR',
+    'cl_d3d11_device_source_khr'        : 'CL_D3D11_DEVICE_KHR',
+    'cl_d3d11_device_set_khr'           : 'CL_ALL_DEVICES_FOR_D3D11_KHR',
+    'cl_dx9_device_source_intel'        : 'CL_D3D9_DEVICE_INTEL',
+    'cl_dx9_device_set_intel'           : 'CL_ALL_DEVICES_FOR_DX9_INTEL',
+    'cl_dx9_media_adapter_set_khr'      : 'CL_ALL_DEVICES_FOR_DX9_MEDIA_ADAPTER_KHR',
+    'cl_dx9_media_adapter_type_khr'     : 'CL_ADAPTER_D3D9_KHR',
     'cl_image_pitch_info_qcom'          : 'CL_IMAGE_ROW_ALIGNMENT_QCOM',
     'cl_kernel_exec_info_arm'           : 'CL_KERNEL_EXEC_INFO_SVM_PTRS_ARM',
     'cl_kernel_sub_group_info'          : 'CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR',
@@ -46,12 +54,16 @@ defaultValueForType = {
     'cl_mem_info_intel'                 : 'CL_MEM_ALLOC_TYPE_INTEL',
     'cl_mem_migration_flags'            : 'CL_MIGRATE_MEM_OBJECT_HOST',
     'cl_mem_migration_flags_ext'        : 'CL_MIGRATE_MEM_OBJECT_HOST_EXT',
+    'cl_mem_object_type'                : 'CL_MEM_OBJECT_IMAGE2D',
     'cl_mipmap_filter_mode_img'         : 'CL_MIPMAP_FILTER_ANY_IMG',
     'cl_svm_mem_flags_arm'              : 'CL_MEM_SVM_FINE_GRAIN_BUFFER_ARM',
+    'cl_va_api_device_source_intel'     : 'CL_VA_API_DISPLAY_INTEL',
+    'cl_va_api_device_set_intel'        : 'CL_ALL_DEVICES_FOR_VA_API_INTEL',
     # Integral Types
     'cl_int'                            : '0',
     'cl_uint'                           : '0',
     'size_t'                            : '0',
+    'UINT'                              : '0',
     }
 
 # Extensions to include in this file:
@@ -89,6 +101,7 @@ def getCallArgs(params):
         elif param.Type in defaultValueForType:
             callstr += defaultValueForType[param.Type]
         else:
+            print('Found unknown type: ' + param.Type);
             callstr += '???'
     return callstr
 
@@ -100,9 +113,27 @@ def getCallArgs(params):
 #define CL_USE_DEPRECATED_OPENCL_2_2_APIS
 #define CL_USE_DEPRECATED_OPENCL_3_0_APIS
 #include "CL/cl.h"
-%if includes:
-${includes}
-%endif
+#include <CL/cl_ext.h>
+#if defined(CLEXT_INCLUDE_GL)
+#include <CL/cl_gl.h>
+#endif
+#if defined(CLEXT_INCLUDE_EGL)
+#include <CL/cl_egl.h>
+#endif
+#if defined(CLEXT_INCLUDE_DX9)
+#include <CL/cl_dx9_media_sharing.h>
+#endif
+// Note: If both D3D10 and D3D11 are supported, the D3D11 header must be
+// included first.
+#if defined(CLEXT_INCLUDE_D3D11)
+#include <CL/cl_d3d11.h>
+#endif
+#if defined(CLEXT_INCLUDE_D3D10)
+#include <CL/cl_d3d10.h>
+#endif
+#if defined(CLEXT_INCLUDE_VA_API)
+#include <CL/cl_va_api_media_sharing_intel.h>
+#endif
 
 void call_all(void)
 {
