@@ -1,6 +1,12 @@
 name: CMake
 
-on: [push]
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+  pull_request:
+    branches:
+      - master
 
 env:
   BUILD_TYPE: RelWithDebInfo
@@ -46,9 +52,9 @@ jobs:
     #  run: |
     #    mkdir temp
     #    pushd scripts
-    #    python3 gen_hybrid_loader_mako.py -registry https://raw.githubusercontent.com/KhronosGroup/OpenCL-Docs/master/xml/cl.xml -o ../temp
+    #    python3 gen_openclext.py -registry https://raw.githubusercontent.com/KhronosGroup/OpenCL-Docs/master/xml/cl.xml -o ../temp
     #    popd
-    #    if ! diff src/loader.cpp temp/loader.cpp; then echo 'Please ensure all files are generated correctly.'; false; fi
+    #    if ! diff src/openclext.cpp temp/openclext.cpp; then echo 'Please ensure all files are generated correctly.'; false; fi
 
     - name: Get OpenCL Headers
       uses: actions/checkout@master
@@ -62,7 +68,11 @@ jobs:
     - name: Run CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake -DOpenCL_INCLUDE_DIRS=$GITHUB_WORKSPACE/external/OpenCL-Headers -DCMAKE_BUILD_TYPE=$BUILD_TYPE $GITHUB_WORKSPACE
+      run: cmake
+        -DOpenCL_INCLUDE_DIRS=$GITHUB_WORKSPACE/external/OpenCL-Headers
+        -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        -DOPENCL_EXTENSION_LOADER_XML_PATH=https://raw.githubusercontent.com/KhronosGroup/OpenCL-Registry/master/xml/cl.xml
+        $GITHUB_WORKSPACE
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
