@@ -21,7 +21,6 @@
 cmake_minimum_required(VERSION 3.4 FATAL_ERROR)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_CXX_STANDARD 11)
 
 project(OpenCLExtensionLoader LANGUAGES C CXX)

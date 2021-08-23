@@ -62,24 +62,66 @@ jobs:
         repository: KhronosGroup/OpenCL-Headers
         path: external/OpenCL-Headers
 
-    - name: Create Build Directory
+    - name: Get OpenCL ICD Loader
+      uses: actions/checkout@master
+      with:
+        repository: KhronosGroup/OpenCL-ICD-Loader
+        path: external/OpenCL-ICD-Loader
+
+    - name: Create OpenCL ICD Loader Build Directory
+      run: cmake -E make_directory ${{runner.workspace}}/build_icd_loader
+
+    - name: Run OpenCL ICD Loader CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build_icd_loader
+      run: cmake
+        -DOPENCL_ICD_LOADER_HEADERS_DIR=$GITHUB_WORKSPACE/external/OpenCL-Headers
+        -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        $GITHUB_WORKSPACE/external/OpenCL-ICD-Loader
+
+    - name: Build OpenCL ICD Loader
+      working-directory: ${{runner.workspace}}/build_icd_loader
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
+
+    - name: Create OpenCL Extension Loader Build Directory
       run: cmake -E make_directory ${{runner.workspace}}/build
 
-    - name: Run CMake
+    - name: Run OpenCL Extension Loader CMake (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake
+      run: ls -R ${{runner.workspace}}/build_icd_loader && cmake
         -DOpenCL_INCLUDE_DIRS=$GITHUB_WORKSPACE/external/OpenCL-Headers
+        -DOpenCL_LIBRARIES=${{runner.workspace}}/build_icd_loader/libOpenCL.so
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE
         -DOPENCL_EXTENSION_LOADER_XML_PATH=https://raw.githubusercontent.com/KhronosGroup/OpenCL-Registry/master/xml/cl.xml
         $GITHUB_WORKSPACE
 
-    - name: Build
+    - name: Run OpenCL Extension Loader CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake
+        -DOpenCL_INCLUDE_DIRS=$GITHUB_WORKSPACE/external/OpenCL-Headers
+        -DOpenCL_LIBRARIES="${{runner.workspace}}/build_icd_loader/$BUILD_TYPE/OpenCL.lib"
+        -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        -DOPENCL_EXTENSION_LOADER_XML_PATH=https://raw.githubusercontent.com/KhronosGroup/OpenCL-Registry/master/xml/cl.xml
+        $GITHUB_WORKSPACE
+
+    - name: Build OpenCL Extension Loader
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
 
-    - name: Test
+    #- name: Copy OpenCL ICD Loader DLL (Windows)
+    #  if: matrix.os == 'windows-latest'
+    #  shell: bash
+    #  run: cmake -E copy "${{runner.workspace}}/build_icd_loader/$BUILD_TYPE/OpenCL.dll" ${{runner.workspace}}/build/tests/$BUILD_TYPE
+
+    # Ubuntu only for now, need to figure out how to install ICD loader DLL for tests.
+    - name: Test OpenCL Extension Loader
+      if: matrix.os == 'ubuntu-latest'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ctest -C $BUILD_TYPE
+      run: ctest -C $BUILD_TYPE --rerun-failed --output-on-failure
