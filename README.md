@@ -1,5 +1,5 @@
 # OpenCL Extension Loader
-GitHub Actions: [![GitHub Actions Build Status](https://github.com/bashbaug/opencl-extension-loader/workflows/build/badge.svg?branch=master)](https://github.com/bashbaug/opencl-extension-loader/actions?query=workflow%3Abuild+branch%3Amaster)
+GitHub Actions: [![GitHub Actions Build Status](https://github.com/bashbaug/opencl-extension-loader/actions/workflows/cmake.yml/badge.svg?branch=main)](https://github.com/bashbaug/opencl-extension-loader/actions/workflows/cmake.yml)
 
 This repository contains an extension loader library for OpenCL extension APIs.
 
