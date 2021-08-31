@@ -331,6 +331,8 @@ typedef ${api.RetType} (CL_API_CALL* ${api.Name}_clextfn)(
 ***************************************************************/
 
 struct openclext_dispatch_table {
+    cl_platform_id platform;
+
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
 %  if shouldGenerate(extension.get('name')):
 %    if getIfdefCondition(extension.get('name')):
@@ -365,14 +367,14 @@ struct openclext_dispatch_table {
 };
 
 /***************************************************************
-* Dispatch Table Initialization (TODO)
+* Dispatch Table Initialization
 ***************************************************************/
-
-static openclext_dispatch_table _dispatch = {0};
 
 static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_ptr)
 {
-#define GET_EXTENSION(_funcname)                                               ${"\\"}
+    dispatch_ptr->platform = platform;
+
+#define CLEXT_GET_EXTENSION(_funcname)                                         ${"\\"}
     dispatch_ptr->_funcname =                                                  ${"\\"}
         (_funcname##_clextfn)clGetExtensionFunctionAddressForPlatform(         ${"\\"}
             platform, #_funcname);
@@ -394,7 +396,7 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 %    for func in block.findall('command'):
 <%
     api = apisigs[func.get('name')]
-%>    GET_EXTENSION(${api.Name});
+%>    CLEXT_GET_EXTENSION(${api.Name});
 %    endfor
 %    if block.get('condition'):
 #endif // ${block.get('condition')}
@@ -408,9 +410,11 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 %    endif
 %  endif
 %endfor
-#undef GET_EXTENSION
+#undef CLEXT_GET_EXTENSION
 }
 
+#if defined(CLEXT_SINGLE_PLATFORM_ONLY)
+static openclext_dispatch_table _dispatch = {0};
 static openclext_dispatch_table* _dispatch_ptr = NULL;
 
 template<typename T>
@@ -423,6 +427,47 @@ static inline openclext_dispatch_table* _get_dispatch(T object)
     }
     return _dispatch_ptr;
 }
+#else // defined(CLEXT_SINGLE_PLATFORM_ONLY)
+static size_t _num_platforms = 0;
+static openclext_dispatch_table* _dispatch_array = NULL;
+
+template<typename T>
+static openclext_dispatch_table* _get_dispatch(T object)
+{
+    if (_num_platforms == 0 && _dispatch_array == NULL) {
+        cl_uint numPlatforms = 0;
+        clGetPlatformIDs(0, NULL, &numPlatforms);
+
+        openclext_dispatch_table* dispatch =
+            (openclext_dispatch_table*)malloc(
+                numPlatforms * sizeof(openclext_dispatch_table));
+        if (dispatch == NULL) {
+            return NULL;
+        }
+
+        std::vector<cl_platform_id> platforms(numPlatforms);
+        clGetPlatformIDs(numPlatforms, platforms.data(), NULL);
+
+        for (size_t i = 0; i < numPlatforms; i++) {
+            _init(platforms[i], dispatch + i);
+        }
+
+        _num_platforms = numPlatforms;
+        _dispatch_array = dispatch;
+    }
+
+    cl_platform_id platform = _get_platform(object);
+    for (size_t i = 0; i < _num_platforms; i++) {
+        openclext_dispatch_table* dispatch_ptr =
+            _dispatch_array + i;
+        if (dispatch_ptr->platform == platform) {
+            return dispatch_ptr;
+        }
+    }
+
+    return NULL;
+}
+#endif // defined(CLEXT_SINGLE_PLATFORM_ONLY)
 
 #ifdef __cplusplus
 extern "C" {

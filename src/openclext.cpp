@@ -480,8 +480,6 @@ typedef cl_int (CL_API_CALL* clCreateSubDevicesEXT_clextfn)(
     cl_device_id* out_devices,
     cl_uint* num_devices);
 
-/* cl_ext_float_atomics */
-
 /* cl_ext_migrate_memobject */
 
 typedef cl_int (CL_API_CALL* clEnqueueMigrateMemObjectEXT_clextfn)(
@@ -962,6 +960,8 @@ typedef cl_int (CL_API_CALL* clGetDeviceImageInfoQCOM_clextfn)(
 ***************************************************************/
 
 struct openclext_dispatch_table {
+    cl_platform_id platform;
+
     /* cl_khr_create_command_queue */
     clCreateCommandQueueWithPropertiesKHR_clextfn clCreateCommandQueueWithPropertiesKHR;
 
@@ -1080,8 +1080,6 @@ struct openclext_dispatch_table {
     clReleaseDeviceEXT_clextfn clReleaseDeviceEXT;
     clRetainDeviceEXT_clextfn clRetainDeviceEXT;
     clCreateSubDevicesEXT_clextfn clCreateSubDevicesEXT;
-
-    /* cl_ext_float_atomics */
 
     /* cl_ext_migrate_memobject */
     clEnqueueMigrateMemObjectEXT_clextfn clEnqueueMigrateMemObjectEXT;
@@ -1250,42 +1248,42 @@ struct openclext_dispatch_table {
 };
 
 /***************************************************************
-* Dispatch Table Initialization (TODO)
+* Dispatch Table Initialization
 ***************************************************************/
-
-static openclext_dispatch_table _dispatch = {0};
 
 static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_ptr)
 {
-#define GET_EXTENSION(_funcname)                                               \
+    dispatch_ptr->platform = platform;
+
+#define CLEXT_GET_EXTENSION(_funcname)                                         \
     dispatch_ptr->_funcname =                                                  \
         (_funcname##_clextfn)clGetExtensionFunctionAddressForPlatform(         \
             platform, #_funcname);
 
     /* cl_khr_create_command_queue */
-    GET_EXTENSION(clCreateCommandQueueWithPropertiesKHR);
+    CLEXT_GET_EXTENSION(clCreateCommandQueueWithPropertiesKHR);
 
 #if defined(CLEXT_INCLUDE_D3D10)
 
     /* cl_khr_d3d10_sharing */
-    GET_EXTENSION(clGetDeviceIDsFromD3D10KHR);
-    GET_EXTENSION(clCreateFromD3D10BufferKHR);
-    GET_EXTENSION(clCreateFromD3D10Texture2DKHR);
-    GET_EXTENSION(clCreateFromD3D10Texture3DKHR);
-    GET_EXTENSION(clEnqueueAcquireD3D10ObjectsKHR);
-    GET_EXTENSION(clEnqueueReleaseD3D10ObjectsKHR);
+    CLEXT_GET_EXTENSION(clGetDeviceIDsFromD3D10KHR);
+    CLEXT_GET_EXTENSION(clCreateFromD3D10BufferKHR);
+    CLEXT_GET_EXTENSION(clCreateFromD3D10Texture2DKHR);
+    CLEXT_GET_EXTENSION(clCreateFromD3D10Texture3DKHR);
+    CLEXT_GET_EXTENSION(clEnqueueAcquireD3D10ObjectsKHR);
+    CLEXT_GET_EXTENSION(clEnqueueReleaseD3D10ObjectsKHR);
 
 #endif // defined(CLEXT_INCLUDE_D3D10)
 
 #if defined(CLEXT_INCLUDE_D3D11)
 
     /* cl_khr_d3d11_sharing */
-    GET_EXTENSION(clGetDeviceIDsFromD3D11KHR);
-    GET_EXTENSION(clCreateFromD3D11BufferKHR);
-    GET_EXTENSION(clCreateFromD3D11Texture2DKHR);
-    GET_EXTENSION(clCreateFromD3D11Texture3DKHR);
-    GET_EXTENSION(clEnqueueAcquireD3D11ObjectsKHR);
-    GET_EXTENSION(clEnqueueReleaseD3D11ObjectsKHR);
+    CLEXT_GET_EXTENSION(clGetDeviceIDsFromD3D11KHR);
+    CLEXT_GET_EXTENSION(clCreateFromD3D11BufferKHR);
+    CLEXT_GET_EXTENSION(clCreateFromD3D11Texture2DKHR);
+    CLEXT_GET_EXTENSION(clCreateFromD3D11Texture3DKHR);
+    CLEXT_GET_EXTENSION(clEnqueueAcquireD3D11ObjectsKHR);
+    CLEXT_GET_EXTENSION(clEnqueueReleaseD3D11ObjectsKHR);
 
 #endif // defined(CLEXT_INCLUDE_D3D11)
 
@@ -1296,26 +1294,26 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #if defined(CLEXT_INCLUDE_DX9)
 
     /* cl_khr_dx9_media_sharing */
-    GET_EXTENSION(clGetDeviceIDsFromDX9MediaAdapterKHR);
-    GET_EXTENSION(clCreateFromDX9MediaSurfaceKHR);
-    GET_EXTENSION(clEnqueueAcquireDX9MediaSurfacesKHR);
-    GET_EXTENSION(clEnqueueReleaseDX9MediaSurfacesKHR);
+    CLEXT_GET_EXTENSION(clGetDeviceIDsFromDX9MediaAdapterKHR);
+    CLEXT_GET_EXTENSION(clCreateFromDX9MediaSurfaceKHR);
+    CLEXT_GET_EXTENSION(clEnqueueAcquireDX9MediaSurfacesKHR);
+    CLEXT_GET_EXTENSION(clEnqueueReleaseDX9MediaSurfacesKHR);
 
 #endif // defined(CLEXT_INCLUDE_DX9)
 
 #if defined(CLEXT_INCLUDE_EGL)
 
     /* cl_khr_egl_event */
-    GET_EXTENSION(clCreateEventFromEGLSyncKHR);
+    CLEXT_GET_EXTENSION(clCreateEventFromEGLSyncKHR);
 
 #endif // defined(CLEXT_INCLUDE_EGL)
 
 #if defined(CLEXT_INCLUDE_EGL)
 
     /* cl_khr_egl_image */
-    GET_EXTENSION(clCreateFromEGLImageKHR);
-    GET_EXTENSION(clEnqueueAcquireEGLObjectsKHR);
-    GET_EXTENSION(clEnqueueReleaseEGLObjectsKHR);
+    CLEXT_GET_EXTENSION(clCreateFromEGLImageKHR);
+    CLEXT_GET_EXTENSION(clEnqueueAcquireEGLObjectsKHR);
+    CLEXT_GET_EXTENSION(clEnqueueReleaseEGLObjectsKHR);
 
 #endif // defined(CLEXT_INCLUDE_EGL)
 
@@ -1334,7 +1332,7 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #if defined(CLEXT_INCLUDE_GL)
 
     /* cl_khr_gl_event */
-    GET_EXTENSION(clCreateEventFromGLsyncKHR);
+    CLEXT_GET_EXTENSION(clCreateEventFromGLsyncKHR);
 
 #endif // defined(CLEXT_INCLUDE_GL)
 
@@ -1345,7 +1343,7 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #endif // defined(CLEXT_INCLUDE_GL)
 
     /* cl_khr_il_program */
-    GET_EXTENSION(clCreateProgramWithILKHR);
+    CLEXT_GET_EXTENSION(clCreateProgramWithILKHR);
 
     /* cl_khr_image2D_from_buffer */
 
@@ -1364,30 +1362,28 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     /* cl_khr_subgroup_named_barrier */
 
     /* cl_khr_subgroups */
-    GET_EXTENSION(clGetKernelSubGroupInfoKHR);
+    CLEXT_GET_EXTENSION(clGetKernelSubGroupInfoKHR);
 
     /* cl_khr_suggested_local_work_size */
-    GET_EXTENSION(clGetKernelSuggestedLocalWorkSizeKHR);
+    CLEXT_GET_EXTENSION(clGetKernelSuggestedLocalWorkSizeKHR);
 
     /* cl_khr_terminate_context */
-    GET_EXTENSION(clTerminateContextKHR);
+    CLEXT_GET_EXTENSION(clTerminateContextKHR);
 
     /* cl_khr_throttle_hints */
 
     /* cl_ext_cxx_for_opencl */
 
     /* cl_ext_device_fission */
-    GET_EXTENSION(clReleaseDeviceEXT);
-    GET_EXTENSION(clRetainDeviceEXT);
-    GET_EXTENSION(clCreateSubDevicesEXT);
-
-    /* cl_ext_float_atomics */
+    CLEXT_GET_EXTENSION(clReleaseDeviceEXT);
+    CLEXT_GET_EXTENSION(clRetainDeviceEXT);
+    CLEXT_GET_EXTENSION(clCreateSubDevicesEXT);
 
     /* cl_ext_migrate_memobject */
-    GET_EXTENSION(clEnqueueMigrateMemObjectEXT);
+    CLEXT_GET_EXTENSION(clEnqueueMigrateMemObjectEXT);
 
     /* cl_APPLE_SetMemObjectDestructor */
-    GET_EXTENSION(clSetMemObjectDestructorAPPLE);
+    CLEXT_GET_EXTENSION(clSetMemObjectDestructorAPPLE);
 
     /* cl_amd_device_attribute_query */
 
@@ -1396,48 +1392,48 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     /* cl_arm_get_core_id */
 
     /* cl_arm_import_memory */
-    GET_EXTENSION(clImportMemoryARM);
+    CLEXT_GET_EXTENSION(clImportMemoryARM);
 
     /* cl_arm_printf */
 
     /* cl_arm_scheduling_controls */
 
     /* cl_arm_shared_virtual_memory */
-    GET_EXTENSION(clSVMAllocARM);
-    GET_EXTENSION(clSVMFreeARM);
-    GET_EXTENSION(clEnqueueSVMFreeARM);
-    GET_EXTENSION(clEnqueueSVMMemcpyARM);
-    GET_EXTENSION(clEnqueueSVMMemFillARM);
-    GET_EXTENSION(clEnqueueSVMMapARM);
-    GET_EXTENSION(clEnqueueSVMUnmapARM);
-    GET_EXTENSION(clSetKernelArgSVMPointerARM);
-    GET_EXTENSION(clSetKernelExecInfoARM);
+    CLEXT_GET_EXTENSION(clSVMAllocARM);
+    CLEXT_GET_EXTENSION(clSVMFreeARM);
+    CLEXT_GET_EXTENSION(clEnqueueSVMFreeARM);
+    CLEXT_GET_EXTENSION(clEnqueueSVMMemcpyARM);
+    CLEXT_GET_EXTENSION(clEnqueueSVMMemFillARM);
+    CLEXT_GET_EXTENSION(clEnqueueSVMMapARM);
+    CLEXT_GET_EXTENSION(clEnqueueSVMUnmapARM);
+    CLEXT_GET_EXTENSION(clSetKernelArgSVMPointerARM);
+    CLEXT_GET_EXTENSION(clSetKernelExecInfoARM);
 
     /* cl_img_cached_allocations */
 
     /* cl_img_generate_mipmap */
-    GET_EXTENSION(clEnqueueGenerateMipmapIMG);
+    CLEXT_GET_EXTENSION(clEnqueueGenerateMipmapIMG);
 
     /* cl_img_mem_properties */
 
     /* cl_img_use_gralloc_ptr */
-    GET_EXTENSION(clEnqueueAcquireGrallocObjectsIMG);
-    GET_EXTENSION(clEnqueueReleaseGrallocObjectsIMG);
+    CLEXT_GET_EXTENSION(clEnqueueAcquireGrallocObjectsIMG);
+    CLEXT_GET_EXTENSION(clEnqueueReleaseGrallocObjectsIMG);
 
     /* cl_img_yuv_image */
 
     /* cl_intel_accelerator */
-    GET_EXTENSION(clCreateAcceleratorINTEL);
-    GET_EXTENSION(clGetAcceleratorInfoINTEL);
-    GET_EXTENSION(clRetainAcceleratorINTEL);
-    GET_EXTENSION(clReleaseAcceleratorINTEL);
+    CLEXT_GET_EXTENSION(clCreateAcceleratorINTEL);
+    CLEXT_GET_EXTENSION(clGetAcceleratorInfoINTEL);
+    CLEXT_GET_EXTENSION(clRetainAcceleratorINTEL);
+    CLEXT_GET_EXTENSION(clReleaseAcceleratorINTEL);
 
     /* cl_intel_advanced_motion_estimation */
 
     /* cl_intel_command_queue_families */
 
     /* cl_intel_create_buffer_with_properties */
-    GET_EXTENSION(clCreateBufferWithPropertiesINTEL);
+    CLEXT_GET_EXTENSION(clCreateBufferWithPropertiesINTEL);
 
     /* cl_intel_device_partition_by_names */
 
@@ -1448,10 +1444,10 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #if defined(CLEXT_INCLUDE_DX9)
 
     /* cl_intel_dx9_media_sharing */
-    GET_EXTENSION(clGetDeviceIDsFromDX9INTEL);
-    GET_EXTENSION(clCreateFromDX9MediaSurfaceINTEL);
-    GET_EXTENSION(clEnqueueAcquireDX9ObjectsINTEL);
-    GET_EXTENSION(clEnqueueReleaseDX9ObjectsINTEL);
+    CLEXT_GET_EXTENSION(clGetDeviceIDsFromDX9INTEL);
+    CLEXT_GET_EXTENSION(clCreateFromDX9MediaSurfaceINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueAcquireDX9ObjectsINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueReleaseDX9ObjectsINTEL);
 
 #endif // defined(CLEXT_INCLUDE_DX9)
 
@@ -1474,35 +1470,35 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #if defined(CLEXT_INCLUDE_D3D10)
 
     /* cl_intel_sharing_format_query_d3d10 */
-    GET_EXTENSION(clGetSupportedD3D10TextureFormatsINTEL);
+    CLEXT_GET_EXTENSION(clGetSupportedD3D10TextureFormatsINTEL);
 
 #endif // defined(CLEXT_INCLUDE_D3D10)
 
 #if defined(CLEXT_INCLUDE_D3D11)
 
     /* cl_intel_sharing_format_query_d3d11 */
-    GET_EXTENSION(clGetSupportedD3D11TextureFormatsINTEL);
+    CLEXT_GET_EXTENSION(clGetSupportedD3D11TextureFormatsINTEL);
 
 #endif // defined(CLEXT_INCLUDE_D3D11)
 
 #if defined(CLEXT_INCLUDE_DX9)
 
     /* cl_intel_sharing_format_query_dx9 */
-    GET_EXTENSION(clGetSupportedDX9MediaSurfaceFormatsINTEL);
+    CLEXT_GET_EXTENSION(clGetSupportedDX9MediaSurfaceFormatsINTEL);
 
 #endif // defined(CLEXT_INCLUDE_DX9)
 
 #if defined(CLEXT_INCLUDE_GL)
 
     /* cl_intel_sharing_format_query_gl */
-    GET_EXTENSION(clGetSupportedGLTextureFormatsINTEL);
+    CLEXT_GET_EXTENSION(clGetSupportedGLTextureFormatsINTEL);
 
 #endif // defined(CLEXT_INCLUDE_GL)
 
 #if defined(CLEXT_INCLUDE_VA_API)
 
     /* cl_intel_sharing_format_query_va_api */
-    GET_EXTENSION(clGetSupportedVA_APIMediaSurfaceFormatsINTEL);
+    CLEXT_GET_EXTENSION(clGetSupportedVA_APIMediaSurfaceFormatsINTEL);
 
 #endif // defined(CLEXT_INCLUDE_VA_API)
 
@@ -1511,28 +1507,28 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     /* cl_intel_thread_local_exec */
 
     /* cl_intel_unified_shared_memory */
-    GET_EXTENSION(clHostMemAllocINTEL);
-    GET_EXTENSION(clDeviceMemAllocINTEL);
-    GET_EXTENSION(clSharedMemAllocINTEL);
-    GET_EXTENSION(clMemFreeINTEL);
-    GET_EXTENSION(clMemBlockingFreeINTEL);
-    GET_EXTENSION(clGetMemAllocInfoINTEL);
-    GET_EXTENSION(clSetKernelArgMemPointerINTEL);
-    GET_EXTENSION(clEnqueueMemsetINTEL);
-    GET_EXTENSION(clEnqueueMemFillINTEL);
-    GET_EXTENSION(clEnqueueMemcpyINTEL);
-    GET_EXTENSION(clEnqueueMemAdviseINTEL);
+    CLEXT_GET_EXTENSION(clHostMemAllocINTEL);
+    CLEXT_GET_EXTENSION(clDeviceMemAllocINTEL);
+    CLEXT_GET_EXTENSION(clSharedMemAllocINTEL);
+    CLEXT_GET_EXTENSION(clMemFreeINTEL);
+    CLEXT_GET_EXTENSION(clMemBlockingFreeINTEL);
+    CLEXT_GET_EXTENSION(clGetMemAllocInfoINTEL);
+    CLEXT_GET_EXTENSION(clSetKernelArgMemPointerINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueMemsetINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueMemFillINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueMemcpyINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueMemAdviseINTEL);
 #if defined(CL_VERSION_1_2)
-    GET_EXTENSION(clEnqueueMigrateMemINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueMigrateMemINTEL);
 #endif // defined(CL_VERSION_1_2)
 
 #if defined(CLEXT_INCLUDE_VA_API)
 
     /* cl_intel_va_api_media_sharing */
-    GET_EXTENSION(clGetDeviceIDsFromVA_APIMediaAdapterINTEL);
-    GET_EXTENSION(clCreateFromVA_APIMediaSurfaceINTEL);
-    GET_EXTENSION(clEnqueueAcquireVA_APIMediaSurfacesINTEL);
-    GET_EXTENSION(clEnqueueReleaseVA_APIMediaSurfacesINTEL);
+    CLEXT_GET_EXTENSION(clGetDeviceIDsFromVA_APIMediaAdapterINTEL);
+    CLEXT_GET_EXTENSION(clCreateFromVA_APIMediaSurfaceINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueAcquireVA_APIMediaSurfacesINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueReleaseVA_APIMediaSurfacesINTEL);
 
 #endif // defined(CLEXT_INCLUDE_VA_API)
 
@@ -1541,15 +1537,17 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     /* cl_qcom_android_native_buffer_host_ptr */
 
     /* cl_qcom_ext_host_ptr */
-    GET_EXTENSION(clGetDeviceImageInfoQCOM);
+    CLEXT_GET_EXTENSION(clGetDeviceImageInfoQCOM);
 
     /* cl_qcom_ext_host_ptr_iocoherent */
 
     /* cl_qcom_ion_host_ptr */
 
-#undef GET_EXTENSION
+#undef CLEXT_GET_EXTENSION
 }
 
+#if defined(CLEXT_SINGLE_PLATFORM_ONLY)
+static openclext_dispatch_table _dispatch = {0};
 static openclext_dispatch_table* _dispatch_ptr = NULL;
 
 template<typename T>
@@ -1562,6 +1560,47 @@ static inline openclext_dispatch_table* _get_dispatch(T object)
     }
     return _dispatch_ptr;
 }
+#else // defined(CLEXT_SINGLE_PLATFORM_ONLY)
+static size_t _num_platforms = 0;
+static openclext_dispatch_table* _dispatch_array = NULL;
+
+template<typename T>
+static openclext_dispatch_table* _get_dispatch(T object)
+{
+    if (_num_platforms == 0 && _dispatch_array == NULL) {
+        cl_uint numPlatforms = 0;
+        clGetPlatformIDs(0, NULL, &numPlatforms);
+
+        openclext_dispatch_table* dispatch =
+            (openclext_dispatch_table*)malloc(
+                numPlatforms * sizeof(openclext_dispatch_table));
+        if (dispatch == NULL) {
+            return NULL;
+        }
+
+        std::vector<cl_platform_id> platforms(numPlatforms);
+        clGetPlatformIDs(numPlatforms, platforms.data(), NULL);
+
+        for (size_t i = 0; i < numPlatforms; i++) {
+            _init(platforms[i], dispatch + i);
+        }
+
+        _num_platforms = numPlatforms;
+        _dispatch_array = dispatch;
+    }
+
+    cl_platform_id platform = _get_platform(object);
+    for (size_t i = 0; i < _num_platforms; i++) {
+        openclext_dispatch_table* dispatch_ptr =
+            _dispatch_array + i;
+        if (dispatch_ptr->platform == platform) {
+            return dispatch_ptr;
+        }
+    }
+
+    return NULL;
+}
+#endif // defined(CLEXT_SINGLE_PLATFORM_ONLY)
 
 #ifdef __cplusplus
 extern "C" {
@@ -2227,8 +2266,6 @@ cl_int clCreateSubDevicesEXT(
         out_devices,
         num_devices);
 }
-
-/* cl_ext_float_atomics */
 
 /* cl_ext_migrate_memobject */
 

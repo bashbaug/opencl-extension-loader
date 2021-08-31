@@ -31,6 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        single_platform: [ON, OFF]
 
     runs-on: ${{matrix.os}}
 
@@ -95,6 +96,7 @@ jobs:
         -DOpenCL_INCLUDE_DIRS=$GITHUB_WORKSPACE/external/OpenCL-Headers
         -DOpenCL_LIBRARIES=${{runner.workspace}}/build_icd_loader/libOpenCL.so
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        -DOPENCL_EXTENSION_LOADER_SINGLE_PLATFORM_ONLY=${{matrix.single_platform}}
         -DOPENCL_EXTENSION_LOADER_XML_PATH=https://raw.githubusercontent.com/KhronosGroup/OpenCL-Registry/master/xml/cl.xml
         $GITHUB_WORKSPACE
 
@@ -106,6 +108,7 @@ jobs:
         -DOpenCL_INCLUDE_DIRS=$GITHUB_WORKSPACE/external/OpenCL-Headers
         -DOpenCL_LIBRARIES="${{runner.workspace}}/build_icd_loader/$BUILD_TYPE/OpenCL.lib"
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        -DOPENCL_EXTENSION_LOADER_SINGLE_PLATFORM_ONLY=${{matrix.single_platform}}
         -DOPENCL_EXTENSION_LOADER_XML_PATH=https://raw.githubusercontent.com/KhronosGroup/OpenCL-Registry/master/xml/cl.xml
         $GITHUB_WORKSPACE
 
