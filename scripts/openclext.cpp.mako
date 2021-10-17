@@ -496,7 +496,7 @@ extern "C" {
 <%
     api = apisigs[func.get('name')]
 %>
-${api.RetType} ${api.Name}(
+${api.RetType} CL_API_CALL ${api.Name}(
 %      for i, paramStr in enumerate(getCParameterStrings(api.Params)):
 %        if i < len(api.Params)-1:
     ${paramStr},

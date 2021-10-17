@@ -1612,7 +1612,7 @@ extern "C" {
 
 /* cl_khr_create_command_queue */
 
-cl_command_queue clCreateCommandQueueWithPropertiesKHR(
+cl_command_queue CL_API_CALL clCreateCommandQueueWithPropertiesKHR(
     cl_context context,
     cl_device_id device,
     const cl_queue_properties_khr* properties,
@@ -1634,7 +1634,7 @@ cl_command_queue clCreateCommandQueueWithPropertiesKHR(
 
 /* cl_khr_d3d10_sharing */
 
-cl_int clGetDeviceIDsFromD3D10KHR(
+cl_int CL_API_CALL clGetDeviceIDsFromD3D10KHR(
     cl_platform_id platform,
     cl_d3d10_device_source_khr d3d_device_source,
     void* d3d_object,
@@ -1657,7 +1657,7 @@ cl_int clGetDeviceIDsFromD3D10KHR(
         num_devices);
 }
 
-cl_mem clCreateFromD3D10BufferKHR(
+cl_mem CL_API_CALL clCreateFromD3D10BufferKHR(
     cl_context context,
     cl_mem_flags flags,
     ID3D10Buffer* resource,
@@ -1675,7 +1675,7 @@ cl_mem clCreateFromD3D10BufferKHR(
         errcode_ret);
 }
 
-cl_mem clCreateFromD3D10Texture2DKHR(
+cl_mem CL_API_CALL clCreateFromD3D10Texture2DKHR(
     cl_context context,
     cl_mem_flags flags,
     ID3D10Texture2D* resource,
@@ -1695,7 +1695,7 @@ cl_mem clCreateFromD3D10Texture2DKHR(
         errcode_ret);
 }
 
-cl_mem clCreateFromD3D10Texture3DKHR(
+cl_mem CL_API_CALL clCreateFromD3D10Texture3DKHR(
     cl_context context,
     cl_mem_flags flags,
     ID3D10Texture3D* resource,
@@ -1715,7 +1715,7 @@ cl_mem clCreateFromD3D10Texture3DKHR(
         errcode_ret);
 }
 
-cl_int clEnqueueAcquireD3D10ObjectsKHR(
+cl_int CL_API_CALL clEnqueueAcquireD3D10ObjectsKHR(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -1736,7 +1736,7 @@ cl_int clEnqueueAcquireD3D10ObjectsKHR(
         event);
 }
 
-cl_int clEnqueueReleaseD3D10ObjectsKHR(
+cl_int CL_API_CALL clEnqueueReleaseD3D10ObjectsKHR(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -1763,7 +1763,7 @@ cl_int clEnqueueReleaseD3D10ObjectsKHR(
 
 /* cl_khr_d3d11_sharing */
 
-cl_int clGetDeviceIDsFromD3D11KHR(
+cl_int CL_API_CALL clGetDeviceIDsFromD3D11KHR(
     cl_platform_id platform,
     cl_d3d11_device_source_khr d3d_device_source,
     void* d3d_object,
@@ -1786,7 +1786,7 @@ cl_int clGetDeviceIDsFromD3D11KHR(
         num_devices);
 }
 
-cl_mem clCreateFromD3D11BufferKHR(
+cl_mem CL_API_CALL clCreateFromD3D11BufferKHR(
     cl_context context,
     cl_mem_flags flags,
     ID3D11Buffer* resource,
@@ -1804,7 +1804,7 @@ cl_mem clCreateFromD3D11BufferKHR(
         errcode_ret);
 }
 
-cl_mem clCreateFromD3D11Texture2DKHR(
+cl_mem CL_API_CALL clCreateFromD3D11Texture2DKHR(
     cl_context context,
     cl_mem_flags flags,
     ID3D11Texture2D* resource,
@@ -1824,7 +1824,7 @@ cl_mem clCreateFromD3D11Texture2DKHR(
         errcode_ret);
 }
 
-cl_mem clCreateFromD3D11Texture3DKHR(
+cl_mem CL_API_CALL clCreateFromD3D11Texture3DKHR(
     cl_context context,
     cl_mem_flags flags,
     ID3D11Texture3D* resource,
@@ -1844,7 +1844,7 @@ cl_mem clCreateFromD3D11Texture3DKHR(
         errcode_ret);
 }
 
-cl_int clEnqueueAcquireD3D11ObjectsKHR(
+cl_int CL_API_CALL clEnqueueAcquireD3D11ObjectsKHR(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -1865,7 +1865,7 @@ cl_int clEnqueueAcquireD3D11ObjectsKHR(
         event);
 }
 
-cl_int clEnqueueReleaseD3D11ObjectsKHR(
+cl_int CL_API_CALL clEnqueueReleaseD3D11ObjectsKHR(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -1896,7 +1896,7 @@ cl_int clEnqueueReleaseD3D11ObjectsKHR(
 
 /* cl_khr_dx9_media_sharing */
 
-cl_int clGetDeviceIDsFromDX9MediaAdapterKHR(
+cl_int CL_API_CALL clGetDeviceIDsFromDX9MediaAdapterKHR(
     cl_platform_id platform,
     cl_uint num_media_adapters,
     cl_dx9_media_adapter_type_khr* media_adapter_type,
@@ -1921,7 +1921,7 @@ cl_int clGetDeviceIDsFromDX9MediaAdapterKHR(
         num_devices);
 }
 
-cl_mem clCreateFromDX9MediaSurfaceKHR(
+cl_mem CL_API_CALL clCreateFromDX9MediaSurfaceKHR(
     cl_context context,
     cl_mem_flags flags,
     cl_dx9_media_adapter_type_khr adapter_type,
@@ -1943,7 +1943,7 @@ cl_mem clCreateFromDX9MediaSurfaceKHR(
         errcode_ret);
 }
 
-cl_int clEnqueueAcquireDX9MediaSurfacesKHR(
+cl_int CL_API_CALL clEnqueueAcquireDX9MediaSurfacesKHR(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -1964,7 +1964,7 @@ cl_int clEnqueueAcquireDX9MediaSurfacesKHR(
         event);
 }
 
-cl_int clEnqueueReleaseDX9MediaSurfacesKHR(
+cl_int CL_API_CALL clEnqueueReleaseDX9MediaSurfacesKHR(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -1991,7 +1991,7 @@ cl_int clEnqueueReleaseDX9MediaSurfacesKHR(
 
 /* cl_khr_egl_event */
 
-cl_event clCreateEventFromEGLSyncKHR(
+cl_event CL_API_CALL clCreateEventFromEGLSyncKHR(
     cl_context context,
     CLeglSyncKHR sync,
     CLeglDisplayKHR display,
@@ -2015,7 +2015,7 @@ cl_event clCreateEventFromEGLSyncKHR(
 
 /* cl_khr_egl_image */
 
-cl_mem clCreateFromEGLImageKHR(
+cl_mem CL_API_CALL clCreateFromEGLImageKHR(
     cl_context context,
     CLeglDisplayKHR egldisplay,
     CLeglImageKHR eglimage,
@@ -2037,7 +2037,7 @@ cl_mem clCreateFromEGLImageKHR(
         errcode_ret);
 }
 
-cl_int clEnqueueAcquireEGLObjectsKHR(
+cl_int CL_API_CALL clEnqueueAcquireEGLObjectsKHR(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -2058,7 +2058,7 @@ cl_int clEnqueueAcquireEGLObjectsKHR(
         event);
 }
 
-cl_int clEnqueueReleaseEGLObjectsKHR(
+cl_int CL_API_CALL clEnqueueReleaseEGLObjectsKHR(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -2097,7 +2097,7 @@ cl_int clEnqueueReleaseEGLObjectsKHR(
 
 /* cl_khr_gl_event */
 
-cl_event clCreateEventFromGLsyncKHR(
+cl_event CL_API_CALL clCreateEventFromGLsyncKHR(
     cl_context context,
     cl_GLsync sync,
     cl_int* errcode_ret)
@@ -2123,7 +2123,7 @@ cl_event clCreateEventFromGLsyncKHR(
 
 /* cl_khr_il_program */
 
-cl_program clCreateProgramWithILKHR(
+cl_program CL_API_CALL clCreateProgramWithILKHR(
     cl_context context,
     const void* il,
     size_t length,
@@ -2159,7 +2159,7 @@ cl_program clCreateProgramWithILKHR(
 
 /* cl_khr_subgroups */
 
-cl_int clGetKernelSubGroupInfoKHR(
+cl_int CL_API_CALL clGetKernelSubGroupInfoKHR(
     cl_kernel in_kernel,
     cl_device_id in_device,
     cl_kernel_sub_group_info param_name,
@@ -2186,7 +2186,7 @@ cl_int clGetKernelSubGroupInfoKHR(
 
 /* cl_khr_suggested_local_work_size */
 
-cl_int clGetKernelSuggestedLocalWorkSizeKHR(
+cl_int CL_API_CALL clGetKernelSuggestedLocalWorkSizeKHR(
     cl_command_queue command_queue,
     cl_kernel kernel,
     cl_uint work_dim,
@@ -2209,7 +2209,7 @@ cl_int clGetKernelSuggestedLocalWorkSizeKHR(
 
 /* cl_khr_terminate_context */
 
-cl_int clTerminateContextKHR(
+cl_int CL_API_CALL clTerminateContextKHR(
     cl_context context)
 {
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
@@ -2226,7 +2226,7 @@ cl_int clTerminateContextKHR(
 
 /* cl_ext_device_fission */
 
-cl_int clReleaseDeviceEXT(
+cl_int CL_API_CALL clReleaseDeviceEXT(
     cl_device_id device)
 {
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(device);
@@ -2237,7 +2237,7 @@ cl_int clReleaseDeviceEXT(
         device);
 }
 
-cl_int clRetainDeviceEXT(
+cl_int CL_API_CALL clRetainDeviceEXT(
     cl_device_id device)
 {
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(device);
@@ -2248,7 +2248,7 @@ cl_int clRetainDeviceEXT(
         device);
 }
 
-cl_int clCreateSubDevicesEXT(
+cl_int CL_API_CALL clCreateSubDevicesEXT(
     cl_device_id in_device,
     const cl_device_partition_property_ext* properties,
     cl_uint num_entries,
@@ -2269,7 +2269,7 @@ cl_int clCreateSubDevicesEXT(
 
 /* cl_ext_migrate_memobject */
 
-cl_int clEnqueueMigrateMemObjectEXT(
+cl_int CL_API_CALL clEnqueueMigrateMemObjectEXT(
     cl_command_queue command_queue,
     cl_uint num_mem_objects,
     const cl_mem* mem_objects,
@@ -2294,7 +2294,7 @@ cl_int clEnqueueMigrateMemObjectEXT(
 
 /* cl_APPLE_SetMemObjectDestructor */
 
-cl_int clSetMemObjectDestructorAPPLE(
+cl_int CL_API_CALL clSetMemObjectDestructorAPPLE(
     cl_mem memobj,
     void (CL_CALLBACK* pfn_notify)(cl_mem memobj, void* user_data),
     void* user_data)
@@ -2317,7 +2317,7 @@ cl_int clSetMemObjectDestructorAPPLE(
 
 /* cl_arm_import_memory */
 
-cl_mem clImportMemoryARM(
+cl_mem CL_API_CALL clImportMemoryARM(
     cl_context context,
     cl_mem_flags flags,
     const cl_import_properties_arm* properties,
@@ -2345,7 +2345,7 @@ cl_mem clImportMemoryARM(
 
 /* cl_arm_shared_virtual_memory */
 
-void* clSVMAllocARM(
+void* CL_API_CALL clSVMAllocARM(
     cl_context context,
     cl_svm_mem_flags_arm flags,
     size_t size,
@@ -2362,7 +2362,7 @@ void* clSVMAllocARM(
         alignment);
 }
 
-void clSVMFreeARM(
+void CL_API_CALL clSVMFreeARM(
     cl_context context,
     void* svm_pointer)
 {
@@ -2375,7 +2375,7 @@ void clSVMFreeARM(
         svm_pointer);
 }
 
-cl_int clEnqueueSVMFreeARM(
+cl_int CL_API_CALL clEnqueueSVMFreeARM(
     cl_command_queue command_queue,
     cl_uint num_svm_pointers,
     void* svm_pointers[],
@@ -2400,7 +2400,7 @@ cl_int clEnqueueSVMFreeARM(
         event);
 }
 
-cl_int clEnqueueSVMMemcpyARM(
+cl_int CL_API_CALL clEnqueueSVMMemcpyARM(
     cl_command_queue command_queue,
     cl_bool blocking_copy,
     void* dst_ptr,
@@ -2425,7 +2425,7 @@ cl_int clEnqueueSVMMemcpyARM(
         event);
 }
 
-cl_int clEnqueueSVMMemFillARM(
+cl_int CL_API_CALL clEnqueueSVMMemFillARM(
     cl_command_queue command_queue,
     void* svm_ptr,
     const void* pattern,
@@ -2450,7 +2450,7 @@ cl_int clEnqueueSVMMemFillARM(
         event);
 }
 
-cl_int clEnqueueSVMMapARM(
+cl_int CL_API_CALL clEnqueueSVMMapARM(
     cl_command_queue command_queue,
     cl_bool blocking_map,
     cl_map_flags flags,
@@ -2475,7 +2475,7 @@ cl_int clEnqueueSVMMapARM(
         event);
 }
 
-cl_int clEnqueueSVMUnmapARM(
+cl_int CL_API_CALL clEnqueueSVMUnmapARM(
     cl_command_queue command_queue,
     void* svm_ptr,
     cl_uint num_events_in_wait_list,
@@ -2494,7 +2494,7 @@ cl_int clEnqueueSVMUnmapARM(
         event);
 }
 
-cl_int clSetKernelArgSVMPointerARM(
+cl_int CL_API_CALL clSetKernelArgSVMPointerARM(
     cl_kernel kernel,
     cl_uint arg_index,
     const void* arg_value)
@@ -2509,7 +2509,7 @@ cl_int clSetKernelArgSVMPointerARM(
         arg_value);
 }
 
-cl_int clSetKernelExecInfoARM(
+cl_int CL_API_CALL clSetKernelExecInfoARM(
     cl_kernel kernel,
     cl_kernel_exec_info_arm param_name,
     size_t param_value_size,
@@ -2530,7 +2530,7 @@ cl_int clSetKernelExecInfoARM(
 
 /* cl_img_generate_mipmap */
 
-cl_int clEnqueueGenerateMipmapIMG(
+cl_int CL_API_CALL clEnqueueGenerateMipmapIMG(
     cl_command_queue command_queue,
     cl_mem src_image,
     cl_mem dst_image,
@@ -2561,7 +2561,7 @@ cl_int clEnqueueGenerateMipmapIMG(
 
 /* cl_img_use_gralloc_ptr */
 
-cl_int clEnqueueAcquireGrallocObjectsIMG(
+cl_int CL_API_CALL clEnqueueAcquireGrallocObjectsIMG(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -2582,7 +2582,7 @@ cl_int clEnqueueAcquireGrallocObjectsIMG(
         event);
 }
 
-cl_int clEnqueueReleaseGrallocObjectsIMG(
+cl_int CL_API_CALL clEnqueueReleaseGrallocObjectsIMG(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -2607,7 +2607,7 @@ cl_int clEnqueueReleaseGrallocObjectsIMG(
 
 /* cl_intel_accelerator */
 
-cl_accelerator_intel clCreateAcceleratorINTEL(
+cl_accelerator_intel CL_API_CALL clCreateAcceleratorINTEL(
     cl_context context,
     cl_accelerator_type_intel accelerator_type,
     size_t descriptor_size,
@@ -2627,7 +2627,7 @@ cl_accelerator_intel clCreateAcceleratorINTEL(
         errcode_ret);
 }
 
-cl_int clGetAcceleratorInfoINTEL(
+cl_int CL_API_CALL clGetAcceleratorInfoINTEL(
     cl_accelerator_intel accelerator,
     cl_accelerator_info_intel param_name,
     size_t param_value_size,
@@ -2646,7 +2646,7 @@ cl_int clGetAcceleratorInfoINTEL(
         param_value_size_ret);
 }
 
-cl_int clRetainAcceleratorINTEL(
+cl_int CL_API_CALL clRetainAcceleratorINTEL(
     cl_accelerator_intel accelerator)
 {
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(accelerator);
@@ -2657,7 +2657,7 @@ cl_int clRetainAcceleratorINTEL(
         accelerator);
 }
 
-cl_int clReleaseAcceleratorINTEL(
+cl_int CL_API_CALL clReleaseAcceleratorINTEL(
     cl_accelerator_intel accelerator)
 {
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(accelerator);
@@ -2674,7 +2674,7 @@ cl_int clReleaseAcceleratorINTEL(
 
 /* cl_intel_create_buffer_with_properties */
 
-cl_mem clCreateBufferWithPropertiesINTEL(
+cl_mem CL_API_CALL clCreateBufferWithPropertiesINTEL(
     cl_context context,
     const cl_mem_properties_intel* properties,
     cl_mem_flags flags,
@@ -2706,7 +2706,7 @@ cl_mem clCreateBufferWithPropertiesINTEL(
 
 /* cl_intel_dx9_media_sharing */
 
-cl_int clGetDeviceIDsFromDX9INTEL(
+cl_int CL_API_CALL clGetDeviceIDsFromDX9INTEL(
     cl_platform_id platform,
     cl_dx9_device_source_intel dx9_device_source,
     void* dx9_object,
@@ -2729,7 +2729,7 @@ cl_int clGetDeviceIDsFromDX9INTEL(
         num_devices);
 }
 
-cl_mem clCreateFromDX9MediaSurfaceINTEL(
+cl_mem CL_API_CALL clCreateFromDX9MediaSurfaceINTEL(
     cl_context context,
     cl_mem_flags flags,
     IDirect3DSurface9* resource,
@@ -2751,7 +2751,7 @@ cl_mem clCreateFromDX9MediaSurfaceINTEL(
         errcode_ret);
 }
 
-cl_int clEnqueueAcquireDX9ObjectsINTEL(
+cl_int CL_API_CALL clEnqueueAcquireDX9ObjectsINTEL(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -2772,7 +2772,7 @@ cl_int clEnqueueAcquireDX9ObjectsINTEL(
         event);
 }
 
-cl_int clEnqueueReleaseDX9ObjectsINTEL(
+cl_int CL_API_CALL clEnqueueReleaseDX9ObjectsINTEL(
     cl_command_queue command_queue,
     cl_uint num_objects,
     cl_mem* mem_objects,
@@ -2815,7 +2815,7 @@ cl_int clEnqueueReleaseDX9ObjectsINTEL(
 
 /* cl_intel_sharing_format_query_d3d10 */
 
-cl_int clGetSupportedD3D10TextureFormatsINTEL(
+cl_int CL_API_CALL clGetSupportedD3D10TextureFormatsINTEL(
     cl_context context,
     cl_mem_flags flags,
     cl_mem_object_type image_type,
@@ -2842,7 +2842,7 @@ cl_int clGetSupportedD3D10TextureFormatsINTEL(
 
 /* cl_intel_sharing_format_query_d3d11 */
 
-cl_int clGetSupportedD3D11TextureFormatsINTEL(
+cl_int CL_API_CALL clGetSupportedD3D11TextureFormatsINTEL(
     cl_context context,
     cl_mem_flags flags,
     cl_mem_object_type image_type,
@@ -2871,7 +2871,7 @@ cl_int clGetSupportedD3D11TextureFormatsINTEL(
 
 /* cl_intel_sharing_format_query_dx9 */
 
-cl_int clGetSupportedDX9MediaSurfaceFormatsINTEL(
+cl_int CL_API_CALL clGetSupportedDX9MediaSurfaceFormatsINTEL(
     cl_context context,
     cl_mem_flags flags,
     cl_mem_object_type image_type,
@@ -2900,7 +2900,7 @@ cl_int clGetSupportedDX9MediaSurfaceFormatsINTEL(
 
 /* cl_intel_sharing_format_query_gl */
 
-cl_int clGetSupportedGLTextureFormatsINTEL(
+cl_int CL_API_CALL clGetSupportedGLTextureFormatsINTEL(
     cl_context context,
     cl_mem_flags flags,
     cl_mem_object_type image_type,
@@ -2927,7 +2927,7 @@ cl_int clGetSupportedGLTextureFormatsINTEL(
 
 /* cl_intel_sharing_format_query_va_api */
 
-cl_int clGetSupportedVA_APIMediaSurfaceFormatsINTEL(
+cl_int CL_API_CALL clGetSupportedVA_APIMediaSurfaceFormatsINTEL(
     cl_context context,
     cl_mem_flags flags,
     cl_mem_object_type image_type,
@@ -2958,7 +2958,7 @@ cl_int clGetSupportedVA_APIMediaSurfaceFormatsINTEL(
 
 /* cl_intel_unified_shared_memory */
 
-void* clHostMemAllocINTEL(
+void* CL_API_CALL clHostMemAllocINTEL(
     cl_context context,
     const cl_mem_properties_intel* properties,
     size_t size,
@@ -2978,7 +2978,7 @@ void* clHostMemAllocINTEL(
         errcode_ret);
 }
 
-void* clDeviceMemAllocINTEL(
+void* CL_API_CALL clDeviceMemAllocINTEL(
     cl_context context,
     cl_device_id device,
     const cl_mem_properties_intel* properties,
@@ -3000,7 +3000,7 @@ void* clDeviceMemAllocINTEL(
         errcode_ret);
 }
 
-void* clSharedMemAllocINTEL(
+void* CL_API_CALL clSharedMemAllocINTEL(
     cl_context context,
     cl_device_id device,
     const cl_mem_properties_intel* properties,
@@ -3022,7 +3022,7 @@ void* clSharedMemAllocINTEL(
         errcode_ret);
 }
 
-cl_int clMemFreeINTEL(
+cl_int CL_API_CALL clMemFreeINTEL(
     cl_context context,
     void* ptr)
 {
@@ -3035,7 +3035,7 @@ cl_int clMemFreeINTEL(
         ptr);
 }
 
-cl_int clMemBlockingFreeINTEL(
+cl_int CL_API_CALL clMemBlockingFreeINTEL(
     cl_context context,
     void* ptr)
 {
@@ -3048,7 +3048,7 @@ cl_int clMemBlockingFreeINTEL(
         ptr);
 }
 
-cl_int clGetMemAllocInfoINTEL(
+cl_int CL_API_CALL clGetMemAllocInfoINTEL(
     cl_context context,
     const void* ptr,
     cl_mem_info_intel param_name,
@@ -3069,7 +3069,7 @@ cl_int clGetMemAllocInfoINTEL(
         param_value_size_ret);
 }
 
-cl_int clSetKernelArgMemPointerINTEL(
+cl_int CL_API_CALL clSetKernelArgMemPointerINTEL(
     cl_kernel kernel,
     cl_uint arg_index,
     const void* arg_value)
@@ -3084,7 +3084,7 @@ cl_int clSetKernelArgMemPointerINTEL(
         arg_value);
 }
 
-cl_int clEnqueueMemsetINTEL(
+cl_int CL_API_CALL clEnqueueMemsetINTEL(
     cl_command_queue command_queue,
     void* dst_ptr,
     cl_int value,
@@ -3107,7 +3107,7 @@ cl_int clEnqueueMemsetINTEL(
         event);
 }
 
-cl_int clEnqueueMemFillINTEL(
+cl_int CL_API_CALL clEnqueueMemFillINTEL(
     cl_command_queue command_queue,
     void* dst_ptr,
     const void* pattern,
@@ -3132,7 +3132,7 @@ cl_int clEnqueueMemFillINTEL(
         event);
 }
 
-cl_int clEnqueueMemcpyINTEL(
+cl_int CL_API_CALL clEnqueueMemcpyINTEL(
     cl_command_queue command_queue,
     cl_bool blocking,
     void* dst_ptr,
@@ -3157,7 +3157,7 @@ cl_int clEnqueueMemcpyINTEL(
         event);
 }
 
-cl_int clEnqueueMemAdviseINTEL(
+cl_int CL_API_CALL clEnqueueMemAdviseINTEL(
     cl_command_queue command_queue,
     const void* ptr,
     size_t size,
@@ -3182,7 +3182,7 @@ cl_int clEnqueueMemAdviseINTEL(
 
 #if defined(CL_VERSION_1_2)
 
-cl_int clEnqueueMigrateMemINTEL(
+cl_int CL_API_CALL clEnqueueMigrateMemINTEL(
     cl_command_queue command_queue,
     const void* ptr,
     size_t size,
@@ -3211,7 +3211,7 @@ cl_int clEnqueueMigrateMemINTEL(
 
 /* cl_intel_va_api_media_sharing */
 
-cl_int clGetDeviceIDsFromVA_APIMediaAdapterINTEL(
+cl_int CL_API_CALL clGetDeviceIDsFromVA_APIMediaAdapterINTEL(
     cl_platform_id platform,
     cl_va_api_device_source_intel media_adapter_type,
     void* media_adapter,
@@ -3234,7 +3234,7 @@ cl_int clGetDeviceIDsFromVA_APIMediaAdapterINTEL(
         num_devices);
 }
 
-cl_mem clCreateFromVA_APIMediaSurfaceINTEL(
+cl_mem CL_API_CALL clCreateFromVA_APIMediaSurfaceINTEL(
     cl_context context,
     cl_mem_flags flags,
     VASurfaceID* surface,
@@ -3254,7 +3254,7 @@ cl_mem clCreateFromVA_APIMediaSurfaceINTEL(
         errcode_ret);
 }
 
-cl_int clEnqueueAcquireVA_APIMediaSurfacesINTEL(
+cl_int CL_API_CALL clEnqueueAcquireVA_APIMediaSurfacesINTEL(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -3275,7 +3275,7 @@ cl_int clEnqueueAcquireVA_APIMediaSurfacesINTEL(
         event);
 }
 
-cl_int clEnqueueReleaseVA_APIMediaSurfacesINTEL(
+cl_int CL_API_CALL clEnqueueReleaseVA_APIMediaSurfacesINTEL(
     cl_command_queue command_queue,
     cl_uint num_objects,
     const cl_mem* mem_objects,
@@ -3304,7 +3304,7 @@ cl_int clEnqueueReleaseVA_APIMediaSurfacesINTEL(
 
 /* cl_qcom_ext_host_ptr */
 
-cl_int clGetDeviceImageInfoQCOM(
+cl_int CL_API_CALL clGetDeviceImageInfoQCOM(
     cl_device_id device,
     size_t image_width,
     size_t image_height,
