@@ -69,6 +69,15 @@ void call_all(void)
     clEnqueueReleaseEGLObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
 #endif // cl_khr_egl_image
 
+#ifdef cl_khr_external_memory
+    clEnqueueAcquireExternalMemObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
+    clEnqueueReleaseExternalMemObjectsKHR(NULL, 0, NULL, 0, NULL, NULL);
+#endif // cl_khr_external_memory
+
+#ifdef cl_khr_external_semaphore
+    clGetSemaphoreHandleForTypeKHR(NULL, NULL, 0, 0, NULL, NULL);
+#endif // cl_khr_external_semaphore
+
 #ifdef cl_khr_gl_event
     clCreateEventFromGLsyncKHR(NULL, NULL, NULL);
 #endif // cl_khr_gl_event
@@ -76,6 +85,15 @@ void call_all(void)
 #ifdef cl_khr_il_program
     clCreateProgramWithILKHR(NULL, NULL, 0, NULL);
 #endif // cl_khr_il_program
+
+#ifdef cl_khr_semaphore
+    clCreateSemaphoreWithPropertiesKHR(NULL, NULL, NULL);
+    clEnqueueWaitSemaphoresKHR(NULL, 0, NULL, NULL, 0, NULL, NULL);
+    clEnqueueSignalSemaphoresKHR(NULL, 0, NULL, NULL, 0, NULL, NULL);
+    clGetSemaphoreInfoKHR(NULL, CL_SEMAPHORE_CONTEXT_KHR, 0, NULL, NULL);
+    clReleaseSemaphoreKHR(NULL);
+    clRetainSemaphoreKHR(NULL);
+#endif // cl_khr_semaphore
 
 #ifdef cl_khr_subgroups
     clGetKernelSubGroupInfoKHR(NULL, NULL, CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR, 0, NULL, 0, NULL, NULL);
@@ -192,6 +210,10 @@ void call_all(void)
     clEnqueueAcquireVA_APIMediaSurfacesINTEL(NULL, 0, NULL, 0, NULL, NULL);
     clEnqueueReleaseVA_APIMediaSurfacesINTEL(NULL, 0, NULL, 0, NULL, NULL);
 #endif // cl_intel_va_api_media_sharing
+
+#ifdef cl_pocl_content_size
+    clSetContentSizeBufferPoCL(NULL, NULL);
+#endif // cl_pocl_content_size
 
 #ifdef cl_qcom_ext_host_ptr
     clGetDeviceImageInfoQCOM(NULL, 0, 0, NULL, CL_IMAGE_ROW_ALIGNMENT_QCOM, 0, NULL, NULL);

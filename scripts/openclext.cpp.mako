@@ -262,6 +262,24 @@ static inline cl_platform_id _get_platform(cl_mem memobj)
     return _get_platform(context);
 }
 
+#if defined(cl_khr_semaphore)
+
+static inline cl_platform_id _get_platform(cl_semaphore_khr semaphore)
+{
+    if (semaphore == NULL) return NULL;
+
+    cl_context context = NULL;
+    clGetSemaphoreInfoKHR(
+        semaphore,
+        CL_SEMAPHORE_CONTEXT_KHR,
+        sizeof(context),
+        &context,
+        NULL);
+    return _get_platform(context);
+}
+
+#endif // defined(cl_khr_semaphore)
+
 #if defined(cl_intel_accelerator)
 
 static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
