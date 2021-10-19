@@ -163,6 +163,24 @@ static inline cl_platform_id _get_platform(cl_mem memobj)
     return _get_platform(context);
 }
 
+#if defined(cl_khr_semaphore)
+
+static inline cl_platform_id _get_platform(cl_semaphore_khr semaphore)
+{
+    if (semaphore == NULL) return NULL;
+
+    cl_context context = NULL;
+    clGetSemaphoreInfoKHR(
+        semaphore,
+        CL_SEMAPHORE_CONTEXT_KHR,
+        sizeof(context),
+        &context,
+        NULL);
+    return _get_platform(context);
+}
+
+#endif // defined(cl_khr_semaphore)
+
 #if defined(cl_intel_accelerator)
 
 static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
@@ -383,6 +401,50 @@ typedef cl_int (CL_API_CALL* clEnqueueReleaseEGLObjectsKHR_clextfn)(
 
 /* cl_khr_extended_versioning */
 
+/* cl_khr_external_memory */
+
+typedef cl_int (CL_API_CALL* clEnqueueAcquireExternalMemObjectsKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_mem_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueReleaseExternalMemObjectsKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_mem_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+/* cl_khr_external_memory_dma_buf */
+
+/* cl_khr_external_memory_dx */
+
+/* cl_khr_external_memory_opaque_fd */
+
+/* cl_khr_external_memory_win32 */
+
+/* cl_khr_external_semaphore */
+
+typedef cl_int (CL_API_CALL* clGetSemaphoreHandleForTypeKHR_clextfn)(
+    cl_semaphore_khr sema_object,
+    cl_device_id device,
+    cl_external_semaphore_handle_type_khr handle_type,
+    size_t handle_size,
+    void* handle_ptr,
+    size_t* handle_size_ret);
+
+/* cl_khr_external_semaphore_dx_fence */
+
+/* cl_khr_external_semaphore_opaque_fd */
+
+/* cl_khr_external_semaphore_sync_fd */
+
+/* cl_khr_external_semaphore_win32 */
+
 /* cl_khr_fp16 */
 
 /* cl_khr_fp64 */
@@ -429,6 +491,44 @@ typedef cl_program (CL_API_CALL* clCreateProgramWithILKHR_clextfn)(
 /* cl_khr_pci_bus_info */
 
 /* cl_khr_priority_hints */
+
+/* cl_khr_semaphore */
+
+typedef cl_semaphore_khr (CL_API_CALL* clCreateSemaphoreWithPropertiesKHR_clextfn)(
+    cl_context context,
+    const cl_semaphore_properties_khr* sema_props,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clEnqueueWaitSemaphoresKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_sema_objects,
+    const cl_semaphore_khr* sema_objects,
+    const cl_semaphore_payload_khr* sema_payload_list,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueSignalSemaphoresKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_uint num_sema_objects,
+    const cl_semaphore_khr* sema_objects,
+    const cl_semaphore_payload_khr* sema_payload_list,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clGetSemaphoreInfoKHR_clextfn)(
+    cl_semaphore_khr sema_object,
+    cl_semaphore_info_khr param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret);
+
+typedef cl_int (CL_API_CALL* clReleaseSemaphoreKHR_clextfn)(
+    cl_semaphore_khr sema_object);
+
+typedef cl_int (CL_API_CALL* clRetainSemaphoreKHR_clextfn)(
+    cl_semaphore_khr sema_object);
 
 /* cl_khr_spir */
 
@@ -660,6 +760,8 @@ typedef cl_mem (CL_API_CALL* clCreateBufferWithPropertiesINTEL_clextfn)(
     size_t size,
     void* host_ptr,
     cl_int* errcode_ret);
+
+/* cl_intel_device_attribute_query */
 
 /* cl_intel_device_partition_by_names */
 
@@ -936,6 +1038,12 @@ typedef cl_int (CL_API_CALL* clEnqueueReleaseVA_APIMediaSurfacesINTEL_clextfn)(
 
 /* cl_nv_device_attribute_query */
 
+/* cl_pocl_content_size */
+
+typedef cl_int (CL_API_CALL* clSetContentSizeBufferPoCL_clextfn)(
+    cl_mem buffer,
+    cl_mem content_size_buffer);
+
 /* cl_qcom_android_native_buffer_host_ptr */
 
 /* cl_qcom_ext_host_ptr */
@@ -1021,6 +1129,29 @@ struct openclext_dispatch_table {
 
     /* cl_khr_extended_versioning */
 
+    /* cl_khr_external_memory */
+    clEnqueueAcquireExternalMemObjectsKHR_clextfn clEnqueueAcquireExternalMemObjectsKHR;
+    clEnqueueReleaseExternalMemObjectsKHR_clextfn clEnqueueReleaseExternalMemObjectsKHR;
+
+    /* cl_khr_external_memory_dma_buf */
+
+    /* cl_khr_external_memory_dx */
+
+    /* cl_khr_external_memory_opaque_fd */
+
+    /* cl_khr_external_memory_win32 */
+
+    /* cl_khr_external_semaphore */
+    clGetSemaphoreHandleForTypeKHR_clextfn clGetSemaphoreHandleForTypeKHR;
+
+    /* cl_khr_external_semaphore_dx_fence */
+
+    /* cl_khr_external_semaphore_opaque_fd */
+
+    /* cl_khr_external_semaphore_sync_fd */
+
+    /* cl_khr_external_semaphore_win32 */
+
     /* cl_khr_fp16 */
 
     /* cl_khr_fp64 */
@@ -1058,6 +1189,14 @@ struct openclext_dispatch_table {
     /* cl_khr_pci_bus_info */
 
     /* cl_khr_priority_hints */
+
+    /* cl_khr_semaphore */
+    clCreateSemaphoreWithPropertiesKHR_clextfn clCreateSemaphoreWithPropertiesKHR;
+    clEnqueueWaitSemaphoresKHR_clextfn clEnqueueWaitSemaphoresKHR;
+    clEnqueueSignalSemaphoresKHR_clextfn clEnqueueSignalSemaphoresKHR;
+    clGetSemaphoreInfoKHR_clextfn clGetSemaphoreInfoKHR;
+    clReleaseSemaphoreKHR_clextfn clReleaseSemaphoreKHR;
+    clRetainSemaphoreKHR_clextfn clRetainSemaphoreKHR;
 
     /* cl_khr_spir */
 
@@ -1136,6 +1275,8 @@ struct openclext_dispatch_table {
 
     /* cl_intel_create_buffer_with_properties */
     clCreateBufferWithPropertiesINTEL_clextfn clCreateBufferWithPropertiesINTEL;
+
+    /* cl_intel_device_attribute_query */
 
     /* cl_intel_device_partition_by_names */
 
@@ -1236,6 +1377,9 @@ struct openclext_dispatch_table {
 
     /* cl_nv_device_attribute_query */
 
+    /* cl_pocl_content_size */
+    clSetContentSizeBufferPoCL_clextfn clSetContentSizeBufferPoCL;
+
     /* cl_qcom_android_native_buffer_host_ptr */
 
     /* cl_qcom_ext_host_ptr */
@@ -1319,6 +1463,29 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 
     /* cl_khr_extended_versioning */
 
+    /* cl_khr_external_memory */
+    CLEXT_GET_EXTENSION(clEnqueueAcquireExternalMemObjectsKHR);
+    CLEXT_GET_EXTENSION(clEnqueueReleaseExternalMemObjectsKHR);
+
+    /* cl_khr_external_memory_dma_buf */
+
+    /* cl_khr_external_memory_dx */
+
+    /* cl_khr_external_memory_opaque_fd */
+
+    /* cl_khr_external_memory_win32 */
+
+    /* cl_khr_external_semaphore */
+    CLEXT_GET_EXTENSION(clGetSemaphoreHandleForTypeKHR);
+
+    /* cl_khr_external_semaphore_dx_fence */
+
+    /* cl_khr_external_semaphore_opaque_fd */
+
+    /* cl_khr_external_semaphore_sync_fd */
+
+    /* cl_khr_external_semaphore_win32 */
+
     /* cl_khr_fp16 */
 
     /* cl_khr_fp64 */
@@ -1356,6 +1523,14 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     /* cl_khr_pci_bus_info */
 
     /* cl_khr_priority_hints */
+
+    /* cl_khr_semaphore */
+    CLEXT_GET_EXTENSION(clCreateSemaphoreWithPropertiesKHR);
+    CLEXT_GET_EXTENSION(clEnqueueWaitSemaphoresKHR);
+    CLEXT_GET_EXTENSION(clEnqueueSignalSemaphoresKHR);
+    CLEXT_GET_EXTENSION(clGetSemaphoreInfoKHR);
+    CLEXT_GET_EXTENSION(clReleaseSemaphoreKHR);
+    CLEXT_GET_EXTENSION(clRetainSemaphoreKHR);
 
     /* cl_khr_spir */
 
@@ -1434,6 +1609,8 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 
     /* cl_intel_create_buffer_with_properties */
     CLEXT_GET_EXTENSION(clCreateBufferWithPropertiesINTEL);
+
+    /* cl_intel_device_attribute_query */
 
     /* cl_intel_device_partition_by_names */
 
@@ -1533,6 +1710,9 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #endif // defined(CLEXT_INCLUDE_VA_API)
 
     /* cl_nv_device_attribute_query */
+
+    /* cl_pocl_content_size */
+    CLEXT_GET_EXTENSION(clSetContentSizeBufferPoCL);
 
     /* cl_qcom_android_native_buffer_host_ptr */
 
@@ -2083,6 +2263,89 @@ cl_int CL_API_CALL clEnqueueReleaseEGLObjectsKHR(
 
 /* cl_khr_extended_versioning */
 
+/* cl_khr_external_memory */
+
+cl_int CL_API_CALL clEnqueueAcquireExternalMemObjectsKHR(
+    cl_command_queue command_queue,
+    cl_uint num_mem_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueAcquireExternalMemObjectsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueAcquireExternalMemObjectsKHR(
+        command_queue,
+        num_mem_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int CL_API_CALL clEnqueueReleaseExternalMemObjectsKHR(
+    cl_command_queue command_queue,
+    cl_uint num_mem_objects,
+    const cl_mem* mem_objects,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueReleaseExternalMemObjectsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueReleaseExternalMemObjectsKHR(
+        command_queue,
+        num_mem_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+/* cl_khr_external_memory_dma_buf */
+
+/* cl_khr_external_memory_dx */
+
+/* cl_khr_external_memory_opaque_fd */
+
+/* cl_khr_external_memory_win32 */
+
+/* cl_khr_external_semaphore */
+
+cl_int CL_API_CALL clGetSemaphoreHandleForTypeKHR(
+    cl_semaphore_khr sema_object,
+    cl_device_id device,
+    cl_external_semaphore_handle_type_khr handle_type,
+    size_t handle_size,
+    void* handle_ptr,
+    size_t* handle_size_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(sema_object);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetSemaphoreHandleForTypeKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSemaphoreHandleForTypeKHR(
+        sema_object,
+        device,
+        handle_type,
+        handle_size,
+        handle_ptr,
+        handle_size_ret);
+}
+
+/* cl_khr_external_semaphore_dx_fence */
+
+/* cl_khr_external_semaphore_opaque_fd */
+
+/* cl_khr_external_semaphore_sync_fd */
+
+/* cl_khr_external_semaphore_win32 */
+
 /* cl_khr_fp16 */
 
 /* cl_khr_fp64 */
@@ -2152,6 +2415,111 @@ cl_program CL_API_CALL clCreateProgramWithILKHR(
 /* cl_khr_pci_bus_info */
 
 /* cl_khr_priority_hints */
+
+/* cl_khr_semaphore */
+
+cl_semaphore_khr CL_API_CALL clCreateSemaphoreWithPropertiesKHR(
+    cl_context context,
+    const cl_semaphore_properties_khr* sema_props,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateSemaphoreWithPropertiesKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateSemaphoreWithPropertiesKHR(
+        context,
+        sema_props,
+        errcode_ret);
+}
+
+cl_int CL_API_CALL clEnqueueWaitSemaphoresKHR(
+    cl_command_queue command_queue,
+    cl_uint num_sema_objects,
+    const cl_semaphore_khr* sema_objects,
+    const cl_semaphore_payload_khr* sema_payload_list,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueWaitSemaphoresKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueWaitSemaphoresKHR(
+        command_queue,
+        num_sema_objects,
+        sema_objects,
+        sema_payload_list,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int CL_API_CALL clEnqueueSignalSemaphoresKHR(
+    cl_command_queue command_queue,
+    cl_uint num_sema_objects,
+    const cl_semaphore_khr* sema_objects,
+    const cl_semaphore_payload_khr* sema_payload_list,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueSignalSemaphoresKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueSignalSemaphoresKHR(
+        command_queue,
+        num_sema_objects,
+        sema_objects,
+        sema_payload_list,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int CL_API_CALL clGetSemaphoreInfoKHR(
+    cl_semaphore_khr sema_object,
+    cl_semaphore_info_khr param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(sema_object);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetSemaphoreInfoKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSemaphoreInfoKHR(
+        sema_object,
+        param_name,
+        param_value_size,
+        param_value,
+        param_value_size_ret);
+}
+
+cl_int CL_API_CALL clReleaseSemaphoreKHR(
+    cl_semaphore_khr sema_object)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(sema_object);
+    if (dispatch_ptr == NULL || dispatch_ptr->clReleaseSemaphoreKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clReleaseSemaphoreKHR(
+        sema_object);
+}
+
+cl_int CL_API_CALL clRetainSemaphoreKHR(
+    cl_semaphore_khr sema_object)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(sema_object);
+    if (dispatch_ptr == NULL || dispatch_ptr->clRetainSemaphoreKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clRetainSemaphoreKHR(
+        sema_object);
+}
 
 /* cl_khr_spir */
 
@@ -2695,6 +3063,8 @@ cl_mem CL_API_CALL clCreateBufferWithPropertiesINTEL(
         host_ptr,
         errcode_ret);
 }
+
+/* cl_intel_device_attribute_query */
 
 /* cl_intel_device_partition_by_names */
 
@@ -3299,6 +3669,21 @@ cl_int CL_API_CALL clEnqueueReleaseVA_APIMediaSurfacesINTEL(
 #endif // defined(CLEXT_INCLUDE_VA_API)
 
 /* cl_nv_device_attribute_query */
+
+/* cl_pocl_content_size */
+
+cl_int CL_API_CALL clSetContentSizeBufferPoCL(
+    cl_mem buffer,
+    cl_mem content_size_buffer)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clSetContentSizeBufferPoCL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clSetContentSizeBufferPoCL(
+        buffer,
+        content_size_buffer);
+}
 
 /* cl_qcom_android_native_buffer_host_ptr */
 
