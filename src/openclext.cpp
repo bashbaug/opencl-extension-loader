@@ -46,6 +46,10 @@
 #include <CL/cl_ext.h>
 #if defined(CLEXT_INCLUDE_GL)
 #include <CL/cl_gl.h>
+// Some versions of the headers to not define cl_khr_gl_event.
+#ifndef cl_khr_gl_event
+#define cl_khr_gl_event 1
+#endif
 #endif
 #if defined(CLEXT_INCLUDE_EGL)
 #include <CL/cl_egl.h>
@@ -1291,8 +1295,8 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 
 #if defined(cl_khr_create_command_queue)
     CLEXT_GET_EXTENSION(clCreateCommandQueueWithPropertiesKHR);
-
 #endif // defined(cl_khr_create_command_queue)
+
 #if defined(CLEXT_INCLUDE_D3D10)
 #if defined(cl_khr_d3d10_sharing)
     CLEXT_GET_EXTENSION(clGetDeviceIDsFromD3D10KHR);
@@ -1301,9 +1305,9 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clCreateFromD3D10Texture3DKHR);
     CLEXT_GET_EXTENSION(clEnqueueAcquireD3D10ObjectsKHR);
     CLEXT_GET_EXTENSION(clEnqueueReleaseD3D10ObjectsKHR);
-
 #endif // defined(cl_khr_d3d10_sharing)
 #endif // defined(CLEXT_INCLUDE_D3D10)
+
 #if defined(CLEXT_INCLUDE_D3D11)
 #if defined(cl_khr_d3d11_sharing)
     CLEXT_GET_EXTENSION(clGetDeviceIDsFromD3D11KHR);
@@ -1312,51 +1316,51 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clCreateFromD3D11Texture3DKHR);
     CLEXT_GET_EXTENSION(clEnqueueAcquireD3D11ObjectsKHR);
     CLEXT_GET_EXTENSION(clEnqueueReleaseD3D11ObjectsKHR);
-
 #endif // defined(cl_khr_d3d11_sharing)
 #endif // defined(CLEXT_INCLUDE_D3D11)
+
 #if defined(CLEXT_INCLUDE_DX9)
 #if defined(cl_khr_dx9_media_sharing)
     CLEXT_GET_EXTENSION(clGetDeviceIDsFromDX9MediaAdapterKHR);
     CLEXT_GET_EXTENSION(clCreateFromDX9MediaSurfaceKHR);
     CLEXT_GET_EXTENSION(clEnqueueAcquireDX9MediaSurfacesKHR);
     CLEXT_GET_EXTENSION(clEnqueueReleaseDX9MediaSurfacesKHR);
-
 #endif // defined(cl_khr_dx9_media_sharing)
 #endif // defined(CLEXT_INCLUDE_DX9)
+
 #if defined(CLEXT_INCLUDE_EGL)
 #if defined(cl_khr_egl_event)
     CLEXT_GET_EXTENSION(clCreateEventFromEGLSyncKHR);
-
 #endif // defined(cl_khr_egl_event)
 #endif // defined(CLEXT_INCLUDE_EGL)
+
 #if defined(CLEXT_INCLUDE_EGL)
 #if defined(cl_khr_egl_image)
     CLEXT_GET_EXTENSION(clCreateFromEGLImageKHR);
     CLEXT_GET_EXTENSION(clEnqueueAcquireEGLObjectsKHR);
     CLEXT_GET_EXTENSION(clEnqueueReleaseEGLObjectsKHR);
-
 #endif // defined(cl_khr_egl_image)
 #endif // defined(CLEXT_INCLUDE_EGL)
+
 #if defined(cl_khr_external_memory)
     CLEXT_GET_EXTENSION(clEnqueueAcquireExternalMemObjectsKHR);
     CLEXT_GET_EXTENSION(clEnqueueReleaseExternalMemObjectsKHR);
-
 #endif // defined(cl_khr_external_memory)
+
 #if defined(cl_khr_external_semaphore)
     CLEXT_GET_EXTENSION(clGetSemaphoreHandleForTypeKHR);
-
 #endif // defined(cl_khr_external_semaphore)
+
 #if defined(CLEXT_INCLUDE_GL)
 #if defined(cl_khr_gl_event)
     CLEXT_GET_EXTENSION(clCreateEventFromGLsyncKHR);
-
 #endif // defined(cl_khr_gl_event)
 #endif // defined(CLEXT_INCLUDE_GL)
+
 #if defined(cl_khr_il_program)
     CLEXT_GET_EXTENSION(clCreateProgramWithILKHR);
-
 #endif // defined(cl_khr_il_program)
+
 #if defined(cl_khr_semaphore)
     CLEXT_GET_EXTENSION(clCreateSemaphoreWithPropertiesKHR);
     CLEXT_GET_EXTENSION(clEnqueueWaitSemaphoresKHR);
@@ -1364,38 +1368,38 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clGetSemaphoreInfoKHR);
     CLEXT_GET_EXTENSION(clReleaseSemaphoreKHR);
     CLEXT_GET_EXTENSION(clRetainSemaphoreKHR);
-
 #endif // defined(cl_khr_semaphore)
+
 #if defined(cl_khr_subgroups)
     CLEXT_GET_EXTENSION(clGetKernelSubGroupInfoKHR);
-
 #endif // defined(cl_khr_subgroups)
+
 #if defined(cl_khr_suggested_local_work_size)
     CLEXT_GET_EXTENSION(clGetKernelSuggestedLocalWorkSizeKHR);
-
 #endif // defined(cl_khr_suggested_local_work_size)
+
 #if defined(cl_khr_terminate_context)
     CLEXT_GET_EXTENSION(clTerminateContextKHR);
-
 #endif // defined(cl_khr_terminate_context)
+
 #if defined(cl_ext_device_fission)
     CLEXT_GET_EXTENSION(clReleaseDeviceEXT);
     CLEXT_GET_EXTENSION(clRetainDeviceEXT);
     CLEXT_GET_EXTENSION(clCreateSubDevicesEXT);
-
 #endif // defined(cl_ext_device_fission)
+
 #if defined(cl_ext_migrate_memobject)
     CLEXT_GET_EXTENSION(clEnqueueMigrateMemObjectEXT);
-
 #endif // defined(cl_ext_migrate_memobject)
+
 #if defined(cl_APPLE_SetMemObjectDestructor)
     CLEXT_GET_EXTENSION(clSetMemObjectDestructorAPPLE);
-
 #endif // defined(cl_APPLE_SetMemObjectDestructor)
+
 #if defined(cl_arm_import_memory)
     CLEXT_GET_EXTENSION(clImportMemoryARM);
-
 #endif // defined(cl_arm_import_memory)
+
 #if defined(cl_arm_shared_virtual_memory)
     CLEXT_GET_EXTENSION(clSVMAllocARM);
     CLEXT_GET_EXTENSION(clSVMFreeARM);
@@ -1406,67 +1410,67 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clEnqueueSVMUnmapARM);
     CLEXT_GET_EXTENSION(clSetKernelArgSVMPointerARM);
     CLEXT_GET_EXTENSION(clSetKernelExecInfoARM);
-
 #endif // defined(cl_arm_shared_virtual_memory)
+
 #if defined(cl_img_generate_mipmap)
     CLEXT_GET_EXTENSION(clEnqueueGenerateMipmapIMG);
-
 #endif // defined(cl_img_generate_mipmap)
+
 #if defined(cl_img_use_gralloc_ptr)
     CLEXT_GET_EXTENSION(clEnqueueAcquireGrallocObjectsIMG);
     CLEXT_GET_EXTENSION(clEnqueueReleaseGrallocObjectsIMG);
-
 #endif // defined(cl_img_use_gralloc_ptr)
+
 #if defined(cl_intel_accelerator)
     CLEXT_GET_EXTENSION(clCreateAcceleratorINTEL);
     CLEXT_GET_EXTENSION(clGetAcceleratorInfoINTEL);
     CLEXT_GET_EXTENSION(clRetainAcceleratorINTEL);
     CLEXT_GET_EXTENSION(clReleaseAcceleratorINTEL);
-
 #endif // defined(cl_intel_accelerator)
+
 #if defined(cl_intel_create_buffer_with_properties)
     CLEXT_GET_EXTENSION(clCreateBufferWithPropertiesINTEL);
-
 #endif // defined(cl_intel_create_buffer_with_properties)
+
 #if defined(CLEXT_INCLUDE_DX9)
 #if defined(cl_intel_dx9_media_sharing)
     CLEXT_GET_EXTENSION(clGetDeviceIDsFromDX9INTEL);
     CLEXT_GET_EXTENSION(clCreateFromDX9MediaSurfaceINTEL);
     CLEXT_GET_EXTENSION(clEnqueueAcquireDX9ObjectsINTEL);
     CLEXT_GET_EXTENSION(clEnqueueReleaseDX9ObjectsINTEL);
-
 #endif // defined(cl_intel_dx9_media_sharing)
 #endif // defined(CLEXT_INCLUDE_DX9)
+
 #if defined(CLEXT_INCLUDE_D3D10)
 #if defined(cl_intel_sharing_format_query_d3d10)
     CLEXT_GET_EXTENSION(clGetSupportedD3D10TextureFormatsINTEL);
-
 #endif // defined(cl_intel_sharing_format_query_d3d10)
 #endif // defined(CLEXT_INCLUDE_D3D10)
+
 #if defined(CLEXT_INCLUDE_D3D11)
 #if defined(cl_intel_sharing_format_query_d3d11)
     CLEXT_GET_EXTENSION(clGetSupportedD3D11TextureFormatsINTEL);
-
 #endif // defined(cl_intel_sharing_format_query_d3d11)
 #endif // defined(CLEXT_INCLUDE_D3D11)
+
 #if defined(CLEXT_INCLUDE_DX9)
 #if defined(cl_intel_sharing_format_query_dx9)
     CLEXT_GET_EXTENSION(clGetSupportedDX9MediaSurfaceFormatsINTEL);
-
 #endif // defined(cl_intel_sharing_format_query_dx9)
 #endif // defined(CLEXT_INCLUDE_DX9)
+
 #if defined(CLEXT_INCLUDE_GL)
 #if defined(cl_intel_sharing_format_query_gl)
     CLEXT_GET_EXTENSION(clGetSupportedGLTextureFormatsINTEL);
-
 #endif // defined(cl_intel_sharing_format_query_gl)
 #endif // defined(CLEXT_INCLUDE_GL)
+
 #if defined(CLEXT_INCLUDE_VA_API)
 #if defined(cl_intel_sharing_format_query_va_api)
     CLEXT_GET_EXTENSION(clGetSupportedVA_APIMediaSurfaceFormatsINTEL);
-
 #endif // defined(cl_intel_sharing_format_query_va_api)
 #endif // defined(CLEXT_INCLUDE_VA_API)
+
 #if defined(cl_intel_unified_shared_memory)
     CLEXT_GET_EXTENSION(clHostMemAllocINTEL);
     CLEXT_GET_EXTENSION(clDeviceMemAllocINTEL);
@@ -1482,25 +1486,25 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #if defined(CL_VERSION_1_2)
     CLEXT_GET_EXTENSION(clEnqueueMigrateMemINTEL);
 #endif // defined(CL_VERSION_1_2)
-
 #endif // defined(cl_intel_unified_shared_memory)
+
 #if defined(CLEXT_INCLUDE_VA_API)
 #if defined(cl_intel_va_api_media_sharing)
     CLEXT_GET_EXTENSION(clGetDeviceIDsFromVA_APIMediaAdapterINTEL);
     CLEXT_GET_EXTENSION(clCreateFromVA_APIMediaSurfaceINTEL);
     CLEXT_GET_EXTENSION(clEnqueueAcquireVA_APIMediaSurfacesINTEL);
     CLEXT_GET_EXTENSION(clEnqueueReleaseVA_APIMediaSurfacesINTEL);
-
 #endif // defined(cl_intel_va_api_media_sharing)
 #endif // defined(CLEXT_INCLUDE_VA_API)
+
 #if defined(cl_pocl_content_size)
     CLEXT_GET_EXTENSION(clSetContentSizeBufferPoCL);
-
 #endif // defined(cl_pocl_content_size)
+
 #if defined(cl_qcom_ext_host_ptr)
     CLEXT_GET_EXTENSION(clGetDeviceImageInfoQCOM);
-
 #endif // defined(cl_qcom_ext_host_ptr)
+
 #undef CLEXT_GET_EXTENSION
 }
 

@@ -115,7 +115,7 @@ def getCallArgs(params):
 #define CL_USE_DEPRECATED_OPENCL_2_1_APIS
 #define CL_USE_DEPRECATED_OPENCL_2_2_APIS
 #define CL_USE_DEPRECATED_OPENCL_3_0_APIS
-#include "CL/cl.h"
+#include <CL/cl.h>
 #include <CL/cl_ext.h>
 #if defined(CLEXT_INCLUDE_GL)
 #include <CL/cl_gl.h>
@@ -137,6 +137,9 @@ def getCallArgs(params):
 #if defined(CLEXT_INCLUDE_VA_API)
 #include <CL/cl_va_api_media_sharing_intel.h>
 #endif
+
+// Some headers to not include function prototypes for the DX sharing extensions.
+#include "dx_sharing_prototypes.h"
 
 void call_all(void)
 {

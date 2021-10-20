@@ -152,6 +152,10 @@ def getCParameterStrings(params):
 #include <CL/cl_ext.h>
 #if defined(CLEXT_INCLUDE_GL)
 #include <CL/cl_gl.h>
+// Some versions of the headers to not define cl_khr_gl_event.
+#ifndef cl_khr_gl_event
+#define cl_khr_gl_event 1
+#endif
 #endif
 #if defined(CLEXT_INCLUDE_EGL)
 #include <CL/cl_egl.h>
@@ -422,11 +426,11 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 %    endif
 %  endif
 %endfor
-
 #endif // defined(${extension.get('name')})
 %    if getIfdefCondition(extension.get('name')):
 #endif // defined(${getIfdefCondition(extension.get('name'))})
 %    endif
+
 %  endif
 %endfor
 #undef CLEXT_GET_EXTENSION
