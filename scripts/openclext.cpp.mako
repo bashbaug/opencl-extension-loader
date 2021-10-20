@@ -47,33 +47,40 @@ VA_API_Extensions = {
     }
 
 # Extensions to include in this file:
-def shouldGenerate(extension):
-    if extension in genExtensions:
+def shouldGenerate(name):
+    if name in genExtensions:
         return True
-    elif not genExtensions and not extension in skipExtensions:
+    elif not genExtensions and not name in skipExtensions:
         return True
     return False
 
 # ifdef condition for an extension:
-def getIfdefCondition(extension):
-    if extension in GL_Extensions:
+def getIfdefCondition(name):
+    if name in GL_Extensions:
         return 'CLEXT_INCLUDE_GL'
-    elif extension in EGL_Extensions:
+    elif name in EGL_Extensions:
         return 'CLEXT_INCLUDE_EGL'
-    elif extension in DX9_Extensions:
+    elif name in DX9_Extensions:
         return 'CLEXT_INCLUDE_DX9'
-    elif extension in D3D10_Extensions:
+    elif name in D3D10_Extensions:
         return 'CLEXT_INCLUDE_D3D10'
-    elif extension in D3D11_Extensions:
+    elif name in D3D11_Extensions:
         return 'CLEXT_INCLUDE_D3D11'
-    elif extension in VA_API_Extensions:
+    elif name in VA_API_Extensions:
         return 'CLEXT_INCLUDE_VA_API'
     return None
 
-# XML blocks with functions to include:
+# XML blocks for extensions with functions to include:
 def shouldEmit(block):
     for func in block.findall('command'):
         return True
+    return False
+
+# Extensions with functions to include:
+def hasFunctions(extension):
+    for block in extension.findall('require'):
+        if shouldEmit(block):
+            return True
     return False
 
 # Order the extensions should be emitted in the headers.
@@ -303,14 +310,11 @@ static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
 ***************************************************************/
 
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
-%  if shouldGenerate(extension.get('name')):
+%  if shouldGenerate(extension.get('name')) and hasFunctions(extension):
 %    if getIfdefCondition(extension.get('name')):
 #if defined(${getIfdefCondition(extension.get('name'))})
-
 %    endif
-<%
-    name = extension.get('name')
-%>/* ${name} */
+#if defined(${extension.get('name')})
 %for block in extension.findall('require'):
 %  if shouldEmit(block):
 %    if block.get('condition'):
@@ -337,10 +341,13 @@ typedef ${api.RetType} (CL_API_CALL* ${api.Name}_clextfn)(
 %  endif
 %endfor
 
+#else
+#pragma message("Define for ${extension.get('name')} was not found!  Please update your headers.")
+#endif // defined(${extension.get('name')})
 %    if getIfdefCondition(extension.get('name')):
 #endif // defined(${getIfdefCondition(extension.get('name'))})
-
 %    endif
+
 %  endif
 %endfor
 
@@ -352,14 +359,11 @@ struct openclext_dispatch_table {
     cl_platform_id platform;
 
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
-%  if shouldGenerate(extension.get('name')):
+%  if shouldGenerate(extension.get('name')) and hasFunctions(extension):
 %    if getIfdefCondition(extension.get('name')):
 #if defined(${getIfdefCondition(extension.get('name'))})
-
 %    endif
-<%
-    name = extension.get('name')
-%>    /* ${name} */
+#if defined(${extension.get('name')})
 %for block in extension.findall('require'):
 %  if shouldEmit(block):
 %    if block.get('condition'):
@@ -375,11 +379,11 @@ struct openclext_dispatch_table {
 %    endif
 %  endif
 %endfor
-
+#endif // defined(${extension.get('name')})
 %    if getIfdefCondition(extension.get('name')):
 #endif // defined(${getIfdefCondition(extension.get('name'))})
-
 %    endif
+
 %  endif
 %endfor
 };
@@ -398,14 +402,11 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
             platform, #_funcname);
 
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
-%  if shouldGenerate(extension.get('name')):
+%  if shouldGenerate(extension.get('name')) and hasFunctions(extension):
 %    if getIfdefCondition(extension.get('name')):
 #if defined(${getIfdefCondition(extension.get('name'))})
-
 %    endif
-<%
-    name = extension.get('name')
-%>    /* ${name} */
+#if defined(${extension.get('name')})
 %for block in extension.findall('require'):
 %  if shouldEmit(block):
 %    if block.get('condition'):
@@ -422,9 +423,9 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 %  endif
 %endfor
 
+#endif // defined(${extension.get('name')})
 %    if getIfdefCondition(extension.get('name')):
 #endif // defined(${getIfdefCondition(extension.get('name'))})
-
 %    endif
 %  endif
 %endfor
@@ -496,14 +497,11 @@ extern "C" {
 ***************************************************************/
 
 %for extension in sorted(spec.findall('extensions/extension'), key=getExtensionSortKey):
-%  if shouldGenerate(extension.get('name')):
+%  if shouldGenerate(extension.get('name')) and hasFunctions(extension):
 %    if getIfdefCondition(extension.get('name')):
 #if defined(${getIfdefCondition(extension.get('name'))})
-
 %    endif
-<%
-    name = extension.get('name')
-%>/* ${name} */
+#if defined(${extension.get('name')})
 %for block in extension.findall('require'):
 %  if shouldEmit(block):
 %    if block.get('condition'):
@@ -559,10 +557,12 @@ ${api.RetType} CL_API_CALL ${api.Name}(
 %  endif
 %endfor
 
+#endif // defined(${extension.get('name')})
 %    if getIfdefCondition(extension.get('name')):
 #endif // defined(${getIfdefCondition(extension.get('name'))})
 
 %    endif
+
 %  endif
 %endfor
 #ifdef __cplusplus
