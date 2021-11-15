@@ -185,6 +185,49 @@ static inline cl_platform_id _get_platform(cl_semaphore_khr semaphore)
 
 #endif // defined(cl_khr_semaphore)
 
+#if defined(cl_khr_command_buffer)
+
+static inline cl_platform_id _get_platform(cl_command_buffer_khr cmdbuf)
+{
+    if (cmdbuf == NULL) return NULL;
+
+    cl_uint numQueues = 0;
+    clGetCommandBufferInfoKHR(
+        cmdbuf,
+        CL_COMMAND_BUFFER_INFO_NUM_QUEUES_KHR,
+        sizeof(numQueues),
+        &numQueues,
+        NULL );
+
+    if( numQueues == 1 )    // fast path, no dynamic allocation
+    {
+        cl_command_queue queue = NULL;
+        clGetCommandBufferInfoKHR(
+            cmdbuf,
+            CL_COMMAND_BUFFER_INFO_QUEUES_KHR,
+            sizeof(queue),
+            &queue,
+            NULL );
+        return _get_platform(queue);
+    }
+
+    if( numQueues > 1)      // slower path, dynamic allocation
+    {
+        std::vector<cl_command_queue> queues(numQueues);
+        clGetCommandBufferInfoKHR(
+            cmdbuf,
+            CL_COMMAND_BUFFER_INFO_QUEUES_KHR,
+            numQueues * sizeof(cl_command_queue),
+            queues.data(),
+            NULL );
+        return _get_platform(queues[0]);
+    }
+
+    return NULL;
+}
+
+#endif // defined(cl_khr_command_buffer)
+
 #if defined(cl_intel_accelerator)
 
 static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
@@ -206,6 +249,158 @@ static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
 /***************************************************************
 * Function Pointer Typedefs
 ***************************************************************/
+
+#if defined(cl_khr_command_buffer)
+
+typedef cl_command_buffer_khr (CL_API_CALL* clCreateCommandBufferKHR_clextfn)(
+    cl_uint num_queues,
+    const cl_command_queue* queues,
+    const cl_command_buffer_properties_khr* properties,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clFinalizeCommandBufferKHR_clextfn)(
+    cl_command_buffer_khr command_buffer);
+
+typedef cl_int (CL_API_CALL* clRetainCommandBufferKHR_clextfn)(
+    cl_command_buffer_khr command_buffer);
+
+typedef cl_int (CL_API_CALL* clReleaseCommandBufferKHR_clextfn)(
+    cl_command_buffer_khr command_buffer);
+
+typedef cl_int (CL_API_CALL* clEnqueueCommandBufferKHR_clextfn)(
+    cl_uint num_queues,
+    cl_command_queue* queues,
+    cl_command_buffer_khr command_buffer,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clCommandBarrierWithWaitListKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandCopyBufferKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_buffer,
+    cl_mem dst_buffer,
+    size_t src_offset,
+    size_t dst_offset,
+    size_t size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandCopyBufferRectKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_buffer,
+    cl_mem dst_buffer,
+    const size_t* src_origin,
+    const size_t* dst_origin,
+    const size_t* region,
+    size_t src_row_pitch,
+    size_t src_slice_pitch,
+    size_t dst_row_pitch,
+    size_t dst_slice_pitch,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandCopyBufferToImageKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_buffer,
+    cl_mem dst_image,
+    size_t src_offset,
+    const size_t* dst_origin,
+    const size_t* region,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandCopyImageKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_image,
+    cl_mem dst_image,
+    const size_t* src_origin,
+    const size_t* dst_origin,
+    const size_t* region,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandCopyImageToBufferKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_image,
+    cl_mem dst_buffer,
+    const size_t* src_origin,
+    const size_t* region,
+    size_t dst_offset,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandFillBufferKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem buffer,
+    const void* pattern,
+    size_t pattern_size,
+    size_t offset,
+    size_t size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandFillImageKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem image,
+    const void* fill_color,
+    const size_t* origin,
+    const size_t* region,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandNDRangeKernelKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    const cl_ndrange_kernel_command_properties_khr* properties,
+    cl_kernel kernel,
+    cl_uint work_dim,
+    const size_t* global_work_offset,
+    const size_t* global_work_size,
+    const size_t* local_work_size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clGetCommandBufferInfoKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_buffer_info_khr param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret);
+
+#else
+#pragma message("Define for cl_khr_command_buffer was not found!  Please update your headers.")
+#endif // defined(cl_khr_command_buffer)
 
 #if defined(cl_khr_create_command_queue)
 
@@ -1066,6 +1261,24 @@ typedef cl_int (CL_API_CALL* clGetDeviceImageInfoQCOM_clextfn)(
 struct openclext_dispatch_table {
     cl_platform_id platform;
 
+#if defined(cl_khr_command_buffer)
+    clCreateCommandBufferKHR_clextfn clCreateCommandBufferKHR;
+    clFinalizeCommandBufferKHR_clextfn clFinalizeCommandBufferKHR;
+    clRetainCommandBufferKHR_clextfn clRetainCommandBufferKHR;
+    clReleaseCommandBufferKHR_clextfn clReleaseCommandBufferKHR;
+    clEnqueueCommandBufferKHR_clextfn clEnqueueCommandBufferKHR;
+    clCommandBarrierWithWaitListKHR_clextfn clCommandBarrierWithWaitListKHR;
+    clCommandCopyBufferKHR_clextfn clCommandCopyBufferKHR;
+    clCommandCopyBufferRectKHR_clextfn clCommandCopyBufferRectKHR;
+    clCommandCopyBufferToImageKHR_clextfn clCommandCopyBufferToImageKHR;
+    clCommandCopyImageKHR_clextfn clCommandCopyImageKHR;
+    clCommandCopyImageToBufferKHR_clextfn clCommandCopyImageToBufferKHR;
+    clCommandFillBufferKHR_clextfn clCommandFillBufferKHR;
+    clCommandFillImageKHR_clextfn clCommandFillImageKHR;
+    clCommandNDRangeKernelKHR_clextfn clCommandNDRangeKernelKHR;
+    clGetCommandBufferInfoKHR_clextfn clGetCommandBufferInfoKHR;
+#endif // defined(cl_khr_command_buffer)
+
 #if defined(cl_khr_create_command_queue)
     clCreateCommandQueueWithPropertiesKHR_clextfn clCreateCommandQueueWithPropertiesKHR;
 #endif // defined(cl_khr_create_command_queue)
@@ -1292,6 +1505,24 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     dispatch_ptr->_funcname =                                                  \
         (_funcname##_clextfn)clGetExtensionFunctionAddressForPlatform(         \
             platform, #_funcname);
+
+#if defined(cl_khr_command_buffer)
+    CLEXT_GET_EXTENSION(clCreateCommandBufferKHR);
+    CLEXT_GET_EXTENSION(clFinalizeCommandBufferKHR);
+    CLEXT_GET_EXTENSION(clRetainCommandBufferKHR);
+    CLEXT_GET_EXTENSION(clReleaseCommandBufferKHR);
+    CLEXT_GET_EXTENSION(clEnqueueCommandBufferKHR);
+    CLEXT_GET_EXTENSION(clCommandBarrierWithWaitListKHR);
+    CLEXT_GET_EXTENSION(clCommandCopyBufferKHR);
+    CLEXT_GET_EXTENSION(clCommandCopyBufferRectKHR);
+    CLEXT_GET_EXTENSION(clCommandCopyBufferToImageKHR);
+    CLEXT_GET_EXTENSION(clCommandCopyImageKHR);
+    CLEXT_GET_EXTENSION(clCommandCopyImageToBufferKHR);
+    CLEXT_GET_EXTENSION(clCommandFillBufferKHR);
+    CLEXT_GET_EXTENSION(clCommandFillImageKHR);
+    CLEXT_GET_EXTENSION(clCommandNDRangeKernelKHR);
+    CLEXT_GET_EXTENSION(clGetCommandBufferInfoKHR);
+#endif // defined(cl_khr_command_buffer)
 
 #if defined(cl_khr_create_command_queue)
     CLEXT_GET_EXTENSION(clCreateCommandQueueWithPropertiesKHR);
@@ -1571,6 +1802,378 @@ extern "C" {
 /***************************************************************
 * Extension Functions
 ***************************************************************/
+
+#if defined(cl_khr_command_buffer)
+
+cl_command_buffer_khr CL_API_CALL clCreateCommandBufferKHR(
+    cl_uint num_queues,
+    const cl_command_queue* queues,
+    const cl_command_buffer_properties_khr* properties,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(num_queues > 0 && queues ? queues[0] : NULL);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCreateCommandBufferKHR == NULL) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return NULL;
+    }
+    return dispatch_ptr->clCreateCommandBufferKHR(
+        num_queues,
+        queues,
+        properties,
+        errcode_ret);
+}
+
+cl_int CL_API_CALL clFinalizeCommandBufferKHR(
+    cl_command_buffer_khr command_buffer)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clFinalizeCommandBufferKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clFinalizeCommandBufferKHR(
+        command_buffer);
+}
+
+cl_int CL_API_CALL clRetainCommandBufferKHR(
+    cl_command_buffer_khr command_buffer)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clRetainCommandBufferKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clRetainCommandBufferKHR(
+        command_buffer);
+}
+
+cl_int CL_API_CALL clReleaseCommandBufferKHR(
+    cl_command_buffer_khr command_buffer)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clReleaseCommandBufferKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clReleaseCommandBufferKHR(
+        command_buffer);
+}
+
+cl_int CL_API_CALL clEnqueueCommandBufferKHR(
+    cl_uint num_queues,
+    cl_command_queue* queues,
+    cl_command_buffer_khr command_buffer,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueCommandBufferKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueCommandBufferKHR(
+        num_queues,
+        queues,
+        command_buffer,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int CL_API_CALL clCommandBarrierWithWaitListKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandBarrierWithWaitListKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandBarrierWithWaitListKHR(
+        command_buffer,
+        command_queue,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandCopyBufferKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_buffer,
+    cl_mem dst_buffer,
+    size_t src_offset,
+    size_t dst_offset,
+    size_t size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandCopyBufferKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandCopyBufferKHR(
+        command_buffer,
+        command_queue,
+        src_buffer,
+        dst_buffer,
+        src_offset,
+        dst_offset,
+        size,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandCopyBufferRectKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_buffer,
+    cl_mem dst_buffer,
+    const size_t* src_origin,
+    const size_t* dst_origin,
+    const size_t* region,
+    size_t src_row_pitch,
+    size_t src_slice_pitch,
+    size_t dst_row_pitch,
+    size_t dst_slice_pitch,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandCopyBufferRectKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandCopyBufferRectKHR(
+        command_buffer,
+        command_queue,
+        src_buffer,
+        dst_buffer,
+        src_origin,
+        dst_origin,
+        region,
+        src_row_pitch,
+        src_slice_pitch,
+        dst_row_pitch,
+        dst_slice_pitch,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandCopyBufferToImageKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_buffer,
+    cl_mem dst_image,
+    size_t src_offset,
+    const size_t* dst_origin,
+    const size_t* region,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandCopyBufferToImageKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandCopyBufferToImageKHR(
+        command_buffer,
+        command_queue,
+        src_buffer,
+        dst_image,
+        src_offset,
+        dst_origin,
+        region,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandCopyImageKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_image,
+    cl_mem dst_image,
+    const size_t* src_origin,
+    const size_t* dst_origin,
+    const size_t* region,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandCopyImageKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandCopyImageKHR(
+        command_buffer,
+        command_queue,
+        src_image,
+        dst_image,
+        src_origin,
+        dst_origin,
+        region,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandCopyImageToBufferKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem src_image,
+    cl_mem dst_buffer,
+    const size_t* src_origin,
+    const size_t* region,
+    size_t dst_offset,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandCopyImageToBufferKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandCopyImageToBufferKHR(
+        command_buffer,
+        command_queue,
+        src_image,
+        dst_buffer,
+        src_origin,
+        region,
+        dst_offset,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandFillBufferKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem buffer,
+    const void* pattern,
+    size_t pattern_size,
+    size_t offset,
+    size_t size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandFillBufferKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandFillBufferKHR(
+        command_buffer,
+        command_queue,
+        buffer,
+        pattern,
+        pattern_size,
+        offset,
+        size,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandFillImageKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    cl_mem image,
+    const void* fill_color,
+    const size_t* origin,
+    const size_t* region,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandFillImageKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandFillImageKHR(
+        command_buffer,
+        command_queue,
+        image,
+        fill_color,
+        origin,
+        region,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandNDRangeKernelKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    const cl_ndrange_kernel_command_properties_khr* properties,
+    cl_kernel kernel,
+    cl_uint work_dim,
+    const size_t* global_work_offset,
+    const size_t* global_work_size,
+    const size_t* local_work_size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clCommandNDRangeKernelKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandNDRangeKernelKHR(
+        command_buffer,
+        command_queue,
+        properties,
+        kernel,
+        work_dim,
+        global_work_offset,
+        global_work_size,
+        local_work_size,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clGetCommandBufferInfoKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_buffer_info_khr param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetCommandBufferInfoKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetCommandBufferInfoKHR(
+        command_buffer,
+        param_name,
+        param_value_size,
+        param_value,
+        param_value_size_ret);
+}
+
+#endif // defined(cl_khr_command_buffer)
 
 #if defined(cl_khr_create_command_queue)
 

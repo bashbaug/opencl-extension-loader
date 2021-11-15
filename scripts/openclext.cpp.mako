@@ -291,6 +291,49 @@ static inline cl_platform_id _get_platform(cl_semaphore_khr semaphore)
 
 #endif // defined(cl_khr_semaphore)
 
+#if defined(cl_khr_command_buffer)
+
+static inline cl_platform_id _get_platform(cl_command_buffer_khr cmdbuf)
+{
+    if (cmdbuf == NULL) return NULL;
+
+    cl_uint numQueues = 0;
+    clGetCommandBufferInfoKHR(
+        cmdbuf,
+        CL_COMMAND_BUFFER_INFO_NUM_QUEUES_KHR,
+        sizeof(numQueues),
+        &numQueues,
+        NULL );
+
+    if( numQueues == 1 )    // fast path, no dynamic allocation
+    {
+        cl_command_queue queue = NULL;
+        clGetCommandBufferInfoKHR(
+            cmdbuf,
+            CL_COMMAND_BUFFER_INFO_QUEUES_KHR,
+            sizeof(queue),
+            &queue,
+            NULL );
+        return _get_platform(queue);
+    }
+
+    if( numQueues > 1)      // slower path, dynamic allocation
+    {
+        std::vector<cl_command_queue> queues(numQueues);
+        clGetCommandBufferInfoKHR(
+            cmdbuf,
+            CL_COMMAND_BUFFER_INFO_QUEUES_KHR,
+            numQueues * sizeof(cl_command_queue),
+            queues.data(),
+            NULL );
+        return _get_platform(queues[0]);
+    }
+
+    return NULL;
+}
+
+#endif // defined(cl_khr_command_buffer)
+
 #if defined(cl_intel_accelerator)
 
 static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
@@ -525,7 +568,13 @@ ${api.RetType} CL_API_CALL ${api.Name}(
 %        endif
 %      endfor
 {
+%      if api.Name == "clCreateCommandBufferKHR":
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(${api.Params[0].Name} > 0 && ${api.Params[1].Name} ? ${api.Params[1].Name}[0] : NULL);
+%      elif api.Name == "clEnqueueCommandBufferKHR":
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(${api.Params[2].Name});
+%      else:
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(${api.Params[0].Name});
+%      endif
     if (dispatch_ptr == NULL || dispatch_ptr->${api.Name} == NULL) {
 %      if api.RetType == "cl_int":
         return CL_INVALID_OPERATION;

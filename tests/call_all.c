@@ -33,6 +33,24 @@
 
 void call_all(void)
 {
+#ifdef cl_khr_command_buffer
+    clCreateCommandBufferKHR(0, NULL, NULL, NULL);
+    clFinalizeCommandBufferKHR(NULL);
+    clRetainCommandBufferKHR(NULL);
+    clReleaseCommandBufferKHR(NULL);
+    clEnqueueCommandBufferKHR(0, NULL, NULL, 0, NULL, NULL);
+    clCommandBarrierWithWaitListKHR(NULL, NULL, 0, NULL, NULL, NULL);
+    clCommandCopyBufferKHR(NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL);
+    clCommandCopyBufferRectKHR(NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL);
+    clCommandCopyBufferToImageKHR(NULL, NULL, NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL);
+    clCommandCopyImageKHR(NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL);
+    clCommandCopyImageToBufferKHR(NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL);
+    clCommandFillBufferKHR(NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL);
+    clCommandFillImageKHR(NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL);
+    clCommandNDRangeKernelKHR(NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, NULL, NULL);
+    clGetCommandBufferInfoKHR(NULL, CL_COMMAND_BUFFER_INFO_REFERENCE_COUNT_KHR, 0, NULL, NULL);
+#endif // cl_khr_command_buffer
+
 #ifdef cl_khr_create_command_queue
     clCreateCommandQueueWithPropertiesKHR(NULL, NULL, NULL, NULL);
 #endif // cl_khr_create_command_queue
