@@ -300,7 +300,7 @@ static inline cl_platform_id _get_platform(cl_command_buffer_khr cmdbuf)
     cl_uint numQueues = 0;
     clGetCommandBufferInfoKHR(
         cmdbuf,
-        CL_COMMAND_BUFFER_INFO_NUM_QUEUES_KHR,
+        CL_COMMAND_BUFFER_NUM_QUEUES_KHR,
         sizeof(numQueues),
         &numQueues,
         NULL );
@@ -310,7 +310,7 @@ static inline cl_platform_id _get_platform(cl_command_buffer_khr cmdbuf)
         cl_command_queue queue = NULL;
         clGetCommandBufferInfoKHR(
             cmdbuf,
-            CL_COMMAND_BUFFER_INFO_QUEUES_KHR,
+            CL_COMMAND_BUFFER_QUEUES_KHR,
             sizeof(queue),
             &queue,
             NULL );
@@ -322,7 +322,7 @@ static inline cl_platform_id _get_platform(cl_command_buffer_khr cmdbuf)
         std::vector<cl_command_queue> queues(numQueues);
         clGetCommandBufferInfoKHR(
             cmdbuf,
-            CL_COMMAND_BUFFER_INFO_QUEUES_KHR,
+            CL_COMMAND_BUFFER_QUEUES_KHR,
             numQueues * sizeof(cl_command_queue),
             queues.data(),
             NULL );

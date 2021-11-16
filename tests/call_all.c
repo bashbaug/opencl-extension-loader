@@ -48,7 +48,7 @@ void call_all(void)
     clCommandFillBufferKHR(NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL);
     clCommandFillImageKHR(NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL);
     clCommandNDRangeKernelKHR(NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, NULL, NULL);
-    clGetCommandBufferInfoKHR(NULL, CL_COMMAND_BUFFER_INFO_REFERENCE_COUNT_KHR, 0, NULL, NULL);
+    clGetCommandBufferInfoKHR(NULL, CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR, 0, NULL, NULL);
 #endif // cl_khr_command_buffer
 
 #ifdef cl_khr_create_command_queue
