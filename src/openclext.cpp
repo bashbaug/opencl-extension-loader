@@ -167,85 +167,6 @@ static inline cl_platform_id _get_platform(cl_mem memobj)
     return _get_platform(context);
 }
 
-#if defined(cl_khr_semaphore)
-
-static inline cl_platform_id _get_platform(cl_semaphore_khr semaphore)
-{
-    if (semaphore == NULL) return NULL;
-
-    cl_context context = NULL;
-    clGetSemaphoreInfoKHR(
-        semaphore,
-        CL_SEMAPHORE_CONTEXT_KHR,
-        sizeof(context),
-        &context,
-        NULL);
-    return _get_platform(context);
-}
-
-#endif // defined(cl_khr_semaphore)
-
-#if defined(cl_khr_command_buffer)
-
-static inline cl_platform_id _get_platform(cl_command_buffer_khr cmdbuf)
-{
-    if (cmdbuf == NULL) return NULL;
-
-    cl_uint numQueues = 0;
-    clGetCommandBufferInfoKHR(
-        cmdbuf,
-        CL_COMMAND_BUFFER_NUM_QUEUES_KHR,
-        sizeof(numQueues),
-        &numQueues,
-        NULL );
-
-    if( numQueues == 1 )    // fast path, no dynamic allocation
-    {
-        cl_command_queue queue = NULL;
-        clGetCommandBufferInfoKHR(
-            cmdbuf,
-            CL_COMMAND_BUFFER_QUEUES_KHR,
-            sizeof(queue),
-            &queue,
-            NULL );
-        return _get_platform(queue);
-    }
-
-    if( numQueues > 1)      // slower path, dynamic allocation
-    {
-        std::vector<cl_command_queue> queues(numQueues);
-        clGetCommandBufferInfoKHR(
-            cmdbuf,
-            CL_COMMAND_BUFFER_QUEUES_KHR,
-            numQueues * sizeof(cl_command_queue),
-            queues.data(),
-            NULL );
-        return _get_platform(queues[0]);
-    }
-
-    return NULL;
-}
-
-#endif // defined(cl_khr_command_buffer)
-
-#if defined(cl_intel_accelerator)
-
-static inline cl_platform_id _get_platform(cl_accelerator_intel accelerator)
-{
-    if (accelerator == NULL) return NULL;
-
-    cl_context context = NULL;
-    clGetAcceleratorInfoINTEL(
-        accelerator,
-        CL_ACCELERATOR_CONTEXT_INTEL,
-        sizeof(context),
-        &context,
-        NULL);
-    return _get_platform(context);
-}
-
-#endif // defined(cl_intel_accelerator)
-
 /***************************************************************
 * Function Pointer Typedefs
 ***************************************************************/
@@ -1740,6 +1661,7 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 }
 
 #if defined(CLEXT_SINGLE_PLATFORM_ONLY)
+
 static openclext_dispatch_table _dispatch = {0};
 static openclext_dispatch_table* _dispatch_ptr = NULL;
 
@@ -1753,7 +1675,37 @@ static inline openclext_dispatch_table* _get_dispatch(T object)
     }
     return _dispatch_ptr;
 }
+
+// For some extension objects we cannot reliably query a platform ID without
+// infinitely recursing.  For these objects we cannot initialize the dispatch
+// table if it is not already initialized.
+
+#if defined(cl_khr_semaphore)
+template<>
+static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr)
+{
+    return _dispatch_ptr;
+}
+#endif // defined(cl_khr_semaphore)
+
+#if defined(cl_khr_command_buffer)
+template<>
+static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr)
+{
+    return _dispatch_ptr;
+}
+#endif // defined(cl_khr_command_buffer)
+
+#if defined(cl_intel_accelerator)
+template<>
+static inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel)
+{
+    return _dispatch_ptr;
+}
+#endif // defined(cl_intel_accelerator)
+
 #else // defined(CLEXT_SINGLE_PLATFORM_ONLY)
+
 static size_t _num_platforms = 0;
 static openclext_dispatch_table* _dispatch_array = NULL;
 
@@ -1793,6 +1745,93 @@ static openclext_dispatch_table* _get_dispatch(T object)
 
     return NULL;
 }
+
+// For some extension objects we cannot reliably query a platform ID without
+// infinitely recursing.  For these objects we cannot initialize the dispatch
+// table if it is not already initialized, and we need to use other methods
+// to find the right dispatch table.
+
+#if defined(cl_khr_semaphore)
+template<>
+static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr semaphore)
+{
+    if (semaphore == NULL) return NULL;
+
+    for (size_t i = 0; i < _num_platforms; i++) {
+        openclext_dispatch_table* dispatch_ptr =
+            _dispatch_array + i;
+        if (dispatch_ptr->clGetSemaphoreInfoKHR) {
+            cl_uint refCount = 0;
+            cl_int errorCode = dispatch_ptr->clGetSemaphoreInfoKHR(
+                semaphore,
+                CL_SEMAPHORE_REFERENCE_COUNT_KHR,
+                sizeof(refCount),
+                &refCount,
+                NULL);
+            if (errorCode == CL_SUCCESS) {
+                return dispatch_ptr;
+            }
+        }
+    }
+
+    return NULL;
+}
+#endif // defined(cl_khr_semaphore)
+
+#if defined(cl_khr_command_buffer)
+template<>
+static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr cmdbuf)
+{
+    if (cmdbuf == NULL) return NULL;
+
+    for (size_t i = 0; i < _num_platforms; i++) {
+        openclext_dispatch_table* dispatch_ptr =
+            _dispatch_array + i;
+        if (dispatch_ptr->clGetCommandBufferInfoKHR) {
+            cl_uint refCount = 0;
+            cl_int errorCode = dispatch_ptr->clGetCommandBufferInfoKHR(
+                cmdbuf,
+                CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR,
+                sizeof(refCount),
+                &refCount,
+                NULL);
+            if (errorCode == CL_SUCCESS) {
+                return dispatch_ptr;
+            }
+        }
+    }
+
+    return NULL;
+}
+#endif // defined(cl_khr_command_buffer)
+
+#if defined(cl_intel_accelerator)
+template<>
+static inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel accelerator)
+{
+    if (accelerator == NULL) return NULL;
+
+    for (size_t i = 0; i < _num_platforms; i++) {
+        openclext_dispatch_table* dispatch_ptr =
+            _dispatch_array + i;
+        if (dispatch_ptr->clGetAcceleratorInfoINTEL) {
+            cl_uint refCount = 0;
+            cl_int errorCode = dispatch_ptr->clGetAcceleratorInfoINTEL(
+                accelerator,
+                CL_ACCELERATOR_REFERENCE_COUNT_INTEL,
+                sizeof(refCount),
+                &refCount,
+                NULL);
+            if (errorCode == CL_SUCCESS) {
+                return dispatch_ptr;
+            }
+        }
+    }
+
+    return NULL;
+}
+#endif // defined(cl_intel_accelerator)
+
 #endif // defined(CLEXT_SINGLE_PLATFORM_ONLY)
 
 #ifdef __cplusplus
