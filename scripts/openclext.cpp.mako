@@ -425,7 +425,7 @@ static inline openclext_dispatch_table* _get_dispatch(T object)
 
 #if defined(cl_khr_semaphore)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr)
+inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr)
 {
     return _dispatch_ptr;
 }
@@ -433,7 +433,7 @@ static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semap
 
 #if defined(cl_khr_command_buffer)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr)
+inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr)
 {
     return _dispatch_ptr;
 }
@@ -441,7 +441,7 @@ static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_
 
 #if defined(cl_intel_accelerator)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel)
+inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel)
 {
     return _dispatch_ptr;
 }
@@ -499,7 +499,7 @@ static openclext_dispatch_table* _get_dispatch(T object)
 
 #if defined(cl_khr_semaphore)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr semaphore)
+inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr semaphore)
 {
     if (semaphore == NULL) return NULL;
     if (_num_platforms <= 1) return _dispatch_array;
@@ -527,7 +527,7 @@ static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semap
 
 #if defined(cl_khr_command_buffer)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr cmdbuf)
+inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr cmdbuf)
 {
     if (cmdbuf == NULL) return NULL;
     if (_num_platforms <= 1) return _dispatch_array;
@@ -555,7 +555,7 @@ static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_
 
 #if defined(cl_intel_accelerator)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel accelerator)
+inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel accelerator)
 {
     if (accelerator == NULL) return NULL;
     if (_num_platforms <= 1) return _dispatch_array;

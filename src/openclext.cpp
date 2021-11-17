@@ -1668,11 +1668,14 @@ static openclext_dispatch_table* _dispatch_ptr = NULL;
 template<typename T>
 static inline openclext_dispatch_table* _get_dispatch(T object)
 {
+    if (object == NULL) return NULL;
+
     if (_dispatch_ptr == NULL) {
         cl_platform_id platform = _get_platform(object);
         _init(platform, &_dispatch);
         _dispatch_ptr = &_dispatch;
     }
+
     return _dispatch_ptr;
 }
 
@@ -1682,7 +1685,7 @@ static inline openclext_dispatch_table* _get_dispatch(T object)
 
 #if defined(cl_khr_semaphore)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr)
+inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr)
 {
     return _dispatch_ptr;
 }
@@ -1690,7 +1693,7 @@ static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semap
 
 #if defined(cl_khr_command_buffer)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr)
+inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr)
 {
     return _dispatch_ptr;
 }
@@ -1698,7 +1701,7 @@ static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_
 
 #if defined(cl_intel_accelerator)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel)
+inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel)
 {
     return _dispatch_ptr;
 }
@@ -1715,6 +1718,9 @@ static openclext_dispatch_table* _get_dispatch(T object)
     if (_num_platforms == 0 && _dispatch_array == NULL) {
         cl_uint numPlatforms = 0;
         clGetPlatformIDs(0, NULL, &numPlatforms);
+        if (numPlatforms == 0) {
+            return NULL;
+        }
 
         openclext_dispatch_table* dispatch =
             (openclext_dispatch_table*)malloc(
@@ -1753,9 +1759,10 @@ static openclext_dispatch_table* _get_dispatch(T object)
 
 #if defined(cl_khr_semaphore)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr semaphore)
+inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semaphore_khr semaphore)
 {
     if (semaphore == NULL) return NULL;
+    if (_num_platforms <= 1) return _dispatch_array;
 
     for (size_t i = 0; i < _num_platforms; i++) {
         openclext_dispatch_table* dispatch_ptr =
@@ -1780,9 +1787,10 @@ static inline openclext_dispatch_table* _get_dispatch<cl_semaphore_khr>(cl_semap
 
 #if defined(cl_khr_command_buffer)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr cmdbuf)
+inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command_buffer_khr cmdbuf)
 {
     if (cmdbuf == NULL) return NULL;
+    if (_num_platforms <= 1) return _dispatch_array;
 
     for (size_t i = 0; i < _num_platforms; i++) {
         openclext_dispatch_table* dispatch_ptr =
@@ -1807,9 +1815,10 @@ static inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_
 
 #if defined(cl_intel_accelerator)
 template<>
-static inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel accelerator)
+inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel accelerator)
 {
     if (accelerator == NULL) return NULL;
+    if (_num_platforms <= 1) return _dispatch_array;
 
     for (size_t i = 0; i < _num_platforms; i++) {
         openclext_dispatch_table* dispatch_ptr =
