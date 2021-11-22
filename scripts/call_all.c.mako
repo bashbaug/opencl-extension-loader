@@ -15,6 +15,7 @@ skipExtensions = {
 defaultValueForType = {
     # Handle Types
     'cl_accelerator_intel'              : 'NULL',
+    'cl_command_buffer_khr'             : 'NULL',
     'cl_command_queue'                  : 'NULL',
     'cl_context'                        : 'NULL',
     'cl_device_id'                      : 'NULL',
@@ -38,6 +39,7 @@ defaultValueForType = {
     'cl_accelerator_info_intel'         : 'CL_ACCELERATOR_DESCRIPTOR_INTEL',
     'cl_accelerator_type_intel'         : '0',
     'cl_bool'                           : 'CL_FALSE',
+    'cl_command_buffer_info_khr'        : 'CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR',
     'cl_d3d10_device_source_khr'        : 'CL_D3D10_DEVICE_KHR',
     'cl_d3d10_device_set_khr'           : 'CL_ALL_DEVICES_FOR_D3D10_KHR',
     'cl_d3d11_device_source_khr'        : 'CL_D3D11_DEVICE_KHR',
