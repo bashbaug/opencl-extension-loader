@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 # Note: cmake 3.7 is needed to use OpenCL::OpenCL.
+# Older versions may work by explicitly specifying OpenCL_INCLUDE_DIRS and OpenCL_LIBRARIES.
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -63,8 +64,18 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_target_properties(extension_loader_copy PROPERTIES FOLDER "OpenCLExtensionLoader/Generation")
 endif()
 
-if (NOT TARGET OpenCL::OpenCL)
-    find_package(OpenCL)
+if (OpenCL_INCLUDE_DIRS AND OpenCL_LIBRARIES)
+    message(STATUS "Using inherited OpenCL_INCLUDE_DIRS and OpenCL_LIBRARIES")
+    set(OPENCL_EXTENSION_LOADER_INCLUDE_DIRS ${OpenCL_INCLUDE_DIRS})
+    set(OPENCL_EXTENSION_LOADER_LIBRARIES ${OpenCL_LIBRARIES})
+else()
+    if (NOT TARGET OpenCL::OpenCL)
+        find_package(OpenCL)
+    endif()
+    if (NOT TARGET OpenCL::OpenCL)
+        message(STATUS "OpenCL was not found!")
+    endif()
+    set(OPENCL_EXTENSION_LOADER_LIBRARIES OpenCL::OpenCL)
 endif()
 
 set( OpenCLExtensionLoader_SOURCE_FILES
@@ -81,6 +92,7 @@ endif()
 add_library(OpenCL::OpenCLExt ALIAS OpenCLExt)
 set_target_properties(OpenCLExt PROPERTIES FOLDER "OpenCLExtensionLoader")
 set_target_properties(OpenCLExt PROPERTIES VERSION "0.9" SOVERSION "0")
+target_include_directories(OpenCLExt SYSTEM PUBLIC ${OPENCL_EXTENSION_LOADER_INCLUDE_DIRS})
 target_compile_definitions(OpenCLExt PRIVATE CL_TARGET_OPENCL_VERSION=300)
 if (OPENCL_EXTENSION_LOADER_SINGLE_PLATFORM_ONLY)
     target_compile_definitions(OpenCLExt PRIVATE CLEXT_SINGLE_PLATFORM_ONLY)
@@ -103,7 +115,7 @@ endif()
 if (OPENCL_EXTENSION_LOADER_INCLUDE_VA_API)
     target_compile_definitions(OpenCLExt PRIVATE CLEXT_INCLUDE_VA_API)
 endif()
-target_link_libraries(OpenCLExt PRIVATE OpenCL::OpenCL)
+target_link_libraries(OpenCLExt PRIVATE ${OPENCL_EXTENSION_LOADER_LIBRARIES})
 
 if (MSVC)
     #/EHs enable C++ EH (no SEH exceptions)
