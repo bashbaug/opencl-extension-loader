@@ -32,7 +32,7 @@ project(OpenCLExtensionLoader
 option (BUILD_SHARED_LIBS "Build shared libs" ON)
 option (OPENCL_EXTENSION_LOADER_FORCE_STATIC_LIB "Unconditionally Build a Static Library" ON)
 option (OPENCL_EXTENSION_LOADER_SINGLE_PLATFORM_ONLY "Only Support Extensions from a Single OpenCL Platform" OFF)
-option (OPENCL_EXTENSION_LOADER_INSTALL         "Generate Installation Target" ON)
+option (OPENCL_EXTENSION_LOADER_INSTALL         "Generate Installation Target" OFF)
 option (OPENCL_EXTENSION_LOADER_INCLUDE_GL      "Include OpenGL Extension APIs" ON)
 option (OPENCL_EXTENSION_LOADER_INCLUDE_EGL     "Include EGL Extension APIs" ON)
 option (OPENCL_EXTENSION_LOADER_INCLUDE_DX9     "Include DirectX 9 Extension APIs" OFF)
