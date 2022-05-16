@@ -65,7 +65,7 @@ See your CMake documentation for more details.
 |OPENCL\_EXTENSION\_LOADER\_INCLUDE\_D3D10         | BOOL | Include Direct3D 10 Interop Extension APIs.  Requires DirectX 10 Headers.  Default: `FALSE`
 |OPENCL\_EXTENSION\_LOADER\_INCLUDE\_D3D11         | BOOL | Include Direct3D 11 Interop Extension APIs.  Required DirectX 11 Headers.  Default: `FALSE`
 |OPENCL\_EXTENSION\_LOADER\_INCLUDE\_VA\_API       | BOOL | Include VA_API Interop Extension APIs.  Requires support for VA_API Headers.  Default: `FALSE`
-|OPENCL\_EXTENSION\_LOADER\_XML\_PATH              | PATH | Path to cl.xml for OpenCL Extension Loader generation.  Default: None.
+|OPENCL\_EXTENSION\_LOADER\_XML\_PATH              | FILEPATH | Full path to an XML file (e.g. `cl.xml`) for OpenCL Extension Loader generation.  Default: None.
 
 ---
 
