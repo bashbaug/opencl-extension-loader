@@ -185,6 +185,11 @@ void call_all(void)
     clEnqueueReleaseDX9ObjectsINTEL(NULL, 0, NULL, 0, NULL, NULL);
 #endif // cl_intel_dx9_media_sharing
 
+#ifdef cl_intel_program_scope_host_pipe
+    clEnqueueReadHostPipeINTEL(NULL, NULL, NULL, CL_FALSE, NULL, 0, 0, NULL, NULL);
+    clEnqueueWriteHostPipeINTEL(NULL, NULL, NULL, CL_FALSE, NULL, 0, 0, NULL, NULL);
+#endif // cl_intel_program_scope_host_pipe
+
 #ifdef cl_intel_sharing_format_query_d3d10
     clGetSupportedD3D10TextureFormatsINTEL(NULL, CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE2D, 0, NULL, NULL);
 #endif // cl_intel_sharing_format_query_d3d10
@@ -213,7 +218,6 @@ void call_all(void)
     clMemBlockingFreeINTEL(NULL, NULL);
     clGetMemAllocInfoINTEL(NULL, NULL, CL_MEM_ALLOC_TYPE_INTEL, 0, NULL, NULL);
     clSetKernelArgMemPointerINTEL(NULL, 0, NULL);
-    clEnqueueMemsetINTEL(NULL, NULL, 0, 0, 0, NULL, NULL);
     clEnqueueMemFillINTEL(NULL, NULL, NULL, 0, 0, 0, NULL, NULL);
     clEnqueueMemcpyINTEL(NULL, CL_FALSE, NULL, NULL, 0, 0, NULL, NULL);
     clEnqueueMemAdviseINTEL(NULL, NULL, 0, 0, 0, NULL, NULL);
@@ -223,6 +227,10 @@ void call_all(void)
 #if defined(CL_VERSION_1_2)
     clEnqueueMigrateMemINTEL(NULL, NULL, 0, CL_MIGRATE_MEM_OBJECT_HOST, 0, NULL, NULL);
 #endif // defined(CL_VERSION_1_2)
+#endif // cl_intel_unified_shared_memory
+
+#ifdef cl_intel_unified_shared_memory
+    clEnqueueMemsetINTEL(NULL, NULL, 0, 0, 0, NULL, NULL);
 #endif // cl_intel_unified_shared_memory
 
 #ifdef cl_intel_va_api_media_sharing
