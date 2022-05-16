@@ -924,6 +924,34 @@ typedef cl_int (CL_API_CALL* clEnqueueReleaseDX9ObjectsINTEL_clextfn)(
 #endif // defined(cl_intel_dx9_media_sharing)
 #endif // defined(CLEXT_INCLUDE_DX9)
 
+#if defined(cl_intel_program_scope_host_pipe)
+
+typedef cl_int (CL_API_CALL* clEnqueueReadHostPipeINTEL_clextfn)(
+    cl_command_queue command_queue,
+    cl_program program,
+    const char* pipe_symbol,
+    cl_bool blocking_read,
+    void* ptr,
+    size_t size,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+typedef cl_int (CL_API_CALL* clEnqueueWriteHostPipeINTEL_clextfn)(
+    cl_command_queue command_queue,
+    cl_program program,
+    const char* pipe_symbol,
+    cl_bool blocking_write,
+    const void* ptr,
+    size_t size,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
+#else
+#pragma message("Define for cl_intel_program_scope_host_pipe was not found!  Please update your headers.")
+#endif // defined(cl_intel_program_scope_host_pipe)
+
 #if defined(CLEXT_INCLUDE_D3D10)
 #if defined(cl_intel_sharing_format_query_d3d10)
 
@@ -1053,15 +1081,6 @@ typedef cl_int (CL_API_CALL* clSetKernelArgMemPointerINTEL_clextfn)(
     cl_uint arg_index,
     const void* arg_value);
 
-typedef cl_int (CL_API_CALL* clEnqueueMemsetINTEL_clextfn)(
-    cl_command_queue command_queue,
-    void* dst_ptr,
-    cl_int value,
-    size_t size,
-    cl_uint num_events_in_wait_list,
-    const cl_event* event_wait_list,
-    cl_event* event);
-
 typedef cl_int (CL_API_CALL* clEnqueueMemFillINTEL_clextfn)(
     cl_command_queue command_queue,
     void* dst_ptr,
@@ -1103,6 +1122,15 @@ typedef cl_int (CL_API_CALL* clEnqueueMigrateMemINTEL_clextfn)(
     cl_event* event);
 
 #endif // defined(CL_VERSION_1_2)
+
+typedef cl_int (CL_API_CALL* clEnqueueMemsetINTEL_clextfn)(
+    cl_command_queue command_queue,
+    void* dst_ptr,
+    cl_int value,
+    size_t size,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
 
 #else
 #pragma message("Define for cl_intel_unified_shared_memory was not found!  Please update your headers.")
@@ -1348,6 +1376,11 @@ struct openclext_dispatch_table {
 #endif // defined(cl_intel_dx9_media_sharing)
 #endif // defined(CLEXT_INCLUDE_DX9)
 
+#if defined(cl_intel_program_scope_host_pipe)
+    clEnqueueReadHostPipeINTEL_clextfn clEnqueueReadHostPipeINTEL;
+    clEnqueueWriteHostPipeINTEL_clextfn clEnqueueWriteHostPipeINTEL;
+#endif // defined(cl_intel_program_scope_host_pipe)
+
 #if defined(CLEXT_INCLUDE_D3D10)
 #if defined(cl_intel_sharing_format_query_d3d10)
     clGetSupportedD3D10TextureFormatsINTEL_clextfn clGetSupportedD3D10TextureFormatsINTEL;
@@ -1386,13 +1419,13 @@ struct openclext_dispatch_table {
     clMemBlockingFreeINTEL_clextfn clMemBlockingFreeINTEL;
     clGetMemAllocInfoINTEL_clextfn clGetMemAllocInfoINTEL;
     clSetKernelArgMemPointerINTEL_clextfn clSetKernelArgMemPointerINTEL;
-    clEnqueueMemsetINTEL_clextfn clEnqueueMemsetINTEL;
     clEnqueueMemFillINTEL_clextfn clEnqueueMemFillINTEL;
     clEnqueueMemcpyINTEL_clextfn clEnqueueMemcpyINTEL;
     clEnqueueMemAdviseINTEL_clextfn clEnqueueMemAdviseINTEL;
 #if defined(CL_VERSION_1_2)
     clEnqueueMigrateMemINTEL_clextfn clEnqueueMigrateMemINTEL;
 #endif // defined(CL_VERSION_1_2)
+    clEnqueueMemsetINTEL_clextfn clEnqueueMemsetINTEL;
 #endif // defined(cl_intel_unified_shared_memory)
 
 #if defined(CLEXT_INCLUDE_VA_API)
@@ -1593,6 +1626,11 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #endif // defined(cl_intel_dx9_media_sharing)
 #endif // defined(CLEXT_INCLUDE_DX9)
 
+#if defined(cl_intel_program_scope_host_pipe)
+    CLEXT_GET_EXTENSION(clEnqueueReadHostPipeINTEL);
+    CLEXT_GET_EXTENSION(clEnqueueWriteHostPipeINTEL);
+#endif // defined(cl_intel_program_scope_host_pipe)
+
 #if defined(CLEXT_INCLUDE_D3D10)
 #if defined(cl_intel_sharing_format_query_d3d10)
     CLEXT_GET_EXTENSION(clGetSupportedD3D10TextureFormatsINTEL);
@@ -1631,13 +1669,13 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clMemBlockingFreeINTEL);
     CLEXT_GET_EXTENSION(clGetMemAllocInfoINTEL);
     CLEXT_GET_EXTENSION(clSetKernelArgMemPointerINTEL);
-    CLEXT_GET_EXTENSION(clEnqueueMemsetINTEL);
     CLEXT_GET_EXTENSION(clEnqueueMemFillINTEL);
     CLEXT_GET_EXTENSION(clEnqueueMemcpyINTEL);
     CLEXT_GET_EXTENSION(clEnqueueMemAdviseINTEL);
 #if defined(CL_VERSION_1_2)
     CLEXT_GET_EXTENSION(clEnqueueMigrateMemINTEL);
 #endif // defined(CL_VERSION_1_2)
+    CLEXT_GET_EXTENSION(clEnqueueMemsetINTEL);
 #endif // defined(cl_intel_unified_shared_memory)
 
 #if defined(CLEXT_INCLUDE_VA_API)
@@ -3553,6 +3591,64 @@ cl_int CL_API_CALL clEnqueueReleaseDX9ObjectsINTEL(
 #endif // defined(CLEXT_INCLUDE_DX9)
 
 
+#if defined(cl_intel_program_scope_host_pipe)
+
+cl_int CL_API_CALL clEnqueueReadHostPipeINTEL(
+    cl_command_queue command_queue,
+    cl_program program,
+    const char* pipe_symbol,
+    cl_bool blocking_read,
+    void* ptr,
+    size_t size,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueReadHostPipeINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueReadHostPipeINTEL(
+        command_queue,
+        program,
+        pipe_symbol,
+        blocking_read,
+        ptr,
+        size,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+cl_int CL_API_CALL clEnqueueWriteHostPipeINTEL(
+    cl_command_queue command_queue,
+    cl_program program,
+    const char* pipe_symbol,
+    cl_bool blocking_write,
+    const void* ptr,
+    size_t size,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueWriteHostPipeINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueWriteHostPipeINTEL(
+        command_queue,
+        program,
+        pipe_symbol,
+        blocking_write,
+        ptr,
+        size,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
+#endif // defined(cl_intel_program_scope_host_pipe)
+
 #if defined(CLEXT_INCLUDE_D3D10)
 #if defined(cl_intel_sharing_format_query_d3d10)
 
@@ -3827,29 +3923,6 @@ cl_int CL_API_CALL clSetKernelArgMemPointerINTEL(
         arg_value);
 }
 
-cl_int CL_API_CALL clEnqueueMemsetINTEL(
-    cl_command_queue command_queue,
-    void* dst_ptr,
-    cl_int value,
-    size_t size,
-    cl_uint num_events_in_wait_list,
-    const cl_event* event_wait_list,
-    cl_event* event)
-{
-    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
-    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueMemsetINTEL == NULL) {
-        return CL_INVALID_OPERATION;
-    }
-    return dispatch_ptr->clEnqueueMemsetINTEL(
-        command_queue,
-        dst_ptr,
-        value,
-        size,
-        num_events_in_wait_list,
-        event_wait_list,
-        event);
-}
-
 cl_int CL_API_CALL clEnqueueMemFillINTEL(
     cl_command_queue command_queue,
     void* dst_ptr,
@@ -3949,6 +4022,29 @@ cl_int CL_API_CALL clEnqueueMigrateMemINTEL(
 }
 
 #endif // defined(CL_VERSION_1_2)
+
+cl_int CL_API_CALL clEnqueueMemsetINTEL(
+    cl_command_queue command_queue,
+    void* dst_ptr,
+    cl_int value,
+    size_t size,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == NULL || dispatch_ptr->clEnqueueMemsetINTEL == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueMemsetINTEL(
+        command_queue,
+        dst_ptr,
+        value,
+        size,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
 
 #endif // defined(cl_intel_unified_shared_memory)
 
