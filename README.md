@@ -18,6 +18,7 @@ For many operating systems, if OpenCL packages or vendor-specific SDKs are insta
 Updated CMake packages may also be provided by the Khronos [OpenCL-SDK](https://github.com/KhronosGroup/OpenCL-SDK).
 
 1. Specified manually via the CMake variables `OpenCL_INCLUDE_DIRS` and `OpenCL_LIBRARIES`.
+For these variables, please note that `OpenCL_INCLUDE_DIRS` should be the full path to the OpenCL headers (the directory containing the `CL` directory), and that `OpenCL_LIBRARIES` should be the full filepath to the OpenCL library (e.g. `OpenCL.dll` or `libOpenCL.so`).
 
 The OpenCL Extension Loader may also be used as a CMake sub-project, in which case it will inherit the CMake variables `OpenCL_INCLUDE_DIRS` and `OpenCL_LIBRARIES` if set, and will `find_package(OpenCL)` otherwise.
 
