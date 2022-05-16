@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Ben Ashbaugh
+# Copyright (c) 2022 Ben Ashbaugh
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_CXX_STANDARD 11)
 
 project(OpenCLExtensionLoader
-    VERSION 0.9
+    VERSION 1.0.220515
     LANGUAGES C CXX)
 
 option (BUILD_SHARED_LIBS "Build shared libs" ON)
@@ -43,7 +43,7 @@ option (OPENCL_EXTENSION_LOADER_INCLUDE_VA_API  "Include VA_API Extension APIs" 
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
     find_package(Python3 COMPONENTS Interpreter)
-    set(OPENCL_EXTENSION_LOADER_XML_PATH CACHE FILEPATH "Path to cl.xml for OpenCL Extension Loader genereration")
+    set(OPENCL_EXTENSION_LOADER_XML_PATH CACHE FILEPATH "Path to cl.xml for OpenCL Extension Loader generation")
     set(OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
     add_custom_target(extension_loader_generate
         COMMAND ${CMAKE_COMMAND} -E make_directory ${OPENCL_EXTENSION_LOADER_OUTPUT_DIRECTORY}
@@ -91,7 +91,7 @@ else()
 endif()
 add_library(OpenCL::OpenCLExt ALIAS OpenCLExt)
 set_target_properties(OpenCLExt PROPERTIES FOLDER "OpenCLExtensionLoader")
-set_target_properties(OpenCLExt PROPERTIES VERSION "0.9" SOVERSION "0")
+set_target_properties(OpenCLExt PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})
 target_include_directories(OpenCLExt PRIVATE ${OPENCL_EXTENSION_LOADER_INCLUDE_DIRS})
 target_compile_definitions(OpenCLExt PRIVATE CL_TARGET_OPENCL_VERSION=300)
 if (OPENCL_EXTENSION_LOADER_SINGLE_PLATFORM_ONLY)
