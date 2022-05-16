@@ -17,9 +17,9 @@ These dependencies can be provided via several different methods:
 For many operating systems, if OpenCL packages or vendor-specific SDKs are installed in standard locations, they will be found automatically.
 Updated CMake packages may also be provided by the Khronos [OpenCL-SDK](https://github.com/KhronosGroup/OpenCL-SDK).
 
-1. Specified manually via the CMake variables `OpenCL_INCLUDE_DIRS` and `OPENCL_LIBRARIES`.
+1. Specified manually via the CMake variables `OpenCL_INCLUDE_DIRS` and `OpenCL_LIBRARIES`.
 
-The OpenCL Extension Loader may also be used as a CMake sub-project, in which case it will inherit the CMake variables `OpenCL_INCLUDE_DIRS` and `OPENCL_LIBRARIES` if set, and will `find_package(OpenCL)` otherwise.
+The OpenCL Extension Loader may also be used as a CMake sub-project, in which case it will inherit the CMake variables `OpenCL_INCLUDE_DIRS` and `OpenCL_LIBRARIES` if set, and will `find_package(OpenCL)` otherwise.
 
 ## How to Use the OpenCL Extension Loader
 
