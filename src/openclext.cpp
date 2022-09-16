@@ -1789,6 +1789,14 @@ inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command
 }
 #endif // defined(cl_khr_command_buffer)
 
+#if defined(cl_khr_command_buffer_mutable_dispatch)
+template<>
+inline openclext_dispatch_table* _get_dispatch<cl_mutable_command_khr>(cl_mutable_command_khr)
+{
+    return _dispatch_ptr;
+}
+#endif // defined(cl_khr_command_buffer)
+
 #if defined(cl_intel_accelerator)
 template<>
 inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel)
