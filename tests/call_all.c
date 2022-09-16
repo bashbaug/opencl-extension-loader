@@ -51,6 +51,11 @@ void call_all(void)
     clGetCommandBufferInfoKHR(NULL, CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR, 0, NULL, NULL);
 #endif // cl_khr_command_buffer
 
+#ifdef cl_khr_command_buffer_mutable_dispatch
+    clUpdateMutableCommandsKHR(NULL, NULL);
+    clGetMutableCommandInfoKHR(NULL, CL_MUTABLE_COMMAND_COMMAND_BUFFER_KHR, 0, NULL, NULL);
+#endif // cl_khr_command_buffer_mutable_dispatch
+
 #ifdef cl_khr_create_command_queue
     clCreateCommandQueueWithPropertiesKHR(NULL, NULL, NULL, NULL);
 #endif // cl_khr_create_command_queue
@@ -133,6 +138,10 @@ void call_all(void)
     clRetainDeviceEXT(NULL);
     clCreateSubDevicesEXT(NULL, NULL, 0, NULL, NULL);
 #endif // cl_ext_device_fission
+
+#ifdef cl_ext_image_requirements_info
+    clGetImageRequirementsInfoEXT(NULL, NULL, CL_MEM_READ_WRITE, NULL, NULL, CL_IMAGE_REQUIREMENTS_SIZE_EXT, 0, NULL, NULL);
+#endif // cl_ext_image_requirements_info
 
 #ifdef cl_ext_migrate_memobject
     clEnqueueMigrateMemObjectEXT(NULL, 0, NULL, CL_MIGRATE_MEM_OBJECT_HOST_EXT, 0, NULL, NULL);

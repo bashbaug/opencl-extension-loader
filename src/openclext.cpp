@@ -323,6 +323,23 @@ typedef cl_int (CL_API_CALL* clGetCommandBufferInfoKHR_clextfn)(
 #pragma message("Define for cl_khr_command_buffer was not found!  Please update your headers.")
 #endif // defined(cl_khr_command_buffer)
 
+#if defined(cl_khr_command_buffer_mutable_dispatch)
+
+typedef cl_int (CL_API_CALL* clUpdateMutableCommandsKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    const cl_mutable_base_config_khr* mutable_config);
+
+typedef cl_int (CL_API_CALL* clGetMutableCommandInfoKHR_clextfn)(
+    cl_mutable_command_khr command,
+    cl_mutable_command_info_khr param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret);
+
+#else
+#pragma message("Define for cl_khr_command_buffer_mutable_dispatch was not found!  Please update your headers.")
+#endif // defined(cl_khr_command_buffer_mutable_dispatch)
+
 #if defined(cl_khr_create_command_queue)
 
 typedef cl_command_queue (CL_API_CALL* clCreateCommandQueueWithPropertiesKHR_clextfn)(
@@ -689,6 +706,23 @@ typedef cl_int (CL_API_CALL* clCreateSubDevicesEXT_clextfn)(
 #else
 #pragma message("Define for cl_ext_device_fission was not found!  Please update your headers.")
 #endif // defined(cl_ext_device_fission)
+
+#if defined(cl_ext_image_requirements_info)
+
+typedef cl_int (CL_API_CALL* clGetImageRequirementsInfoEXT_clextfn)(
+    cl_context context,
+    const cl_mem_properties* properties,
+    cl_mem_flags flags,
+    const cl_image_format* image_format,
+    const cl_image_desc* image_desc,
+    cl_image_requirements_info_ext param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret);
+
+#else
+#pragma message("Define for cl_ext_image_requirements_info was not found!  Please update your headers.")
+#endif // defined(cl_ext_image_requirements_info)
 
 #if defined(cl_ext_migrate_memobject)
 
@@ -1228,6 +1262,11 @@ struct openclext_dispatch_table {
     clGetCommandBufferInfoKHR_clextfn clGetCommandBufferInfoKHR;
 #endif // defined(cl_khr_command_buffer)
 
+#if defined(cl_khr_command_buffer_mutable_dispatch)
+    clUpdateMutableCommandsKHR_clextfn clUpdateMutableCommandsKHR;
+    clGetMutableCommandInfoKHR_clextfn clGetMutableCommandInfoKHR;
+#endif // defined(cl_khr_command_buffer_mutable_dispatch)
+
 #if defined(cl_khr_create_command_queue)
     clCreateCommandQueueWithPropertiesKHR_clextfn clCreateCommandQueueWithPropertiesKHR;
 #endif // defined(cl_khr_create_command_queue)
@@ -1322,6 +1361,10 @@ struct openclext_dispatch_table {
     clRetainDeviceEXT_clextfn clRetainDeviceEXT;
     clCreateSubDevicesEXT_clextfn clCreateSubDevicesEXT;
 #endif // defined(cl_ext_device_fission)
+
+#if defined(cl_ext_image_requirements_info)
+    clGetImageRequirementsInfoEXT_clextfn clGetImageRequirementsInfoEXT;
+#endif // defined(cl_ext_image_requirements_info)
 
 #if defined(cl_ext_migrate_memobject)
     clEnqueueMigrateMemObjectEXT_clextfn clEnqueueMigrateMemObjectEXT;
@@ -1478,6 +1521,11 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clGetCommandBufferInfoKHR);
 #endif // defined(cl_khr_command_buffer)
 
+#if defined(cl_khr_command_buffer_mutable_dispatch)
+    CLEXT_GET_EXTENSION(clUpdateMutableCommandsKHR);
+    CLEXT_GET_EXTENSION(clGetMutableCommandInfoKHR);
+#endif // defined(cl_khr_command_buffer_mutable_dispatch)
+
 #if defined(cl_khr_create_command_queue)
     CLEXT_GET_EXTENSION(clCreateCommandQueueWithPropertiesKHR);
 #endif // defined(cl_khr_create_command_queue)
@@ -1572,6 +1620,10 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clRetainDeviceEXT);
     CLEXT_GET_EXTENSION(clCreateSubDevicesEXT);
 #endif // defined(cl_ext_device_fission)
+
+#if defined(cl_ext_image_requirements_info)
+    CLEXT_GET_EXTENSION(clGetImageRequirementsInfoEXT);
+#endif // defined(cl_ext_image_requirements_info)
 
 #if defined(cl_ext_migrate_memobject)
     CLEXT_GET_EXTENSION(clEnqueueMigrateMemObjectEXT);
@@ -1737,6 +1789,14 @@ inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command
 }
 #endif // defined(cl_khr_command_buffer)
 
+#if defined(cl_khr_command_buffer_mutable_dispatch)
+template<>
+inline openclext_dispatch_table* _get_dispatch<cl_mutable_command_khr>(cl_mutable_command_khr)
+{
+    return _dispatch_ptr;
+}
+#endif // defined(cl_khr_command_buffer)
+
 #if defined(cl_intel_accelerator)
 template<>
 inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel)
@@ -1850,6 +1910,36 @@ inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command
     return NULL;
 }
 #endif // defined(cl_khr_command_buffer)
+
+#if defined(cl_khr_command_buffer_mutable_dispatch)
+template<>
+inline openclext_dispatch_table* _get_dispatch<cl_mutable_command_khr>(cl_mutable_command_khr command)
+{
+    if (command == NULL) return NULL;
+    if (_num_platforms <= 1) return _dispatch_array;
+
+    for (size_t i = 0; i < _num_platforms; i++) {
+        openclext_dispatch_table* dispatch_ptr =
+            _dispatch_array + i;
+        if (dispatch_ptr->clGetMutableCommandInfoKHR) {
+            // Alternatively, this could query the command queue from the
+            // command, then get the dispatch table from the command queue.
+            cl_command_buffer_khr cmdbuf = NULL;
+            cl_int errorCode = dispatch_ptr->clGetMutableCommandInfoKHR(
+                command,
+                CL_MUTABLE_COMMAND_COMMAND_BUFFER_KHR,
+                sizeof(cmdbuf),
+                &cmdbuf,
+                NULL);
+            if (errorCode == CL_SUCCESS) {
+                return dispatch_ptr;
+            }
+        }
+    }
+
+    return NULL;
+}
+#endif // defined(cl_khr_command_buffer_mutable_dispatch)
 
 #if defined(cl_intel_accelerator)
 template<>
@@ -2260,6 +2350,42 @@ cl_int CL_API_CALL clGetCommandBufferInfoKHR(
 }
 
 #endif // defined(cl_khr_command_buffer)
+
+#if defined(cl_khr_command_buffer_mutable_dispatch)
+
+cl_int CL_API_CALL clUpdateMutableCommandsKHR(
+    cl_command_buffer_khr command_buffer,
+    const cl_mutable_base_config_khr* mutable_config)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == NULL || dispatch_ptr->clUpdateMutableCommandsKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clUpdateMutableCommandsKHR(
+        command_buffer,
+        mutable_config);
+}
+
+cl_int CL_API_CALL clGetMutableCommandInfoKHR(
+    cl_mutable_command_khr command,
+    cl_mutable_command_info_khr param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetMutableCommandInfoKHR == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetMutableCommandInfoKHR(
+        command,
+        param_name,
+        param_value_size,
+        param_value,
+        param_value_size_ret);
+}
+
+#endif // defined(cl_khr_command_buffer_mutable_dispatch)
 
 #if defined(cl_khr_create_command_queue)
 
@@ -3071,6 +3197,37 @@ cl_int CL_API_CALL clCreateSubDevicesEXT(
 }
 
 #endif // defined(cl_ext_device_fission)
+
+#if defined(cl_ext_image_requirements_info)
+
+cl_int CL_API_CALL clGetImageRequirementsInfoEXT(
+    cl_context context,
+    const cl_mem_properties* properties,
+    cl_mem_flags flags,
+    const cl_image_format* image_format,
+    const cl_image_desc* image_desc,
+    cl_image_requirements_info_ext param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == NULL || dispatch_ptr->clGetImageRequirementsInfoEXT == NULL) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetImageRequirementsInfoEXT(
+        context,
+        properties,
+        flags,
+        image_format,
+        image_desc,
+        param_name,
+        param_value_size,
+        param_value,
+        param_value_size_ret);
+}
+
+#endif // defined(cl_ext_image_requirements_info)
 
 #if defined(cl_ext_migrate_memobject)
 
