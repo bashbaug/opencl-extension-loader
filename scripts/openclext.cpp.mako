@@ -553,6 +553,36 @@ inline openclext_dispatch_table* _get_dispatch<cl_command_buffer_khr>(cl_command
 }
 #endif // defined(cl_khr_command_buffer)
 
+#if defined(cl_khr_command_buffer_mutable_dispatch)
+template<>
+inline openclext_dispatch_table* _get_dispatch<cl_mutable_command_khr>(cl_mutable_command_khr command)
+{
+    if (command == NULL) return NULL;
+    if (_num_platforms <= 1) return _dispatch_array;
+
+    for (size_t i = 0; i < _num_platforms; i++) {
+        openclext_dispatch_table* dispatch_ptr =
+            _dispatch_array + i;
+        if (dispatch_ptr->clGetMutableCommandInfoKHR) {
+            // Alternatively, this could query the command queue from the
+            // command, then get the dispatch table from the command queue.
+            cl_command_buffer_khr cmdbuf = NULL;
+            cl_int errorCode = dispatch_ptr->clGetMutableCommandInfoKHR(
+                command,
+                CL_MUTABLE_COMMAND_COMMAND_BUFFER_KHR,
+                sizeof(cmdbuf),
+                &cmdbuf,
+                NULL);
+            if (errorCode == CL_SUCCESS) {
+                return dispatch_ptr;
+            }
+        }
+    }
+
+    return NULL;
+}
+#endif // defined(cl_khr_command_buffer_mutable_dispatch)
+
 #if defined(cl_intel_accelerator)
 template<>
 inline openclext_dispatch_table* _get_dispatch<cl_accelerator_intel>(cl_accelerator_intel accelerator)
