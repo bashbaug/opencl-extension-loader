@@ -10,6 +10,9 @@ skipExtensions = {
     # cl_APPLE_ContextLoggingFunctions is not passed a dispatchable object so
     # we cannot generate functions for it.
     'cl_APPLE_ContextLoggingFunctions',
+    # cl_APPLE_SetMemObjectDestructor could work but there is a discrepancy
+    # in the headers for the pfn_notify function.
+    'cl_APPLE_SetMemObjectDestructor',
     }
 
 GL_Extensions = {
@@ -174,6 +177,8 @@ def getCParameterStrings(params):
 #if defined(CLEXT_INCLUDE_VA_API)
 #include <CL/cl_va_api_media_sharing_intel.h>
 #endif
+
+#include <stdlib.h>
 
 #include <vector>
 

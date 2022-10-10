@@ -147,10 +147,6 @@ void call_all(void)
     clEnqueueMigrateMemObjectEXT(NULL, 0, NULL, CL_MIGRATE_MEM_OBJECT_HOST_EXT, 0, NULL, NULL);
 #endif // cl_ext_migrate_memobject
 
-#ifdef cl_APPLE_SetMemObjectDestructor
-    clSetMemObjectDestructorAPPLE(NULL, NULL, NULL);
-#endif // cl_APPLE_SetMemObjectDestructor
-
 #ifdef cl_arm_import_memory
     clImportMemoryARM(NULL, CL_MEM_READ_WRITE, NULL, NULL, 0, NULL);
 #endif // cl_arm_import_memory
