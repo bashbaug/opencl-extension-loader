@@ -10,6 +10,9 @@ skipExtensions = {
     # cl_APPLE_ContextLoggingFunctions is not passed a dispatchable object so
     # we cannot generate functions for it.
     'cl_APPLE_ContextLoggingFunctions',
+    # cl_APPLE_SetMemObjectDestructor could work but there is a discrepancy
+    # in the headers for the pfn_notify function.
+    'cl_APPLE_SetMemObjectDestructor',
     }
 
 defaultValueForType = {

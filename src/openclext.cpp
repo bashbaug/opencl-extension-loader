@@ -69,6 +69,8 @@
 #include <CL/cl_va_api_media_sharing_intel.h>
 #endif
 
+#include <stdlib.h>
+
 #include <vector>
 
 static inline cl_platform_id _get_platform(cl_platform_id platform)
@@ -739,17 +741,6 @@ typedef cl_int (CL_API_CALL* clEnqueueMigrateMemObjectEXT_clextfn)(
 #pragma message("Define for cl_ext_migrate_memobject was not found!  Please update your headers.")
 #endif // defined(cl_ext_migrate_memobject)
 
-#if defined(cl_APPLE_SetMemObjectDestructor)
-
-typedef cl_int (CL_API_CALL* clSetMemObjectDestructorAPPLE_clextfn)(
-    cl_mem memobj,
-    void (CL_CALLBACK* pfn_notify)(cl_mem memobj, void* user_data),
-    void* user_data);
-
-#else
-#pragma message("Define for cl_APPLE_SetMemObjectDestructor was not found!  Please update your headers.")
-#endif // defined(cl_APPLE_SetMemObjectDestructor)
-
 #if defined(cl_arm_import_memory)
 
 typedef cl_mem (CL_API_CALL* clImportMemoryARM_clextfn)(
@@ -1370,10 +1361,6 @@ struct openclext_dispatch_table {
     clEnqueueMigrateMemObjectEXT_clextfn clEnqueueMigrateMemObjectEXT;
 #endif // defined(cl_ext_migrate_memobject)
 
-#if defined(cl_APPLE_SetMemObjectDestructor)
-    clSetMemObjectDestructorAPPLE_clextfn clSetMemObjectDestructorAPPLE;
-#endif // defined(cl_APPLE_SetMemObjectDestructor)
-
 #if defined(cl_arm_import_memory)
     clImportMemoryARM_clextfn clImportMemoryARM;
 #endif // defined(cl_arm_import_memory)
@@ -1628,10 +1615,6 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #if defined(cl_ext_migrate_memobject)
     CLEXT_GET_EXTENSION(clEnqueueMigrateMemObjectEXT);
 #endif // defined(cl_ext_migrate_memobject)
-
-#if defined(cl_APPLE_SetMemObjectDestructor)
-    CLEXT_GET_EXTENSION(clSetMemObjectDestructorAPPLE);
-#endif // defined(cl_APPLE_SetMemObjectDestructor)
 
 #if defined(cl_arm_import_memory)
     CLEXT_GET_EXTENSION(clImportMemoryARM);
@@ -3255,25 +3238,6 @@ cl_int CL_API_CALL clEnqueueMigrateMemObjectEXT(
 }
 
 #endif // defined(cl_ext_migrate_memobject)
-
-#if defined(cl_APPLE_SetMemObjectDestructor)
-
-cl_int CL_API_CALL clSetMemObjectDestructorAPPLE(
-    cl_mem memobj,
-    void (CL_CALLBACK* pfn_notify)(cl_mem memobj, void* user_data),
-    void* user_data)
-{
-    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(memobj);
-    if (dispatch_ptr == NULL || dispatch_ptr->clSetMemObjectDestructorAPPLE == NULL) {
-        return CL_INVALID_OPERATION;
-    }
-    return dispatch_ptr->clSetMemObjectDestructorAPPLE(
-        memobj,
-        pfn_notify,
-        user_data);
-}
-
-#endif // defined(cl_APPLE_SetMemObjectDestructor)
 
 #if defined(cl_arm_import_memory)
 
