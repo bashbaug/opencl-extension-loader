@@ -466,7 +466,7 @@ static size_t _num_platforms = 0;
 static openclext_dispatch_table* _dispatch_array = NULL;
 
 template<typename T>
-static openclext_dispatch_table* _get_dispatch(T object)
+static inline openclext_dispatch_table* _get_dispatch(T object)
 {
     if (_num_platforms == 0 && _dispatch_array == NULL) {
         cl_uint numPlatforms = 0;
