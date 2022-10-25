@@ -15,7 +15,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Check Tabs
       run: |
@@ -36,7 +36,7 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     #- name: Set up Python
     #  uses: actions/setup-python@v2
@@ -58,13 +58,13 @@ jobs:
     #    if ! diff src/openclext.cpp temp/openclext.cpp; then echo 'Please ensure all files are generated correctly.'; false; fi
 
     - name: Get OpenCL Headers
-      uses: actions/checkout@master
+      uses: actions/checkout@v3
       with:
         repository: KhronosGroup/OpenCL-Headers
         path: external/OpenCL-Headers
 
     - name: Get OpenCL ICD Loader
-      uses: actions/checkout@master
+      uses: actions/checkout@v3
       with:
         repository: KhronosGroup/OpenCL-ICD-Loader
         path: external/OpenCL-ICD-Loader
