@@ -315,6 +315,22 @@ typedef cl_int (CL_API_CALL* clGetCommandBufferInfoKHR_clextfn)(
 #pragma message("Define for cl_khr_command_buffer was not found!  Please update your headers.")
 #endif // defined(cl_khr_command_buffer)
 
+#if defined(cl_khr_command_buffer_multi_device)
+
+typedef cl_command_buffer_khr (CL_API_CALL* clRemapCommandBufferKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_bool automatic,
+    cl_uint num_queues,
+    const cl_command_queue* queues,
+    cl_uint num_handles,
+    const cl_mutable_command_khr* handles,
+    cl_mutable_command_khr* handles_ret,
+    cl_int* errcode_ret);
+
+#else
+#pragma message("Define for cl_khr_command_buffer_multi_device was not found!  Please update your headers.")
+#endif // defined(cl_khr_command_buffer_multi_device)
+
 #if defined(cl_khr_command_buffer_mutable_dispatch)
 
 typedef cl_int (CL_API_CALL* clUpdateMutableCommandsKHR_clextfn)(
@@ -1255,6 +1271,10 @@ struct openclext_dispatch_table {
     clGetCommandBufferInfoKHR_clextfn clGetCommandBufferInfoKHR;
 #endif // defined(cl_khr_command_buffer)
 
+#if defined(cl_khr_command_buffer_multi_device)
+    clRemapCommandBufferKHR_clextfn clRemapCommandBufferKHR;
+#endif // defined(cl_khr_command_buffer_multi_device)
+
 #if defined(cl_khr_command_buffer_mutable_dispatch)
     clUpdateMutableCommandsKHR_clextfn clUpdateMutableCommandsKHR;
     clGetMutableCommandInfoKHR_clextfn clGetMutableCommandInfoKHR;
@@ -1516,6 +1536,10 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clCommandNDRangeKernelKHR);
     CLEXT_GET_EXTENSION(clGetCommandBufferInfoKHR);
 #endif // defined(cl_khr_command_buffer)
+
+#if defined(cl_khr_command_buffer_multi_device)
+    CLEXT_GET_EXTENSION(clRemapCommandBufferKHR);
+#endif // defined(cl_khr_command_buffer_multi_device)
 
 #if defined(cl_khr_command_buffer_mutable_dispatch)
     CLEXT_GET_EXTENSION(clUpdateMutableCommandsKHR);
@@ -2368,6 +2392,36 @@ cl_int CL_API_CALL clGetCommandBufferInfoKHR(
 }
 
 #endif // defined(cl_khr_command_buffer)
+
+#if defined(cl_khr_command_buffer_multi_device)
+
+cl_command_buffer_khr CL_API_CALL clRemapCommandBufferKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_bool automatic,
+    cl_uint num_queues,
+    const cl_command_queue* queues,
+    cl_uint num_handles,
+    const cl_mutable_command_khr* handles,
+    cl_mutable_command_khr* handles_ret,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clRemapCommandBufferKHR == nullptr) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return nullptr;
+    }
+    return dispatch_ptr->clRemapCommandBufferKHR(
+        command_buffer,
+        automatic,
+        num_queues,
+        queues,
+        num_handles,
+        handles,
+        handles_ret,
+        errcode_ret);
+}
+
+#endif // defined(cl_khr_command_buffer_multi_device)
 
 #if defined(cl_khr_command_buffer_mutable_dispatch)
 
