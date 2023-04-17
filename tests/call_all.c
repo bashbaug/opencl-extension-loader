@@ -66,6 +66,10 @@ void call_all(void)
     clGetCommandBufferInfoKHR(NULL, CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR, 0, NULL, NULL);
 #endif // cl_khr_command_buffer
 
+#ifdef cl_khr_command_buffer_multi_device
+    clRemapCommandBufferKHR(NULL, CL_FALSE, 0, NULL, 0, NULL, NULL, NULL);
+#endif // cl_khr_command_buffer_multi_device
+
 #ifdef cl_khr_command_buffer_mutable_dispatch
     clUpdateMutableCommandsKHR(NULL, NULL);
     clGetMutableCommandInfoKHR(NULL, CL_MUTABLE_COMMAND_COMMAND_BUFFER_KHR, 0, NULL, NULL);
