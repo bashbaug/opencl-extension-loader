@@ -159,6 +159,20 @@ static inline cl_platform_id _get_platform(cl_mem memobj)
     return _get_platform(context);
 }
 
+static inline cl_platform_id _get_platform(cl_event event)
+{
+    if (event == nullptr) return nullptr;
+
+    cl_context context = nullptr;
+    clGetEventInfo(
+        event,
+        CL_EVENT_CONTEXT,
+        sizeof(context),
+        &context,
+        nullptr);
+    return _get_platform(context);
+}
+
 /***************************************************************
 * Function Pointer Typedefs
 ***************************************************************/
@@ -310,6 +324,29 @@ typedef cl_int (CL_API_CALL* clGetCommandBufferInfoKHR_clextfn)(
     size_t param_value_size,
     void* param_value,
     size_t* param_value_size_ret);
+
+typedef cl_int (CL_API_CALL* clCommandSVMMemcpyKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    void* dst_ptr,
+    const void* src_ptr,
+    size_t size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
+
+typedef cl_int (CL_API_CALL* clCommandSVMMemFillKHR_clextfn)(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    void* svm_ptr,
+    const void* pattern,
+    size_t pattern_size,
+    size_t size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle);
 
 #else
 #pragma message("Define for cl_khr_command_buffer was not found!  Please update your headers.")
@@ -590,6 +627,17 @@ typedef cl_int (CL_API_CALL* clGetSemaphoreHandleForTypeKHR_clextfn)(
 #pragma message("Define for cl_khr_external_semaphore was not found!  Please update your headers.")
 #endif // defined(cl_khr_external_semaphore)
 
+#if defined(cl_khr_external_semaphore_sync_fd)
+
+typedef cl_int (CL_API_CALL* clReImportSemaphoreSyncFdKHR_clextfn)(
+    cl_semaphore_khr sema_object,
+    cl_semaphore_reimport_properties_khr* reimport_props,
+    int fd);
+
+#else
+#pragma message("Define for cl_khr_external_semaphore_sync_fd was not found!  Please update your headers.")
+#endif // defined(cl_khr_external_semaphore_sync_fd)
+
 #if defined(CLEXT_INCLUDE_GL)
 #if defined(cl_khr_gl_event)
 
@@ -834,6 +882,16 @@ typedef cl_int (CL_API_CALL* clSetKernelExecInfoARM_clextfn)(
 #else
 #pragma message("Define for cl_arm_shared_virtual_memory was not found!  Please update your headers.")
 #endif // defined(cl_arm_shared_virtual_memory)
+
+#if defined(cl_img_cancel_command)
+
+typedef cl_int (CL_API_CALL* clCancelCommandsIMG_clextfn)(
+    const cl_event* event_list,
+    size_t num_events_in_list);
+
+#else
+#pragma message("Define for cl_img_cancel_command was not found!  Please update your headers.")
+#endif // defined(cl_img_cancel_command)
 
 #if defined(cl_img_generate_mipmap)
 
@@ -1269,6 +1327,8 @@ struct openclext_dispatch_table {
     clCommandFillImageKHR_clextfn clCommandFillImageKHR;
     clCommandNDRangeKernelKHR_clextfn clCommandNDRangeKernelKHR;
     clGetCommandBufferInfoKHR_clextfn clGetCommandBufferInfoKHR;
+    clCommandSVMMemcpyKHR_clextfn clCommandSVMMemcpyKHR;
+    clCommandSVMMemFillKHR_clextfn clCommandSVMMemFillKHR;
 #endif // defined(cl_khr_command_buffer)
 
 #if defined(cl_khr_command_buffer_multi_device)
@@ -1338,6 +1398,10 @@ struct openclext_dispatch_table {
     clGetSemaphoreHandleForTypeKHR_clextfn clGetSemaphoreHandleForTypeKHR;
 #endif // defined(cl_khr_external_semaphore)
 
+#if defined(cl_khr_external_semaphore_sync_fd)
+    clReImportSemaphoreSyncFdKHR_clextfn clReImportSemaphoreSyncFdKHR;
+#endif // defined(cl_khr_external_semaphore_sync_fd)
+
 #if defined(CLEXT_INCLUDE_GL)
 #if defined(cl_khr_gl_event)
     clCreateEventFromGLsyncKHR_clextfn clCreateEventFromGLsyncKHR;
@@ -1398,6 +1462,10 @@ struct openclext_dispatch_table {
     clSetKernelArgSVMPointerARM_clextfn clSetKernelArgSVMPointerARM;
     clSetKernelExecInfoARM_clextfn clSetKernelExecInfoARM;
 #endif // defined(cl_arm_shared_virtual_memory)
+
+#if defined(cl_img_cancel_command)
+    clCancelCommandsIMG_clextfn clCancelCommandsIMG;
+#endif // defined(cl_img_cancel_command)
 
 #if defined(cl_img_generate_mipmap)
     clEnqueueGenerateMipmapIMG_clextfn clEnqueueGenerateMipmapIMG;
@@ -1535,6 +1603,8 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clCommandFillImageKHR);
     CLEXT_GET_EXTENSION(clCommandNDRangeKernelKHR);
     CLEXT_GET_EXTENSION(clGetCommandBufferInfoKHR);
+    CLEXT_GET_EXTENSION(clCommandSVMMemcpyKHR);
+    CLEXT_GET_EXTENSION(clCommandSVMMemFillKHR);
 #endif // defined(cl_khr_command_buffer)
 
 #if defined(cl_khr_command_buffer_multi_device)
@@ -1604,6 +1674,10 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clGetSemaphoreHandleForTypeKHR);
 #endif // defined(cl_khr_external_semaphore)
 
+#if defined(cl_khr_external_semaphore_sync_fd)
+    CLEXT_GET_EXTENSION(clReImportSemaphoreSyncFdKHR);
+#endif // defined(cl_khr_external_semaphore_sync_fd)
+
 #if defined(CLEXT_INCLUDE_GL)
 #if defined(cl_khr_gl_event)
     CLEXT_GET_EXTENSION(clCreateEventFromGLsyncKHR);
@@ -1664,6 +1738,10 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clSetKernelArgSVMPointerARM);
     CLEXT_GET_EXTENSION(clSetKernelExecInfoARM);
 #endif // defined(cl_arm_shared_virtual_memory)
+
+#if defined(cl_img_cancel_command)
+    CLEXT_GET_EXTENSION(clCancelCommandsIMG);
+#endif // defined(cl_img_cancel_command)
 
 #if defined(cl_img_generate_mipmap)
     CLEXT_GET_EXTENSION(clEnqueueGenerateMipmapIMG);
@@ -2391,6 +2469,62 @@ cl_int CL_API_CALL clGetCommandBufferInfoKHR(
         param_value_size_ret);
 }
 
+cl_int CL_API_CALL clCommandSVMMemcpyKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    void* dst_ptr,
+    const void* src_ptr,
+    size_t size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clCommandSVMMemcpyKHR == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandSVMMemcpyKHR(
+        command_buffer,
+        command_queue,
+        dst_ptr,
+        src_ptr,
+        size,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
+cl_int CL_API_CALL clCommandSVMMemFillKHR(
+    cl_command_buffer_khr command_buffer,
+    cl_command_queue command_queue,
+    void* svm_ptr,
+    const void* pattern,
+    size_t pattern_size,
+    size_t size,
+    cl_uint num_sync_points_in_wait_list,
+    const cl_sync_point_khr* sync_point_wait_list,
+    cl_sync_point_khr* sync_point,
+    cl_mutable_command_khr* mutable_handle)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clCommandSVMMemFillKHR == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCommandSVMMemFillKHR(
+        command_buffer,
+        command_queue,
+        svm_ptr,
+        pattern,
+        pattern_size,
+        size,
+        num_sync_points_in_wait_list,
+        sync_point_wait_list,
+        sync_point,
+        mutable_handle);
+}
+
 #endif // defined(cl_khr_command_buffer)
 
 #if defined(cl_khr_command_buffer_multi_device)
@@ -3004,6 +3138,25 @@ cl_int CL_API_CALL clGetSemaphoreHandleForTypeKHR(
 
 #endif // defined(cl_khr_external_semaphore)
 
+#if defined(cl_khr_external_semaphore_sync_fd)
+
+cl_int CL_API_CALL clReImportSemaphoreSyncFdKHR(
+    cl_semaphore_khr sema_object,
+    cl_semaphore_reimport_properties_khr* reimport_props,
+    int fd)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(sema_object);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clReImportSemaphoreSyncFdKHR == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clReImportSemaphoreSyncFdKHR(
+        sema_object,
+        reimport_props,
+        fd);
+}
+
+#endif // defined(cl_khr_external_semaphore_sync_fd)
+
 #if defined(CLEXT_INCLUDE_GL)
 #if defined(cl_khr_gl_event)
 
@@ -3538,6 +3691,23 @@ cl_int CL_API_CALL clSetKernelExecInfoARM(
 }
 
 #endif // defined(cl_arm_shared_virtual_memory)
+
+#if defined(cl_img_cancel_command)
+
+cl_int CL_API_CALL clCancelCommandsIMG(
+    const cl_event* event_list,
+    size_t num_events_in_list)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(num_events_in_list > 0 && event_list ? event_list[0] : nullptr);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clCancelCommandsIMG == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clCancelCommandsIMG(
+        event_list,
+        num_events_in_list);
+}
+
+#endif // defined(cl_img_cancel_command)
 
 #if defined(cl_img_generate_mipmap)
 

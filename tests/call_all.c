@@ -66,6 +66,11 @@ void call_all(void)
     clGetCommandBufferInfoKHR(NULL, CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR, 0, NULL, NULL);
 #endif // cl_khr_command_buffer
 
+#ifdef cl_khr_command_buffer
+    clCommandSVMMemcpyKHR(NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL);
+    clCommandSVMMemFillKHR(NULL, NULL, NULL, NULL, 0, 0, 0, NULL, NULL, NULL);
+#endif // cl_khr_command_buffer
+
 #ifdef cl_khr_command_buffer_multi_device
     clRemapCommandBufferKHR(NULL, CL_FALSE, 0, NULL, 0, NULL, NULL, NULL);
 #endif // cl_khr_command_buffer_multi_device
@@ -122,6 +127,10 @@ void call_all(void)
 #ifdef cl_khr_external_semaphore
     clGetSemaphoreHandleForTypeKHR(NULL, NULL, 0, 0, NULL, NULL);
 #endif // cl_khr_external_semaphore
+
+#ifdef cl_khr_external_semaphore_sync_fd
+    clReImportSemaphoreSyncFdKHR(NULL, NULL, 0);
+#endif // cl_khr_external_semaphore_sync_fd
 
 #ifdef cl_khr_gl_event
     clCreateEventFromGLsyncKHR(NULL, NULL, NULL);
@@ -181,6 +190,10 @@ void call_all(void)
     clSetKernelArgSVMPointerARM(NULL, 0, NULL);
     clSetKernelExecInfoARM(NULL, CL_KERNEL_EXEC_INFO_SVM_PTRS_ARM, 0, NULL);
 #endif // cl_arm_shared_virtual_memory
+
+#ifdef cl_img_cancel_command
+    clCancelCommandsIMG(NULL, 0);
+#endif // cl_img_cancel_command
 
 #ifdef cl_img_generate_mipmap
     clEnqueueGenerateMipmapIMG(NULL, NULL, NULL, CL_MIPMAP_FILTER_ANY_IMG, NULL, NULL, 0, NULL, NULL);

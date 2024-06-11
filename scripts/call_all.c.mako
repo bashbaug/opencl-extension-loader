@@ -74,6 +74,7 @@ defaultValueForType = {
     # Integral Types
     'cl_int'                            : '0',
     'cl_uint'                           : '0',
+    'int'                               : '0',
     'size_t'                            : '0',
     'UINT'                              : '0',
     }
