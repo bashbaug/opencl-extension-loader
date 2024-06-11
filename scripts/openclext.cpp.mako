@@ -276,6 +276,20 @@ static inline cl_platform_id _get_platform(cl_mem memobj)
     return _get_platform(context);
 }
 
+static inline cl_platform_id _get_platform(cl_event event)
+{
+    if (event == nullptr) return nullptr;
+
+    cl_context context = nullptr;
+    clGetEventInfo(
+        event,
+        CL_EVENT_CONTEXT,
+        sizeof(context),
+        &context,
+        nullptr);
+    return _get_platform(context);
+}
+
 /***************************************************************
 * Function Pointer Typedefs
 ***************************************************************/
@@ -744,6 +758,8 @@ ${api.RetType} CL_API_CALL ${api.Name}(
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(${api.Params[0].Name} > 0 && ${api.Params[1].Name} ? ${api.Params[1].Name}[0] : nullptr);
 %      elif api.Name == "clEnqueueCommandBufferKHR":
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(${api.Params[2].Name});
+%      elif api.Name == "clCancelCommandsIMG":
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(${api.Params[1].Name} > 0 && ${api.Params[0].Name} ? ${api.Params[0].Name}[0] : nullptr);
 %      else:
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(${api.Params[0].Name});
 %      endif
