@@ -54,21 +54,21 @@ void call_all(void)
     clRetainCommandBufferKHR(NULL);
     clReleaseCommandBufferKHR(NULL);
     clEnqueueCommandBufferKHR(0, NULL, NULL, 0, NULL, NULL);
-    clCommandBarrierWithWaitListKHR(NULL, NULL, 0, NULL, NULL, NULL);
-    clCommandCopyBufferKHR(NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL);
-    clCommandCopyBufferRectKHR(NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL);
-    clCommandCopyBufferToImageKHR(NULL, NULL, NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL);
-    clCommandCopyImageKHR(NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL);
-    clCommandCopyImageToBufferKHR(NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL);
-    clCommandFillBufferKHR(NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL);
-    clCommandFillImageKHR(NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL);
+    clCommandBarrierWithWaitListKHR(NULL, NULL, NULL, 0, NULL, NULL, NULL);
+    clCommandCopyBufferKHR(NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL);
+    clCommandCopyBufferRectKHR(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL);
+    clCommandCopyBufferToImageKHR(NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, NULL);
+    clCommandCopyImageKHR(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL);
+    clCommandCopyImageToBufferKHR(NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL);
+    clCommandFillBufferKHR(NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL);
+    clCommandFillImageKHR(NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL);
     clCommandNDRangeKernelKHR(NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, NULL, NULL);
     clGetCommandBufferInfoKHR(NULL, CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR, 0, NULL, NULL);
 #endif // cl_khr_command_buffer
 
 #ifdef cl_khr_command_buffer
-    clCommandSVMMemcpyKHR(NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL);
-    clCommandSVMMemFillKHR(NULL, NULL, NULL, NULL, 0, 0, 0, NULL, NULL, NULL);
+    clCommandSVMMemcpyKHR(NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, NULL);
+    clCommandSVMMemFillKHR(NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, NULL, NULL);
 #endif // cl_khr_command_buffer
 
 #ifdef cl_khr_command_buffer_multi_device
@@ -76,7 +76,7 @@ void call_all(void)
 #endif // cl_khr_command_buffer_multi_device
 
 #ifdef cl_khr_command_buffer_mutable_dispatch
-    clUpdateMutableCommandsKHR(NULL, NULL);
+    clUpdateMutableCommandsKHR(NULL, 0, NULL, NULL);
     clGetMutableCommandInfoKHR(NULL, CL_MUTABLE_COMMAND_COMMAND_BUFFER_KHR, 0, NULL, NULL);
 #endif // cl_khr_command_buffer_mutable_dispatch
 
