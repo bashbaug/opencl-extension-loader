@@ -205,6 +205,7 @@ typedef cl_int (CL_API_CALL* clEnqueueCommandBufferKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandBarrierWithWaitListKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_uint num_sync_points_in_wait_list,
     const cl_sync_point_khr* sync_point_wait_list,
     cl_sync_point_khr* sync_point,
@@ -213,6 +214,7 @@ typedef cl_int (CL_API_CALL* clCommandBarrierWithWaitListKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandCopyBufferKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_buffer,
     cl_mem dst_buffer,
     size_t src_offset,
@@ -226,6 +228,7 @@ typedef cl_int (CL_API_CALL* clCommandCopyBufferKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandCopyBufferRectKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_buffer,
     cl_mem dst_buffer,
     const size_t* src_origin,
@@ -243,6 +246,7 @@ typedef cl_int (CL_API_CALL* clCommandCopyBufferRectKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandCopyBufferToImageKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_buffer,
     cl_mem dst_image,
     size_t src_offset,
@@ -256,6 +260,7 @@ typedef cl_int (CL_API_CALL* clCommandCopyBufferToImageKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandCopyImageKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_image,
     cl_mem dst_image,
     const size_t* src_origin,
@@ -269,6 +274,7 @@ typedef cl_int (CL_API_CALL* clCommandCopyImageKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandCopyImageToBufferKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_image,
     cl_mem dst_buffer,
     const size_t* src_origin,
@@ -282,6 +288,7 @@ typedef cl_int (CL_API_CALL* clCommandCopyImageToBufferKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandFillBufferKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem buffer,
     const void* pattern,
     size_t pattern_size,
@@ -295,6 +302,7 @@ typedef cl_int (CL_API_CALL* clCommandFillBufferKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandFillImageKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem image,
     const void* fill_color,
     const size_t* origin,
@@ -307,7 +315,7 @@ typedef cl_int (CL_API_CALL* clCommandFillImageKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandNDRangeKernelKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
-    const cl_ndrange_kernel_command_properties_khr* properties,
+    const cl_command_properties_khr* properties,
     cl_kernel kernel,
     cl_uint work_dim,
     const size_t* global_work_offset,
@@ -328,6 +336,7 @@ typedef cl_int (CL_API_CALL* clGetCommandBufferInfoKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandSVMMemcpyKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     void* dst_ptr,
     const void* src_ptr,
     size_t size,
@@ -339,6 +348,7 @@ typedef cl_int (CL_API_CALL* clCommandSVMMemcpyKHR_clextfn)(
 typedef cl_int (CL_API_CALL* clCommandSVMMemFillKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     void* svm_ptr,
     const void* pattern,
     size_t pattern_size,
@@ -372,7 +382,9 @@ typedef cl_command_buffer_khr (CL_API_CALL* clRemapCommandBufferKHR_clextfn)(
 
 typedef cl_int (CL_API_CALL* clUpdateMutableCommandsKHR_clextfn)(
     cl_command_buffer_khr command_buffer,
-    const cl_mutable_base_config_khr* mutable_config);
+    cl_uint num_configs,
+    const cl_command_buffer_update_type_khr* config_types,
+    const void** configs);
 
 typedef cl_int (CL_API_CALL* clGetMutableCommandInfoKHR_clextfn)(
     cl_mutable_command_khr command,
@@ -2176,6 +2188,7 @@ cl_int CL_API_CALL clEnqueueCommandBufferKHR(
 cl_int CL_API_CALL clCommandBarrierWithWaitListKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_uint num_sync_points_in_wait_list,
     const cl_sync_point_khr* sync_point_wait_list,
     cl_sync_point_khr* sync_point,
@@ -2188,6 +2201,7 @@ cl_int CL_API_CALL clCommandBarrierWithWaitListKHR(
     return dispatch_ptr->clCommandBarrierWithWaitListKHR(
         command_buffer,
         command_queue,
+        properties,
         num_sync_points_in_wait_list,
         sync_point_wait_list,
         sync_point,
@@ -2197,6 +2211,7 @@ cl_int CL_API_CALL clCommandBarrierWithWaitListKHR(
 cl_int CL_API_CALL clCommandCopyBufferKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_buffer,
     cl_mem dst_buffer,
     size_t src_offset,
@@ -2214,6 +2229,7 @@ cl_int CL_API_CALL clCommandCopyBufferKHR(
     return dispatch_ptr->clCommandCopyBufferKHR(
         command_buffer,
         command_queue,
+        properties,
         src_buffer,
         dst_buffer,
         src_offset,
@@ -2228,6 +2244,7 @@ cl_int CL_API_CALL clCommandCopyBufferKHR(
 cl_int CL_API_CALL clCommandCopyBufferRectKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_buffer,
     cl_mem dst_buffer,
     const size_t* src_origin,
@@ -2249,6 +2266,7 @@ cl_int CL_API_CALL clCommandCopyBufferRectKHR(
     return dispatch_ptr->clCommandCopyBufferRectKHR(
         command_buffer,
         command_queue,
+        properties,
         src_buffer,
         dst_buffer,
         src_origin,
@@ -2267,6 +2285,7 @@ cl_int CL_API_CALL clCommandCopyBufferRectKHR(
 cl_int CL_API_CALL clCommandCopyBufferToImageKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_buffer,
     cl_mem dst_image,
     size_t src_offset,
@@ -2284,6 +2303,7 @@ cl_int CL_API_CALL clCommandCopyBufferToImageKHR(
     return dispatch_ptr->clCommandCopyBufferToImageKHR(
         command_buffer,
         command_queue,
+        properties,
         src_buffer,
         dst_image,
         src_offset,
@@ -2298,6 +2318,7 @@ cl_int CL_API_CALL clCommandCopyBufferToImageKHR(
 cl_int CL_API_CALL clCommandCopyImageKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_image,
     cl_mem dst_image,
     const size_t* src_origin,
@@ -2315,6 +2336,7 @@ cl_int CL_API_CALL clCommandCopyImageKHR(
     return dispatch_ptr->clCommandCopyImageKHR(
         command_buffer,
         command_queue,
+        properties,
         src_image,
         dst_image,
         src_origin,
@@ -2329,6 +2351,7 @@ cl_int CL_API_CALL clCommandCopyImageKHR(
 cl_int CL_API_CALL clCommandCopyImageToBufferKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem src_image,
     cl_mem dst_buffer,
     const size_t* src_origin,
@@ -2346,6 +2369,7 @@ cl_int CL_API_CALL clCommandCopyImageToBufferKHR(
     return dispatch_ptr->clCommandCopyImageToBufferKHR(
         command_buffer,
         command_queue,
+        properties,
         src_image,
         dst_buffer,
         src_origin,
@@ -2360,6 +2384,7 @@ cl_int CL_API_CALL clCommandCopyImageToBufferKHR(
 cl_int CL_API_CALL clCommandFillBufferKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem buffer,
     const void* pattern,
     size_t pattern_size,
@@ -2377,6 +2402,7 @@ cl_int CL_API_CALL clCommandFillBufferKHR(
     return dispatch_ptr->clCommandFillBufferKHR(
         command_buffer,
         command_queue,
+        properties,
         buffer,
         pattern,
         pattern_size,
@@ -2391,6 +2417,7 @@ cl_int CL_API_CALL clCommandFillBufferKHR(
 cl_int CL_API_CALL clCommandFillImageKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     cl_mem image,
     const void* fill_color,
     const size_t* origin,
@@ -2407,6 +2434,7 @@ cl_int CL_API_CALL clCommandFillImageKHR(
     return dispatch_ptr->clCommandFillImageKHR(
         command_buffer,
         command_queue,
+        properties,
         image,
         fill_color,
         origin,
@@ -2420,7 +2448,7 @@ cl_int CL_API_CALL clCommandFillImageKHR(
 cl_int CL_API_CALL clCommandNDRangeKernelKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
-    const cl_ndrange_kernel_command_properties_khr* properties,
+    const cl_command_properties_khr* properties,
     cl_kernel kernel,
     cl_uint work_dim,
     const size_t* global_work_offset,
@@ -2472,6 +2500,7 @@ cl_int CL_API_CALL clGetCommandBufferInfoKHR(
 cl_int CL_API_CALL clCommandSVMMemcpyKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     void* dst_ptr,
     const void* src_ptr,
     size_t size,
@@ -2487,6 +2516,7 @@ cl_int CL_API_CALL clCommandSVMMemcpyKHR(
     return dispatch_ptr->clCommandSVMMemcpyKHR(
         command_buffer,
         command_queue,
+        properties,
         dst_ptr,
         src_ptr,
         size,
@@ -2499,6 +2529,7 @@ cl_int CL_API_CALL clCommandSVMMemcpyKHR(
 cl_int CL_API_CALL clCommandSVMMemFillKHR(
     cl_command_buffer_khr command_buffer,
     cl_command_queue command_queue,
+    const cl_command_properties_khr* properties,
     void* svm_ptr,
     const void* pattern,
     size_t pattern_size,
@@ -2515,6 +2546,7 @@ cl_int CL_API_CALL clCommandSVMMemFillKHR(
     return dispatch_ptr->clCommandSVMMemFillKHR(
         command_buffer,
         command_queue,
+        properties,
         svm_ptr,
         pattern,
         pattern_size,
@@ -2561,7 +2593,9 @@ cl_command_buffer_khr CL_API_CALL clRemapCommandBufferKHR(
 
 cl_int CL_API_CALL clUpdateMutableCommandsKHR(
     cl_command_buffer_khr command_buffer,
-    const cl_mutable_base_config_khr* mutable_config)
+    cl_uint num_configs,
+    const cl_command_buffer_update_type_khr* config_types,
+    const void** configs)
 {
     struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_buffer);
     if (dispatch_ptr == nullptr || dispatch_ptr->clUpdateMutableCommandsKHR == nullptr) {
@@ -2569,7 +2603,9 @@ cl_int CL_API_CALL clUpdateMutableCommandsKHR(
     }
     return dispatch_ptr->clUpdateMutableCommandsKHR(
         command_buffer,
-        mutable_config);
+        num_configs,
+        config_types,
+        configs);
 }
 
 cl_int CL_API_CALL clGetMutableCommandInfoKHR(
