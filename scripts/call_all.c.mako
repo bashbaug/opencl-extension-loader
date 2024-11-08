@@ -68,7 +68,10 @@ defaultValueForType = {
     'cl_mem_object_type'                : 'CL_MEM_OBJECT_IMAGE2D',
     'cl_mipmap_filter_mode_img'         : 'CL_MIPMAP_FILTER_ANY_IMG',
     'cl_semaphore_info_khr'             : 'CL_SEMAPHORE_CONTEXT_KHR',
+    'cl_svm_capabilities_khr'           : 'CL_SVM_TYPE_MACRO_COARSE_GRAIN_BUFFER_KHR',
+    'cl_svm_free_flags_khr'             : 'CL_SVM_FREE_BLOCKING_KHR',
     'cl_svm_mem_flags_arm'              : 'CL_MEM_SVM_FINE_GRAIN_BUFFER_ARM',
+    'cl_svm_pointer_info_khr'           : 'CL_SVM_INFO_TYPE_INDEX_KHR',
     'cl_va_api_device_source_intel'     : 'CL_VA_API_DISPLAY_INTEL',
     'cl_va_api_device_set_intel'        : 'CL_ALL_DEVICES_FOR_VA_API_INTEL',
     # Integral Types

@@ -64,11 +64,6 @@
 
 #include <vector>
 
-static inline cl_platform_id _get_platform(cl_platform_id platform)
-{
-    return platform;
-}
-
 static inline cl_platform_id _get_platform(cl_device_id device)
 {
     if (device == nullptr) return nullptr;
@@ -755,6 +750,42 @@ typedef cl_int (CL_API_CALL* clTerminateContextKHR_clextfn)(
 #else
 #pragma message("Define for cl_khr_terminate_context was not found!  Please update your headers.")
 #endif // defined(cl_khr_terminate_context)
+
+#if defined(cl_khr_unified_svm)
+
+typedef void* (CL_API_CALL* clSVMAllocWithPropertiesKHR_clextfn)(
+    cl_context context,
+    const cl_svm_alloc_properties_khr* properties,
+    cl_uint svm_type_index,
+    size_t size,
+    cl_int* errcode_ret);
+
+typedef cl_int (CL_API_CALL* clSVMFreeWithPropertiesKHR_clextfn)(
+    cl_context context,
+    const cl_svm_free_properties_khr* properties,
+    cl_svm_free_flags_khr flags,
+    void* ptr);
+
+typedef cl_int (CL_API_CALL* clGetSVMPointerInfoKHR_clextfn)(
+    cl_context context,
+    cl_device_id device,
+    const void* ptr,
+    cl_svm_pointer_info_khr param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret);
+
+typedef cl_int (CL_API_CALL* clGetSVMSuggestedTypeIndexKHR_clextfn)(
+    cl_context context,
+    cl_svm_capabilities_khr required_capabilities,
+    cl_svm_capabilities_khr desired_capabilities,
+    const cl_svm_alloc_properties_khr* properties,
+    size_t size,
+    cl_uint* suggested_svm_type_index);
+
+#else
+#pragma message("Define for cl_khr_unified_svm was not found!  Please update your headers.")
+#endif // defined(cl_khr_unified_svm)
 
 #if defined(cl_ext_device_fission)
 
@@ -1445,6 +1476,13 @@ struct openclext_dispatch_table {
     clTerminateContextKHR_clextfn clTerminateContextKHR;
 #endif // defined(cl_khr_terminate_context)
 
+#if defined(cl_khr_unified_svm)
+    clSVMAllocWithPropertiesKHR_clextfn clSVMAllocWithPropertiesKHR;
+    clSVMFreeWithPropertiesKHR_clextfn clSVMFreeWithPropertiesKHR;
+    clGetSVMPointerInfoKHR_clextfn clGetSVMPointerInfoKHR;
+    clGetSVMSuggestedTypeIndexKHR_clextfn clGetSVMSuggestedTypeIndexKHR;
+#endif // defined(cl_khr_unified_svm)
+
 #if defined(cl_ext_device_fission)
     clReleaseDeviceEXT_clextfn clReleaseDeviceEXT;
     clRetainDeviceEXT_clextfn clRetainDeviceEXT;
@@ -1720,6 +1758,13 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #if defined(cl_khr_terminate_context)
     CLEXT_GET_EXTENSION(clTerminateContextKHR);
 #endif // defined(cl_khr_terminate_context)
+
+#if defined(cl_khr_unified_svm)
+    CLEXT_GET_EXTENSION(clSVMAllocWithPropertiesKHR);
+    CLEXT_GET_EXTENSION(clSVMFreeWithPropertiesKHR);
+    CLEXT_GET_EXTENSION(clGetSVMPointerInfoKHR);
+    CLEXT_GET_EXTENSION(clGetSVMSuggestedTypeIndexKHR);
+#endif // defined(cl_khr_unified_svm)
 
 #if defined(cl_ext_device_fission)
     CLEXT_GET_EXTENSION(clReleaseDeviceEXT);
@@ -3413,6 +3458,91 @@ cl_int CL_API_CALL clTerminateContextKHR(
 }
 
 #endif // defined(cl_khr_terminate_context)
+
+#if defined(cl_khr_unified_svm)
+
+void* CL_API_CALL clSVMAllocWithPropertiesKHR(
+    cl_context context,
+    const cl_svm_alloc_properties_khr* properties,
+    cl_uint svm_type_index,
+    size_t size,
+    cl_int* errcode_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clSVMAllocWithPropertiesKHR == nullptr) {
+        if (errcode_ret) *errcode_ret = CL_INVALID_OPERATION;
+        return nullptr;
+    }
+    return dispatch_ptr->clSVMAllocWithPropertiesKHR(
+        context,
+        properties,
+        svm_type_index,
+        size,
+        errcode_ret);
+}
+
+cl_int CL_API_CALL clSVMFreeWithPropertiesKHR(
+    cl_context context,
+    const cl_svm_free_properties_khr* properties,
+    cl_svm_free_flags_khr flags,
+    void* ptr)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clSVMFreeWithPropertiesKHR == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clSVMFreeWithPropertiesKHR(
+        context,
+        properties,
+        flags,
+        ptr);
+}
+
+cl_int CL_API_CALL clGetSVMPointerInfoKHR(
+    cl_context context,
+    cl_device_id device,
+    const void* ptr,
+    cl_svm_pointer_info_khr param_name,
+    size_t param_value_size,
+    void* param_value,
+    size_t* param_value_size_ret)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clGetSVMPointerInfoKHR == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSVMPointerInfoKHR(
+        context,
+        device,
+        ptr,
+        param_name,
+        param_value_size,
+        param_value,
+        param_value_size_ret);
+}
+
+cl_int CL_API_CALL clGetSVMSuggestedTypeIndexKHR(
+    cl_context context,
+    cl_svm_capabilities_khr required_capabilities,
+    cl_svm_capabilities_khr desired_capabilities,
+    const cl_svm_alloc_properties_khr* properties,
+    size_t size,
+    cl_uint* suggested_svm_type_index)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clGetSVMSuggestedTypeIndexKHR == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clGetSVMSuggestedTypeIndexKHR(
+        context,
+        required_capabilities,
+        desired_capabilities,
+        properties,
+        size,
+        suggested_svm_type_index);
+}
+
+#endif // defined(cl_khr_unified_svm)
 
 #if defined(cl_ext_device_fission)
 

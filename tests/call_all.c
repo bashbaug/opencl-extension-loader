@@ -161,6 +161,13 @@ void call_all(void)
     clTerminateContextKHR(NULL);
 #endif // cl_khr_terminate_context
 
+#ifdef cl_khr_unified_svm
+    clSVMAllocWithPropertiesKHR(NULL, NULL, 0, 0, NULL);
+    clSVMFreeWithPropertiesKHR(NULL, NULL, CL_SVM_FREE_BLOCKING_KHR, NULL);
+    clGetSVMPointerInfoKHR(NULL, NULL, NULL, CL_SVM_INFO_TYPE_INDEX_KHR, 0, NULL, NULL);
+    clGetSVMSuggestedTypeIndexKHR(NULL, CL_SVM_TYPE_MACRO_COARSE_GRAIN_BUFFER_KHR, CL_SVM_TYPE_MACRO_COARSE_GRAIN_BUFFER_KHR, NULL, 0, NULL);
+#endif // cl_khr_unified_svm
+
 #ifdef cl_ext_device_fission
     clReleaseDeviceEXT(NULL);
     clRetainDeviceEXT(NULL);
