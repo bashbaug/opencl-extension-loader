@@ -1,5 +1,5 @@
 /*******************************************************************************
-// Copyright (c) 2021-2024 Ben Ashbaugh
+// Copyright (c) 2021-2025 Ben Ashbaugh
 //
 // SPDX-License-Identifier: MIT or Apache-2.0
 */
@@ -167,6 +167,10 @@ void call_all(void)
     clGetSVMPointerInfoKHR(NULL, NULL, NULL, CL_SVM_INFO_TYPE_INDEX_KHR, 0, NULL, NULL);
     clGetSVMSuggestedTypeIndexKHR(NULL, CL_SVM_TYPE_MACRO_COARSE_GRAIN_BUFFER_KHR, CL_SVM_TYPE_MACRO_COARSE_GRAIN_BUFFER_KHR, NULL, 0, NULL);
 #endif // cl_khr_unified_svm
+
+#ifdef cl_ext_buffer_device_address
+    clSetKernelArgDevicePointerEXT(NULL, 0, 0);
+#endif // cl_ext_buffer_device_address
 
 #ifdef cl_ext_device_fission
     clReleaseDeviceEXT(NULL);
