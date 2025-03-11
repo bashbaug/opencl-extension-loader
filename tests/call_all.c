@@ -161,6 +161,10 @@ void call_all(void)
     clTerminateContextKHR(NULL);
 #endif // cl_khr_terminate_context
 
+#ifdef cl_ext_buffer_device_address
+    clSetKernelArgDevicePointerEXT(NULL, 0, 0);
+#endif // cl_ext_buffer_device_address
+
 #ifdef cl_ext_device_fission
     clReleaseDeviceEXT(NULL);
     clRetainDeviceEXT(NULL);
