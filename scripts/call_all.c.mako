@@ -120,7 +120,7 @@ def getCallArgs(params):
     return callstr
 
 %>/*******************************************************************************
-// Copyright (c) 2021-2025 Ben Ashbaugh
+// Copyright (c) 2021-2026 Ben Ashbaugh
 //
 // SPDX-License-Identifier: MIT or Apache-2.0
 */
