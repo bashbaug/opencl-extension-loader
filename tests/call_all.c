@@ -166,6 +166,7 @@ void call_all(void)
     clSVMFreeWithPropertiesKHR(NULL, NULL, CL_SVM_FREE_BLOCKING_KHR, NULL);
     clGetSVMPointerInfoKHR(NULL, NULL, NULL, CL_SVM_INFO_TYPE_INDEX_KHR, 0, NULL, NULL);
     clGetSVMSuggestedTypeIndexKHR(NULL, CL_SVM_TYPE_MACRO_COARSE_GRAIN_BUFFER_KHR, CL_SVM_TYPE_MACRO_COARSE_GRAIN_BUFFER_KHR, NULL, 0, NULL);
+    clEnqueueSVMMemcpyWithPropertiesKHR(NULL, NULL, CL_FALSE, NULL, NULL, 0, 0, NULL, NULL);
 #endif // cl_khr_unified_svm
 
 #ifdef cl_ext_buffer_device_address
@@ -299,5 +300,9 @@ void call_all(void)
 #ifdef cl_qcom_ext_host_ptr
     clGetDeviceImageInfoQCOM(NULL, 0, 0, NULL, CL_IMAGE_ROW_ALIGNMENT_QCOM, 0, NULL, NULL);
 #endif // cl_qcom_ext_host_ptr
+
+#ifdef cl_qcom_perf_hint
+    clSetPerfHintQCOM(NULL, 0);
+#endif // cl_qcom_perf_hint
 
 }

@@ -68,6 +68,7 @@ defaultValueForType = {
     'cl_mem_migration_flags_ext'        : 'CL_MIGRATE_MEM_OBJECT_HOST_EXT',
     'cl_mem_object_type'                : 'CL_MEM_OBJECT_IMAGE2D',
     'cl_mipmap_filter_mode_img'         : 'CL_MIPMAP_FILTER_ANY_IMG',
+    'cl_perf_hint_qcom'                 : '0',
     'cl_semaphore_info_khr'             : 'CL_SEMAPHORE_CONTEXT_KHR',
     'cl_svm_capabilities_khr'           : 'CL_SVM_TYPE_MACRO_COARSE_GRAIN_BUFFER_KHR',
     'cl_svm_free_flags_khr'             : 'CL_SVM_FREE_BLOCKING_KHR',

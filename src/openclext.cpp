@@ -783,6 +783,17 @@ typedef cl_int (CL_API_CALL* clGetSVMSuggestedTypeIndexKHR_clextfn)(
     size_t size,
     cl_uint* suggested_svm_type_index);
 
+typedef cl_int (CL_API_CALL* clEnqueueSVMMemcpyWithPropertiesKHR_clextfn)(
+    cl_command_queue command_queue,
+    cl_svm_copy_properties_khr* properties,
+    cl_bool blocking_copy,
+    void* dst_ptr,
+    const void* src_ptr,
+    size_t size,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event);
+
 #else
 #pragma message("Define for cl_khr_unified_svm was not found!  Please update your headers.")
 #endif // defined(cl_khr_unified_svm)
@@ -1357,6 +1368,16 @@ typedef cl_int (CL_API_CALL* clGetDeviceImageInfoQCOM_clextfn)(
 #pragma message("Define for cl_qcom_ext_host_ptr was not found!  Please update your headers.")
 #endif // defined(cl_qcom_ext_host_ptr)
 
+#if defined(cl_qcom_perf_hint)
+
+typedef cl_int (CL_API_CALL* clSetPerfHintQCOM_clextfn)(
+    cl_context context,
+    cl_perf_hint_qcom perf_hint);
+
+#else
+#pragma message("Define for cl_qcom_perf_hint was not found!  Please update your headers.")
+#endif // defined(cl_qcom_perf_hint)
+
 
 /***************************************************************
 * Extension Function Pointer Dispatch Table
@@ -1492,6 +1513,7 @@ struct openclext_dispatch_table {
     clSVMFreeWithPropertiesKHR_clextfn clSVMFreeWithPropertiesKHR;
     clGetSVMPointerInfoKHR_clextfn clGetSVMPointerInfoKHR;
     clGetSVMSuggestedTypeIndexKHR_clextfn clGetSVMSuggestedTypeIndexKHR;
+    clEnqueueSVMMemcpyWithPropertiesKHR_clextfn clEnqueueSVMMemcpyWithPropertiesKHR;
 #endif // defined(cl_khr_unified_svm)
 
 #if defined(cl_ext_buffer_device_address)
@@ -1629,6 +1651,10 @@ struct openclext_dispatch_table {
 #if defined(cl_qcom_ext_host_ptr)
     clGetDeviceImageInfoQCOM_clextfn clGetDeviceImageInfoQCOM;
 #endif // defined(cl_qcom_ext_host_ptr)
+
+#if defined(cl_qcom_perf_hint)
+    clSetPerfHintQCOM_clextfn clSetPerfHintQCOM;
+#endif // defined(cl_qcom_perf_hint)
 
 };
 
@@ -1779,6 +1805,7 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
     CLEXT_GET_EXTENSION(clSVMFreeWithPropertiesKHR);
     CLEXT_GET_EXTENSION(clGetSVMPointerInfoKHR);
     CLEXT_GET_EXTENSION(clGetSVMSuggestedTypeIndexKHR);
+    CLEXT_GET_EXTENSION(clEnqueueSVMMemcpyWithPropertiesKHR);
 #endif // defined(cl_khr_unified_svm)
 
 #if defined(cl_ext_buffer_device_address)
@@ -1916,6 +1943,10 @@ static void _init(cl_platform_id platform, openclext_dispatch_table* dispatch_pt
 #if defined(cl_qcom_ext_host_ptr)
     CLEXT_GET_EXTENSION(clGetDeviceImageInfoQCOM);
 #endif // defined(cl_qcom_ext_host_ptr)
+
+#if defined(cl_qcom_perf_hint)
+    CLEXT_GET_EXTENSION(clSetPerfHintQCOM);
+#endif // defined(cl_qcom_perf_hint)
 
 #undef CLEXT_GET_EXTENSION
 }
@@ -3561,6 +3592,33 @@ cl_int CL_API_CALL clGetSVMSuggestedTypeIndexKHR(
         suggested_svm_type_index);
 }
 
+cl_int CL_API_CALL clEnqueueSVMMemcpyWithPropertiesKHR(
+    cl_command_queue command_queue,
+    cl_svm_copy_properties_khr* properties,
+    cl_bool blocking_copy,
+    void* dst_ptr,
+    const void* src_ptr,
+    size_t size,
+    cl_uint num_events_in_wait_list,
+    const cl_event* event_wait_list,
+    cl_event* event)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(command_queue);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clEnqueueSVMMemcpyWithPropertiesKHR == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clEnqueueSVMMemcpyWithPropertiesKHR(
+        command_queue,
+        properties,
+        blocking_copy,
+        dst_ptr,
+        src_ptr,
+        size,
+        num_events_in_wait_list,
+        event_wait_list,
+        event);
+}
+
 #endif // defined(cl_khr_unified_svm)
 
 #if defined(cl_ext_buffer_device_address)
@@ -4790,6 +4848,23 @@ cl_int CL_API_CALL clGetDeviceImageInfoQCOM(
 }
 
 #endif // defined(cl_qcom_ext_host_ptr)
+
+#if defined(cl_qcom_perf_hint)
+
+cl_int CL_API_CALL clSetPerfHintQCOM(
+    cl_context context,
+    cl_perf_hint_qcom perf_hint)
+{
+    struct openclext_dispatch_table* dispatch_ptr = _get_dispatch(context);
+    if (dispatch_ptr == nullptr || dispatch_ptr->clSetPerfHintQCOM == nullptr) {
+        return CL_INVALID_OPERATION;
+    }
+    return dispatch_ptr->clSetPerfHintQCOM(
+        context,
+        perf_hint);
+}
+
+#endif // defined(cl_qcom_perf_hint)
 
 #ifdef __cplusplus
 }
